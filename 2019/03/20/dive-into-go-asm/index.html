@@ -4,7 +4,7 @@
 
 <head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
-    <meta name="keywords" content="dive-into-go-asm, Stefno">
+    <meta name="keywords" content="深入Go的底层，带你走进一群有追求的人, Stefno">
     <meta name="description" content="上周六晚上，我参加了“Go夜读”活动，这期主要讲Go汇编语言，由滴滴大佬曹春晖大神主讲。活动结束后，我感觉打通了任督二脉。活动从晚上9点到深夜11点多，全程深度参与，大呼过瘾，以至于活动结束之后，久久不能平静。
 可以说理解了Go汇编语言，就">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,7 +14,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>dive-into-go-asm | Stefno</title>
+    <title>深入Go的底层，带你走进一群有追求的人 | Stefno</title>
     <link rel="icon" type="image/png" href="/qq.JPG">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -235,7 +235,7 @@
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        dive-into-go-asm
+                        深入Go的底层，带你走进一群有追求的人
                     </div>
                 </div>
             </div>
@@ -695,7 +695,7 @@ func f(s []int) int {
             <br/>
             <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text"
                   property="dct:title" rel="dct:type">
-                    《dive-into-go-asm》
+                    《深入Go的底层，带你走进一群有追求的人》
                 </span> 由
             <a xmlns:cc="http://creativecommons.org/ns#" href="/2019/03/20/dive-into-go-asm/" property="cc:attributionName"
                rel="cc:attributionURL">
@@ -763,32 +763,44 @@ func f(s []int) int {
             <div class="article-badge left-badge text-color">
                 <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2019/06/17/cch-says-memory-reorder/">
+                <a href="/2019/04/02/dive-into-go-slice/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="曹大谈内存重排">
+                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="深度解密Go语言之slice">
                         
-                        <span class="card-title">曹大谈内存重排</span>
+                        <span class="card-title">深度解密Go语言之slice</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            写这篇文章的原因很简单，公司内部的 Golang 社区组织了第一期分享，主讲嘉宾就是我们敬爱的曹大。这个必定是要去听的，只是曹大的讲题非常硬核，所以提前找他要了参考资料，花了 1 个小时提前预习，才不至于在正式分享的时候什么也不懂。当然了，
+                            Go 语言的 slice 很好用，不过也有一些坑。slice 是 Go 语言一个很重要的数据结构。网上已经有很多文章写过了，似乎没必要再写。但是每个人看问题的视角不同，写出来的东西自然也不一样。我这篇会从更底层的汇编语言去解读它。而且在我写
                         
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2019-06-17
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2019-04-02
                         </span>
                         <span class="publish-author">
                             
-                            <i class="fa fa-user fa-fw"></i>
-                            Stefno
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/编程语言/" class="post-category" target="_blank">
+                                    编程语言
+                                </a>
+                            
                             
                         </span>
                     </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/golang/" target="_blank">
+                        <span class="chip bg-color">golang</span>
+                    </a>
+                    
                 </div>
                 
             </div>
@@ -797,27 +809,27 @@ func f(s []int) int {
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">
-                本篇&nbsp;<i class="fa fa-dot-circle-o"></i>
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2019/03/20/dive-into-go-asm/">
+                <a href="/2019/03/13/graphic-go-memory-allocation/">
                     <div class="card-image">
                         
-                        <img src="https://user-images.githubusercontent.com/7698088/61765369-5d071b00-ae0f-11e9-9b04-1fc98f9548d5.png" class="responsive-img" alt="dive-into-go-asm">
+                        <img src="https://user-images.githubusercontent.com/7698088/61788688-51cee200-ae45-11e9-82bb-fcd765be4657.jpeg" class="responsive-img" alt="图解Go语言内存分配">
                         
-                        <span class="card-title">dive-into-go-asm</span>
+                        <span class="card-title">图解Go语言内存分配</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            上周六晚上，我参加了“Go夜读”活动，这期主要讲Go汇编语言，由滴滴大佬曹春晖大神主讲。活动结束后，我感觉打通了任督二脉。活动从晚上9点到深夜11点多，全程深度参与，大呼过瘾，以至于活动结束之后，久久不能平静。
-可以说理解了Go汇编语言，就
+                            Go语言内置运行时（就是runtime），抛弃了传统的内存分配方式，改为自主管理。这样可以自主地实现更好的内存使用模式，比如内存池、预分配等等。这样，不会每次内存分配都需要进行系统调用。
+Golang运行时的内存分配算法主要源自 Googl
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-03-20
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-03-13
                             </span>
                         <span class="publish-author">
                             
@@ -831,7 +843,6 @@ func f(s []int) int {
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
@@ -957,7 +968,7 @@ func f(s []int) int {
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">17.8k</span>
+                <span class="white-color">82.2k</span>
             
 
             

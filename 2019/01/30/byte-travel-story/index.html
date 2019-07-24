@@ -1,0 +1,952 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="一个字节的网络漫游故事独白, Stefno">
+    <meta name="description" content="大家好，给大家介绍一下，我是一个字节。相比于你们人类据说即将达到的百岁人生的寿命，我的一生简直不直一提（我只能存活零点几个毫秒）。
+也许只有那些码农才会了解我，而且也只有一部分码农。那些整天做业务的猿们想来也不会真正的了解我，更别提人类其他">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>一个字节的网络漫游故事独白 | Stefno</title>
+    <link rel="icon" type="image/png" href="/qq.JPG">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    <style type="text/css">
+        
+        code[class*="language-"], pre[class*="language-"] {
+            white-space: pre !important;
+        }
+        
+    </style>
+
+    <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+
+<header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/qq.JPG" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">Stefno</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fa fa-navicon"></i></a>
+<ul class="right">
+    
+    <li class="hide-on-med-and-down">
+        <a href="/" class="waves-effect waves-light">
+            
+            <i class="fa fa-home"></i>
+            
+            <span>首页</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/categories" class="waves-effect waves-light">
+            
+            <i class="fa fa-bookmark"></i>
+            
+            <span>分类</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/archives" class="waves-effect waves-light">
+            
+            <i class="fa fa-archive"></i>
+            
+            <span>归档</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/about" class="waves-effect waves-light">
+            
+            <i class="fa fa-user-circle-o"></i>
+            
+            <span>关于</span>
+        </a>
+    </li>
+    
+    <li>
+        <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+            <i id="searchIcon" class="fa fa-search" title="搜索"></i>
+        </a>
+    </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/qq.JPG" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Stefno</div>
+        <div class="logo-desc">
+            
+            日拱一卒，终能所成！
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li>
+            <a href="/" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-home"></i>
+                
+                首页
+            </a>
+        </li>
+        
+        <li>
+            <a href="/categories" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-bookmark"></i>
+                
+                分类
+            </a>
+        </li>
+        
+        <li>
+            <a href="/archives" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-archive"></i>
+                
+                归档
+            </a>
+        </li>
+        
+        <li>
+            <a href="/about" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-user-circle-o"></i>
+                
+                关于
+            </a>
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/qcrao/Go-Questions" class="waves-effect waves-light" target="_blank">
+                <i class="fa fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/qcrao/Go-Questions" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/2.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        一个字节的网络漫游故事独白
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 20px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/协议/" target="_blank">
+                                <span class="chip bg-color">协议</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fa fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/网络/" class="post-category" target="_blank">
+                                网络
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                <div class="post-date info-break-policy">
+                    <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2019-01-30
+                </div>
+
+                <div class="info-break-policy">
+                
+                    <i class="fa fa-at"></i> Stefno
+                
+                </div>
+
+                
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
+                        2.6k
+                    </div>
+                    
+
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                        8 分
+                    </div>
+                    
+                
+				
+				
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="fa fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>大家好，给大家介绍一下，我是一个字节。相比于你们人类据说即将达到的百岁人生的寿命，我的一生简直不直一提（我只能存活零点几个毫秒）。</p>
+<p>也许只有那些码农才会了解我，而且也只有一部分码农。那些整天做业务的猿们想来也不会真正的了解我，更别提人类其他行业的人了。</p>
+<p>我不甘心，虽然我微不足道，但是我对人类的贡献实在是太大了。没有我的世界根本无法想像：不能听网易云音乐，不能刷抖音，不能上拼多多，所有和网络相关的活动都无法进行。</p>
+<p>所以，今天我要讲讲我的一生，让更多的人知道我的存在，知道我的故事，也为证明自己曾经存在过吧。</p>
+<h1 id="诞生"><a href="#诞生" class="headerlink" title="诞生"></a>诞生</h1><p>我的主人是一个在西二旗知名互联网公司上班的程序猿，过着1095（注：早10点晚9点，一周5天工作）的生活，很少能在晚霞中回家，自然也说不出“落霞与孤鹜齐飞”那样的句子。</p>
+<p>这一天，他9点半到家，第一件事打开电脑，熟练地启动chrome浏览器，在地址栏敲下一个<code>z</code>字符，我所有的故事就从这里开始。</p>
+<p>当主人按下键盘上的<code>z</code>键时，系统了产生一个中断信号，通知CPU过来读取键盘输入，CPU读取到<code>z</code>后，将<code>z</code>发送给chrome浏览器, chrome收到后，将<code>z</code>显示到浏览器的地址栏上，同时后台搜索主人平时访问过的地址，排名第一的<code>https://www.zhihu.com/</code>被快速补全了。</p>
+<p>这时主人熟练地按下了回车键，chrome收到指令后，进行了一顿操作，在这电光火石之间，我诞生了，同时诞生的还有我的字节兄弟们。</p>
+<h1 id="上路"><a href="#上路" class="headerlink" title="上路"></a>上路</h1><p>话说<code>Chorme老大哥</code>接收到了URL后，首先拆解成自己能看懂的东西。<code>https://www.zhihu.com</code>会被拆解成三部分：<code>https</code>、<code>www.zhihu.com</code>、<code>/</code></p>
+<p><code>https</code>表示协议类型，通过这个<code>Chorme老大哥</code>知道他接下来该如何与远方的网站服务器通信；<code>www.zhihu.com</code>表示主机名，就是Chorme老大哥要通信的对象了；第三部分则是它要向服务器要的内容（注：这里表明是空，实际上隐含的表示主目录文件的概念）。</p>
+<p>有了这三项，<code>Chorme老大哥</code>就能从服务器那里获取它想要的内容了，从而展示给我的主人。</p>
+<p><code>Chorme老大哥</code>跑到<code>HTTP数据包生产车间</code>，哼哧哼哧地倒腾半天，生产出了一个HTTP数据包（注：忽略https, 简单起见我们当成http），这个数据包实际上就是我和我的一群字节兄弟们，我们挤在一个集装箱内，熙熙攘攘。</p>
+<p>我们马上就要搭乘<code>IP列车</code>到远方的服务器，见识外面的世界了。集装箱被装上了<code>TCP专车</code>，它将带我们来到列车站。<code>TCP专车</code>很安全也很舒适，我从集装箱的缝隙中看到车前贴上了车牌：<code>80</code>. </p>
+<p>到了车站，<code>TCP专车</code>直接开到了列车上。这样也好，<code>IP列车</code>上很脏，我们坐在专车上更好。 只是列车还不知道具体要去哪，所以我们就只能先在列车上等着了。</p>
+<p>不对啊，列车应该去<code>www.zhihu.com</code>这个网站，不是已经知道了吗？对的，但是<code>IP列车</code>挺笨的，也挺古板的，不认识这些字母。它只认识数字，人类称之为ip. </p>
+<p><code>Chorme老大哥</code>也有点抱怨，人类真是笨，连个ip都记不住，非得用域名来上网。害我还得拿着这个域名去问<code>DNS老大爷</code>，它知道所有域名对应的ip. </p>
+<p>这不，<code>Chorme老大哥</code>又跑到另外一个车间————<code>DNS数据包生产车间</code>里倒腾出了一个DNS数据包，当然还是一群字节兄弟们，不过这里的兄弟就少一些了。它们在集装箱里叽叽喳喳，被装上了<code>UDP敞篷车</code>，车虽然很快，但不太安全，我这些兄弟们坐在上面，提心吊胆，生怕掉下去，因为掉下去，就永远消失了。</p>
+<p><code>UDP敞篷车</code>也直接开到了<code>IP列车</code>上，车前贴了车牌：53.</p>
+<p>这回Chrome老大哥直接从<code>操作系统大佬</code>那要到了<code>DNS老大爷</code>的ip, 贴到了<code>IP列车</code>的车头，<code>IP列车</code>马上全速启动，载着我这些字节兄弟，赶到了<code>DNS老大爷</code>的城堡，<code>UDP敞篷车</code>开下列车，按照车牌号53找到了<code>DNS老大爷</code>的住处。从它那拿到了<code>www.zhihu.com</code>对应的ip.</p>
+<p><code>DNS老大爷</code>学问渊博，他也很仗义，从自己城堡里的<code>DNS数据包生产车间</code>造出了DNS响应包，包里也是我这些字节兄弟们，它们拿着重要的资料数据————<code>www.zhihu.com</code>对应的ip, 坐上了另一趟返程的<code>IP列车</code>，而列车的终点就是我现在所在的地方。当然了，他们是由另一辆<code>UDP敞篷车</code>载着他们回来的。</p>
+<p><code>Chorme老大哥</code>在车间接见了这些兄弟，非常感动。因为他们带回了<code>www.zhihu.com</code>对应的ip. 那些兄弟争先恐后的报告自己知道的东西，有些兄弟报告1, 有些兄弟报告0, <code>Chorme老大哥</code>非常有经验，它把这些消息合并起来了，最终得到了它想要的ip: 118.89.204.192.</p>
+<p><code>Chorme老大哥</code>拿着这个ip来到了我所在的列车前面，我激动地要叫起来了：终于我要出发了！它熟练地把<code>118.89.204.192</code>贴到了列车的前面，马上列车就开动了，我上路了。</p>
+<p><code>IP列车</code>的列车长在掌管着车头的方向，决定着我们的命运走向。路网非常复杂，而车头上只有一个ip地址，根本没告诉列车长应该走哪条路。这不难，富有经验的列车长根据车头的ip地址查到了下一个大站（路由器）的地址，之后再根据这个大站地址查到（ARP协议）途经的下一个小站（交换机或集线器）应该走的轨道。在每个小站，对照这个大站地址，列车长就知道该走哪条路。搞定！</p>
+<p>经过了很多的小站，我们终于到了下一个大站了。站点的工作人员看着我们车头前的ip地址，查了下表（路由表）告诉我们下一个大站的地址，并且告诉我们途径的下一个小站应该走哪条轨道。列车长就这样，一路拿这张表，顺利地把们带到了终点：<br><code>118.89.204.192</code>. </p>
+<p>不过，刚刚就在到终点的前一刻，列车被拦住了，一群荷枪实弹的警卫冲上来了，一些胆小的字节兄弟们都哭了，我也是屏气凝声。他们先是查看了车头的ip地址，再查看了列车长手里的表，还看了下我们的<code>TCP专车</code>的车牌。很快就放行了，虚惊一场！</p>
+<h1 id="新生"><a href="#新生" class="headerlink" title="新生"></a>新生</h1><p>到了终点站后，列车首先停下接受工作人员的检查。列车长出示了他手里的表，对了一下表上标注的下一站地址确实是：知乎。接着又看了下列车头部标注的ip地址，就算检查通过了，第一关很轻松。</p>
+<p>接下来，我们坐的<code>TCP专车</code>开下列车了。进了一个<code>TCP车牌检查站</code>，工作人员看了下车牌号80, 也挥手示意我们通过。</p>
+<p>接着我们都下车走进了<code>主页车间</code>，进去后，我们先按我们身上的标号排好了位置，工作人员将我们每个人所代表的信息进行了聚拢。得到了各种关于主人的信息，比如他所用的浏览器的版本，cookie等等信息，我知道，我们的使命完成了。果然，一道光闪过，我们都消失了，完成了我们光荣的一生。</p>
+<p><code>主页车间</code>领导马上下达生产命令：1组去仓库拉取最新话题，2组去商业中心获取今天的广告主信息……</p>
+<p>很快，各组都完成了任务，车间在一阵轰鸣过后，新的一批字节兄弟诞生了，他们带着这些话题、广告信息，和我们当年出生的时候一样，熙熙攘攘。但是我知道，我获得了新生。</p>
+<h1 id="归家"><a href="#归家" class="headerlink" title="归家"></a>归家</h1><p>像我们当年一样，这些新出生的字节兄弟依次坐上了<code>TCP专车</code>，<code>IP列车</code>一路跋涉，去往我出发的地方，那是我梦开始的地方。</p>
+<p>我所经历的，他们未曾少过一分。</p>
+<h1 id="定格"><a href="#定格" class="headerlink" title="定格"></a>定格</h1><p><code>Chrome老大哥</code>终于等来了这些字节兄弟，在他们排好队后，老大哥看清了字节兄弟们代表的内容：话题<code>如何在西二旗地铁优雅地装逼</code>，热度10w, 广告<code>上午植发，下午上班</code>……</p>
+<p>这些是<code>Chrome老大哥</code>最擅长的事情，分分钟将他们显示在了网页上。字节兄弟们终于完成了使命，定格在了retina屏幕上。</p>
+<p>我的主人点开第一话题后，看了一会儿。然后瞅到了到植发广告，他偷偷地开启了隐身模式，仔细地研究了起来……</p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>第一次尝试这种题材的文章，供大家一乐！有写得不到位的地方，欢迎大家补充！</p>
+<p>另外，推荐大家去看《网络是怎样连接的》，看完可以形成对网络的整体印象。写得非常好！</p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51420568-305b1800-1bce-11e9-962a-52b12be7eb2e.png" alt="QR"></p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>【知乎回答】<a href="https://www.zhihu.com/question/292704461/answer/482549197" target="_blank" rel="noopener">https://www.zhihu.com/question/292704461/answer/482549197</a></p>
+<p>【当我们谈网络时】<a href="https://segmentfault.com/a/1190000004094420" target="_blank" rel="noopener">https://segmentfault.com/a/1190000004094420</a></p>
+<p>【按下键盘时】<a href="https://www.zhihu.com/question/29707696" target="_blank" rel="noopener">https://www.zhihu.com/question/29707696</a></p>
+<p>【mac地址和ip地址】<a href="http://blog.sciencenet.cn/blog-411071-1037673.html" target="_blank" rel="noopener">http://blog.sciencenet.cn/blog-411071-1037673.html</a></p>
+
+            </div>
+            <hr/>
+
+            
+            <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.88rem;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-large waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fa fa-close"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpeg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.JPG" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+
+            <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    <div class="social-share" data-disabled="qzone" data-wechat-qrcode-helper="<p>微信里点“发现”->“扫一扫”二维码便可查看分享。</p>"></div>
+    
+</div>
+
+<script src="/libs/share/js/social-share.min.js"></script>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        <p class="reprint-tip">
+            <i class="fa fa-exclamation-triangle"></i>&nbsp;&nbsp;
+            <span>转载规则</span>
+        </p>
+        
+            <div class="center-align">
+                <a rel="license" href="https://creativecommons.org/licenses/by/4.0/deed.zh">
+                    <img alt=""
+                         style="border-width:0"
+                         src="https://i.creativecommons.org/l/by/4.0/88x31.png"/>
+                </a>
+            </div>
+            <br/>
+            <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text"
+                  property="dct:title" rel="dct:type">
+                    《一个字节的网络漫游故事独白》
+                </span> 由
+            <a xmlns:cc="http://creativecommons.org/ns#" href="/2019/01/30/byte-travel-story/" property="cc:attributionName"
+               rel="cc:attributionURL">
+                Stefno
+            </a> 采用
+            <a rel="license" href="https://creativecommons.org/licenses/by/4.0/deed.zh">
+                知识共享署名 4.0 国际许可协议
+            </a>进行许可。
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+        </div>
+    </div>
+
+    
+        <link rel="stylesheet" href="/libs/gitalk/gitalk.css">
+<link rel="stylesheet" href="/css/my-gitalk.css">
+
+<div class="card gitalk-card" data-aos="fade-up">
+    <div id="gitalk-container" class="card-content"></div>
+</div>
+
+<script src="/libs/gitalk/gitalk.min.js"></script>
+<script>
+    let gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: '',
+        owner: '',
+        admin: null,
+        id: '2019-01-30T06-48-00',
+        distractionFreeMode: false  // Facebook-like distraction free mode
+    });
+
+    gitalk.render('gitalk-container');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2019/02/12/how-to-keep-off-trap-of-defer/">
+                    <div class="card-image">
+                        
+                        <img src="https://user-images.githubusercontent.com/7698088/61783774-ff88c380-ae3a-11e9-971c-21e75cb0b17a.jpg" class="responsive-img" alt="Golang之轻松化解defer的温柔陷阱">
+                        
+                        <span class="card-title">Golang之轻松化解defer的温柔陷阱</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            什么是defer？defer是Go语言提供的一种用于注册延迟调用的机制：让函数或语句可以在当前函数执行完毕后（包括通过return正常结束或者panic导致的异常结束）执行。
+defer语句通常用于一些成对操作的场景：打开连接/关闭连接；加
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2019-02-12
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-user fa-fw"></i>
+                            Stefno
+                            
+                        </span>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2019/01/18/dive-into-http/">
+                    <div class="card-image">
+                        
+                        <img src="https://user-images.githubusercontent.com/7698088/61789029-357f7500-ae46-11e9-8efa-ec7ecff11d6b.png" class="responsive-img" alt="深度解密HTTP通信细节">
+                        
+                        <span class="card-title">深度解密HTTP通信细节</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            记得刚毕业找工作面试的时候，经常会被问到：你知道“3次握手，4次挥手”吗？这时候我会“胸有成竹”地“背诵”前期准备好的“答案”，第一次怎么怎么，第二次……答完就没有下文了，面试官貌似也没有深入下去的意思，深入下去我也不懂，皆大欢喜！
+作为程
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-01-18
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/HTTP/" class="post-category" target="_blank">
+                                    HTTP
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/协议/" target="_blank">
+                        <span class="chip bg-color">协议</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+</div>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="fa fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fa fa-list"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h1, h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h1, h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).slideUp(500);
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).slideDown(500);
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+    
+
+</main>
+
+
+<footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            本站由&copy;<a href="https://github.com/qcrao/qcrao.github.io" target="_blank">Stefno</a>基于
+            <a href="https://hexo.io/" target="_blank">Hexo</a> 的
+            <a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">hexo-theme-matery</a>主题搭建.
+
+            
+                &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
+                <span class="white-color">82.2k</span>
+            
+
+            
+			
+                <br>
+                
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa fa-heart-o"></i>
+                    本站总访问量 <span id="busuanzi_value_site_pv" class="white-color"></span>
+                </span>
+                
+                
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa fa-users"></i>
+                    次,&nbsp;访客数 <span id="busuanzi_value_site_uv" class="white-color"></span> 人.
+                </span>
+                
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+
+
+    <a href="mailto:qcrao91@gmail.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fa fa-rss"></i>
+    </a>
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+<!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fa fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+<!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fa fa-angle-up"></i>
+    </a>
+</div>
+
+
+<script src="/libs/materialize/materialize.min.js"></script>
+<script src="/libs/masonry/masonry.pkgd.min.js"></script>
+<script src="/libs/aos/aos.js"></script>
+<script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+<script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+<script src="/js/matery.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+
+
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>

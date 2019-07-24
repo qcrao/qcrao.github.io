@@ -1,0 +1,1513 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="深度解密Go语言之slice, Stefno">
+    <meta name="description" content="Go 语言的 slice 很好用，不过也有一些坑。slice 是 Go 语言一个很重要的数据结构。网上已经有很多文章写过了，似乎没必要再写。但是每个人看问题的视角不同，写出来的东西自然也不一样。我这篇会从更底层的汇编语言去解读它。而且在我写">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>深度解密Go语言之slice | Stefno</title>
+    <link rel="icon" type="image/png" href="/qq.JPG">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    <style type="text/css">
+        
+        code[class*="language-"], pre[class*="language-"] {
+            white-space: pre !important;
+        }
+        
+    </style>
+
+    <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+
+<header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/qq.JPG" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">Stefno</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fa fa-navicon"></i></a>
+<ul class="right">
+    
+    <li class="hide-on-med-and-down">
+        <a href="/" class="waves-effect waves-light">
+            
+            <i class="fa fa-home"></i>
+            
+            <span>首页</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/categories" class="waves-effect waves-light">
+            
+            <i class="fa fa-bookmark"></i>
+            
+            <span>分类</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/archives" class="waves-effect waves-light">
+            
+            <i class="fa fa-archive"></i>
+            
+            <span>归档</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/about" class="waves-effect waves-light">
+            
+            <i class="fa fa-user-circle-o"></i>
+            
+            <span>关于</span>
+        </a>
+    </li>
+    
+    <li>
+        <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+            <i id="searchIcon" class="fa fa-search" title="搜索"></i>
+        </a>
+    </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/qq.JPG" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Stefno</div>
+        <div class="logo-desc">
+            
+            日拱一卒，终能所成！
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li>
+            <a href="/" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-home"></i>
+                
+                首页
+            </a>
+        </li>
+        
+        <li>
+            <a href="/categories" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-bookmark"></i>
+                
+                分类
+            </a>
+        </li>
+        
+        <li>
+            <a href="/archives" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-archive"></i>
+                
+                归档
+            </a>
+        </li>
+        
+        <li>
+            <a href="/about" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-user-circle-o"></i>
+                
+                关于
+            </a>
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/qcrao/Go-Questions" class="waves-effect waves-light" target="_blank">
+                <i class="fa fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/qcrao/Go-Questions" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/10.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        深度解密Go语言之slice
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 20px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/golang/" target="_blank">
+                                <span class="chip bg-color">golang</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fa fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/编程语言/" class="post-category" target="_blank">
+                                编程语言
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                <div class="post-date info-break-policy">
+                    <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2019-04-02
+                </div>
+
+                <div class="info-break-policy">
+                
+                    <i class="fa fa-at"></i> Stefno
+                
+                </div>
+
+                
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
+                        5.6k
+                    </div>
+                    
+
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                        23 分
+                    </div>
+                    
+                
+				
+				
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="fa fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>Go 语言的 <code>slice</code> 很好用，不过也有一些坑。<code>slice</code> 是 Go 语言一个很重要的数据结构。网上已经有很多文章写过了，似乎没必要再写。但是每个人看问题的视角不同，写出来的东西自然也不一样。我这篇会从更底层的汇编语言去解读它。而且在我写这篇文章的过程中，发现绝大部分文章都存在一些问题，文章里会讲到，这里先不展开。</p>
+<p>我希望本文可以终结这个话题，下次再有人想和你讨论 <code>slice</code>，直接把这篇文章的链接丢过去就行了。</p>
+<p>[toc]</p>
+<h1 id="当我们在说-slice-时，到底在说什么"><a href="#当我们在说-slice-时，到底在说什么" class="headerlink" title="当我们在说 slice 时，到底在说什么"></a>当我们在说 slice 时，到底在说什么</h1><p><code>slice</code> 翻译成中文就是<code>切片</code>，它和<code>数组（array）</code>很类似，可以用下标的方式进行访问，如果越界，就会产生 panic。但是它比数组更灵活，可以自动地进行扩容。</p>
+<p>了解 slice 的本质，最简单的方法就是看它的源代码：</p>
+<pre class=" language-golang"><code class="language-golang">// runtime/slice.go
+type slice struct {
+    array unsafe.Pointer // 元素指针
+    len   int // 长度 
+    cap   int // 容量
+}</code></pre>
+<p>看到了吗，<code>slice</code> 共有三个属性：<br><code>指针</code>，指向底层数组；<br><code>长度</code>，表示切片可用元素的个数，也就是说使用下标对 slice 的元素进行访问时，下标不能超过 slice 的长度；<br><code>容量</code>，底层数组的元素个数，容量 &gt;= 长度。在底层数组不进行扩容的情况下，容量也是 slice 可以扩张的最大限度。</p>
+<p><img src="https://user-images.githubusercontent.com/7698088/55270142-876c2000-52d6-11e9-99e5-2e921fc2d430.png" alt="切片数据结构"></p>
+<p>注意，底层数组是可以被多个 slice 同时指向的，因此对一个 slice 的元素进行操作是有可能影响到其他 slice 的。</p>
+<h1 id="slice-的创建"><a href="#slice-的创建" class="headerlink" title="slice 的创建"></a>slice 的创建</h1><p>创建 slice 的方式有以下几种：</p>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>方式</th>
+<th>代码示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>直接声明</td>
+<td><code>var slice []int</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>new</td>
+<td><code>slice := *new([]int)</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>字面量</td>
+<td><code>slice := []int{1,2,3,4,5}</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>make</td>
+<td><code>slice := make([]int, 5, 10)</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>从切片或数组“截取”</td>
+<td><code>slice := array[1:5]</code> 或 <code>slice := sourceSlice[1:5]</code></td>
+</tr>
+</tbody></table>
+<h2 id="直接声明"><a href="#直接声明" class="headerlink" title="直接声明"></a>直接声明</h2><p>第一种创建出来的 slice 其实是一个 <code>nil slice</code>。它的长度和容量都为0。和<code>nil</code>比较的结果为<code>true</code>。</p>
+<p>这里比较混淆的是<code>empty slice</code>，它的长度和容量也都为0，但是所有的空切片的数据指针都指向同一个地址 <code>0xc42003bda0</code>。空切片和 <code>nil</code> 比较的结果为<code>false</code>。</p>
+<p>它们的内部结构如下图：</p>
+<p><img src="https://user-images.githubusercontent.com/7698088/54864985-ac720780-4d99-11e9-8386-68ef68880c8d.png" alt="nil slice 与 empty slice"></p>
+<table>
+<thead>
+<tr>
+<th>创建方式</th>
+<th>nil切片</th>
+<th>空切片</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>方式一</td>
+<td>var s1 []int</td>
+<td>var s2 = []int{}</td>
+</tr>
+<tr>
+<td>方式二</td>
+<td>var s4 = *new([]int)</td>
+<td>var s3 = make([]int, 0)</td>
+</tr>
+<tr>
+<td>长度</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>容量</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>和 <code>nil</code> 比较</td>
+<td><code>true</code></td>
+<td><code>false</code></td>
+</tr>
+</tbody></table>
+<p><code>nil</code> 切片和空切片很相似，长度和容量都是0，官方建议尽量使用 <code>nil</code> 切片。</p>
+<p>关于<code>nil slice</code>和<code>empty slice</code>的探索可以参考公众号“码洞”作者老钱写的一篇文章《深度解析 Go 语言中「切片」的三种特殊状态》，地址附在了参考资料部分。</p>
+<h2 id="字面量"><a href="#字面量" class="headerlink" title="字面量"></a>字面量</h2><p>比较简单，直接用<code>初始化表达式</code>创建。</p>
+<pre class=" language-golang"><code class="language-golang">package main
+
+import "fmt"
+
+func main() {
+    s1 := []int{0, 1, 2, 3, 8: 100}
+    fmt.Println(s1, len(s1), cap(s1))
+}</code></pre>
+<p>运行结果：</p>
+<pre class=" language-shell"><code class="language-shell">[0 1 2 3 0 0 0 0 100] 9 9</code></pre>
+<p>唯一值得注意的是上面的代码例子中使用了索引号，直接赋值，这样，其他未注明的元素则默认 <code>0 值</code>。</p>
+<h2 id="make"><a href="#make" class="headerlink" title="make"></a>make</h2><p><code>make</code>函数需要传入三个参数：切片类型，长度，容量。当然，容量可以不传，默认和长度相等。</p>
+<p>上篇文章<a href="https://www.cnblogs.com/qcrao-2018/p/10562216.html" target="_blank" rel="noopener">《走进Go的底层》</a>中，我们学到了汇编这个工具，这次我们再次请出汇编来更深入地看看<code>slice</code>。如果没看过上篇文章，建议先回去看完，再继续阅读本文效果更佳。</p>
+<p>先来一小段玩具代码，使用 <code>make</code> 关键字创建 <code>slice</code>：</p>
+<pre class=" language-golang"><code class="language-golang">package main
+
+import "fmt"
+
+func main() {
+    slice := make([]int, 5, 10) // 长度为5，容量为10
+    slice[2] = 2 // 索引为2的元素赋值为2
+    fmt.Println(slice)
+}</code></pre>
+<p>执行如下命令，得到 Go 汇编代码：</p>
+<pre class=" language-shell"><code class="language-shell">go tool compile -S main.go</code></pre>
+<p>我们只关注main函数：</p>
+<pre class=" language-asm"><code class="language-asm">0x0000 00000 (main.go:5)TEXT    "".main(SB), $96-0
+0x0000 00000 (main.go:5)MOVQ    (TLS), CX
+0x0009 00009 (main.go:5)CMPQ    SP, 16(CX)
+0x000d 00013 (main.go:5)JLS     228
+0x0013 00019 (main.go:5)SUBQ    $96, SP
+0x0017 00023 (main.go:5)MOVQ    BP, 88(SP)
+0x001c 00028 (main.go:5)LEAQ    88(SP), BP
+0x0021 00033 (main.go:5)FUNCDATA    $0, gclocals·69c1753bd5f81501d95132d08af04464(SB)
+0x0021 00033 (main.go:5)FUNCDATA    $1, gclocals·57cc5e9a024203768cbab1c731570886(SB)
+0x0021 00033 (main.go:5)LEAQ    type.int(SB), AX
+0x0028 00040 (main.go:6)MOVQ    AX, (SP)
+0x002c 00044 (main.go:6)MOVQ    $5, 8(SP)
+0x0035 00053 (main.go:6)MOVQ    $10, 16(SP)
+0x003e 00062 (main.go:6)PCDATA  $0, $0
+0x003e 00062 (main.go:6)CALL    runtime.makeslice(SB)
+0x0043 00067 (main.go:6)MOVQ    24(SP), AX
+0x0048 00072 (main.go:6)MOVQ    32(SP), CX
+0x004d 00077 (main.go:6)MOVQ    40(SP), DX
+0x0052 00082 (main.go:7)CMPQ    CX, $2
+0x0056 00086 (main.go:7)JLS     221
+0x005c 00092 (main.go:7)MOVQ    $2, 16(AX)
+0x0064 00100 (main.go:8)MOVQ    AX, ""..autotmp_2+64(SP)
+0x0069 00105 (main.go:8)MOVQ    CX, ""..autotmp_2+72(SP)
+0x006e 00110 (main.go:8)MOVQ    DX, ""..autotmp_2+80(SP)
+0x0073 00115 (main.go:8)MOVQ    $0, ""..autotmp_1+48(SP)
+0x007c 00124 (main.go:8)MOVQ    $0, ""..autotmp_1+56(SP)
+0x0085 00133 (main.go:8)LEAQ    type.[]int(SB), AX
+0x008c 00140 (main.go:8)MOVQ    AX, (SP)
+0x0090 00144 (main.go:8)LEAQ    ""..autotmp_2+64(SP), AX
+0x0095 00149 (main.go:8)MOVQ    AX, 8(SP)
+0x009a 00154 (main.go:8)PCDATA  $0, $1
+0x009a 00154 (main.go:8)CALL    runtime.convT2Eslice(SB)
+0x009f 00159 (main.go:8)MOVQ    16(SP), AX
+0x00a4 00164 (main.go:8)MOVQ    24(SP), CX
+0x00a9 00169 (main.go:8)MOVQ    AX, ""..autotmp_1+48(SP)
+0x00ae 00174 (main.go:8)MOVQ    CX, ""..autotmp_1+56(SP)
+0x00b3 00179 (main.go:8)LEAQ    ""..autotmp_1+48(SP), AX
+0x00b8 00184 (main.go:8)MOVQ    AX, (SP)
+0x00bc 00188 (main.go:8)MOVQ    $1, 8(SP)
+0x00c5 00197 (main.go:8)MOVQ    $1, 16(SP)
+0x00ce 00206 (main.go:8)PCDATA  $0, $1
+0x00ce 00206 (main.go:8)CALL    fmt.Println(SB)
+0x00d3 00211 (main.go:9)MOVQ    88(SP), BP
+0x00d8 00216 (main.go:9)ADDQ    $96, SP
+0x00dc 00220 (main.go:9)RET
+0x00dd 00221 (main.go:7)PCDATA  $0, $0
+0x00dd 00221 (main.go:7)CALL    runtime.panicindex(SB)
+0x00e2 00226 (main.go:7)UNDEF
+0x00e4 00228 (main.go:7)NOP
+0x00e4 00228 (main.go:5)PCDATA  $0, $-1
+0x00e4 00228 (main.go:5)CALL    runtime.morestack_noctxt(SB)
+0x00e9 00233 (main.go:5)JMP     0</code></pre>
+<p>先说明一下，Go 语言汇编 <code>FUNCDATA</code> 和 <code>PCDATA</code> 是编译器产生的，用于保存一些和垃圾收集相关的信息，我们先不用 care。</p>
+<p>以上汇编代码行数比较多，没关系，因为命令都比较简单，而且我们的 Go 源码也足够简单，没有理由看不明白。</p>
+<p>我们先从上到下扫一眼，看到几个关键函数：</p>
+<pre class=" language-shell"><code class="language-shell">CALL    runtime.makeslice(SB)
+CALL    runtime.convT2Eslice(SB)
+CALL    fmt.Println(SB)
+CALL    runtime.morestack_noctxt(SB)</code></pre>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>创建slice</td>
+</tr>
+<tr>
+<td>2</td>
+<td>类型转换</td>
+</tr>
+<tr>
+<td>3</td>
+<td>打印函数</td>
+</tr>
+<tr>
+<td>4</td>
+<td>栈空间扩容</td>
+</tr>
+</tbody></table>
+<p><code>1</code>是创建 slice 相关的；<code>2</code>是类型转换；调用 <code>fmt.Println</code>需要将 slice 作一个转换； <code>3</code>是打印语句；<code>4</code>是栈空间扩容函数，在函数开始处，会检查当前栈空间是否足够，不够的话需要调用它来进行扩容。暂时可以忽略。</p>
+<p>调用了函数就会涉及到参数传递，Go 的参数传递都是通过 栈空间完成的。接下来，我们详细分析这整个过程。</p>
+<table>
+<thead>
+<tr>
+<th>行数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><code>main</code>函数定义，栈帧大小为 <code>96B</code></td>
+</tr>
+<tr>
+<td>2-4</td>
+<td>判断栈是否需要进行扩容，如果需要则跳到 <code>228</code>，这里会调用 <code>runtime.morestack_noctxt(SB)</code> 进行栈扩容操作。具体细节后续还会有文章来讲</td>
+</tr>
+<tr>
+<td>5-9</td>
+<td>将 <code>caller BP</code> 压栈，具体细节后面会讲到</td>
+</tr>
+<tr>
+<td>10-15</td>
+<td>调用 <code>runtime.makeslice(SB)</code> 函数及准备工作。*_type表示的是 <code>int</code>，也就是 <code>slice</code> 元素的类型。这里对应的源码是第6行，也就是调用 <code>make</code> 创建 <code>slice</code> 的那一行。<code>5</code> 和 <code>10</code> 分别代表长度和容量，函数参数会在栈顶准备好，之后执行函数调用命令 <code>CALL</code>，进入到被调用函数的栈帧，就会按顺序从 <code>caller</code> 的栈顶取函数参数</td>
+</tr>
+<tr>
+<td>16-18</td>
+<td>接收 <code>makeslice</code>的返回值，通过 <code>move</code> 移动到寄存器中</td>
+</tr>
+<tr>
+<td>19-21</td>
+<td>给数组索引值为 <code>2</code> 的元素赋上值 <code>2</code>，因为是 <code>int</code> 型的 <code>slice</code>，元素大小为8字节，所以 <code>MOVQ $2, 16(AX)</code> 此命令就是将 <code>2</code> 搬到索引为 <code>2</code> 的位置。这里还会对索引值的大小进行检查，如果越界，则会跳转到 <code>221</code>，执行 <code>panic</code> 函数</td>
+</tr>
+<tr>
+<td>22-26</td>
+<td>分别通过寄存器 <code>AX，CX，DX</code> 将 <code>makeslice</code> 的返回值 <code>move</code> 到内存的其他位置，也称为局部变量，这样就构造出了 <code>slice</code></td>
+</tr>
+</tbody></table>
+<p><img src="https://user-images.githubusercontent.com/7698088/54982728-5fcf3c00-4fe6-11e9-819b-9c5b45cc93bf.png" alt="makeslice 栈帧"></p>
+<p>左边是栈上的数据，右边是堆上的数据。<code>array</code> 指向 <code>slice</code> 的底层数据，被分配到堆上了。注意，栈上的地址是从高向低增长；堆则从低向高增长。栈左边的数字表示对应的汇编代码的行数，栈右边箭头则表示栈地址。（48）SP、（56）SP 表示的内容接着往下看。</p>
+<p>注意，在图中，栈地址是从下往上增长，所以 SP 表示的是图中 <code>*_type</code> 所在的位置，其它的依此类推。</p>
+<table>
+<thead>
+<tr>
+<th>行数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>27-32</td>
+<td>准备调用 <code>runtime.convT2Eslice(SB)</code>的函数参数</td>
+</tr>
+<tr>
+<td>33-36</td>
+<td>接收返回值，通过AX，CX寄存器 <code>move</code> 到(48)SP、（56）SP</td>
+</tr>
+</tbody></table>
+<p><code>convT2Eslice</code> 的函数声明如下：</p>
+<pre class=" language-golang"><code class="language-golang">func convT2Eslice(t *_type, elem unsafe.Pointer) (e eface) </code></pre>
+<p>第一个参数是指针 <code>*_type</code>，<code>_type</code>是一个表示类型的结构体，这里传入的就是 <code>slice</code>的类型 <code>[]int</code>；第二个参数则是元素的指针，这里传入的就是 <code>slice</code> 底层数组的首地址。</p>
+<p>返回值 <code>eface</code> 的结构体定义如下：</p>
+<pre class=" language-golang"><code class="language-golang">type eface struct {
+    _type *_type
+    data  unsafe.Pointer
+}</code></pre>
+<p>由于我们会调用 <code>fmt.Println(slice)</code>，看下函数原型：</p>
+<pre class=" language-golang"><code class="language-golang">func Println(a ...interface{}) (n int, err error)</code></pre>
+<p><code>Println</code> 接收 interface 类型，因此我们需要将 <code>slice</code> 转换成 interface 类型。由于 <code>slice</code> 没有方法，是个“<code>空 interface</code>”。因此会调用 <code>convT2Eslice</code> 完成这一转换过程。</p>
+<p><code>convT2Eslice</code> 函数返回的是类型指针和数据地址。源码就不贴了，大体流程是：调用 <code>mallocgc</code> 分配一块内存，把数据 <code>copy</code> 进到新的内存，然后返回这块内存的地址，<code>*_type</code> 则直接返回传入的参数。</p>
+<p><img src="https://user-images.githubusercontent.com/7698088/55271648-2d298a00-52eb-11e9-9dd0-e1bcc1fe33d0.png" alt="convT2Eslice 栈帧"></p>
+<p><code>32(SP)</code> 和 <code>40(SP)</code> 其实是 <code>makeslice</code> 函数的返回值，这里可以忽略。</p>
+<p>还剩 <code>fmt.Println(slice)</code> 最后一个函数调用了，我们继续。</p>
+<table>
+<thead>
+<tr>
+<th>行数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>37-40</td>
+<td>准备 <code>Println</code> 函数参数。共3个参数，第一个是类型地址，还有两个 <code>1</code>，这块暂时还不知道为什么要传，有了解的同学可以在文章后面留言</td>
+</tr>
+</tbody></table>
+<p>所以调用 <code>fmt.Println(slice)</code> 时，实际是传入了一个 <code>slice类型的eface地址</code>。这样，<code>Println</code>就可以访问类型中的数据，最终给“打印”出来。 </p>
+<p><img src="https://user-images.githubusercontent.com/7698088/55271702-1f283900-52ec-11e9-9d3f-d8eb754ef23c.png" alt="fmt.Println 栈帧"></p>
+<p>最后，我们看下 <code>main</code> 函数栈帧的开始和收尾部分。</p>
+<pre class=" language-asm"><code class="language-asm">0x0013 00019 (main.go:5)SUBQ    $96, SP
+0x0017 00023 (main.go:5)MOVQ    BP, 88(SP)
+0x001c 00028 (main.go:5)LEAQ    88(SP), BP
+…………………………
+0x00d3 00211 (main.go:9)MOVQ    88(SP), BP
+0x00d8 00216 (main.go:9)ADDQ    $96, SP
+RET</code></pre>
+<p><code>BP</code>可以理解为保存了当前函数栈帧栈底的地址，<code>SP</code>则保存栈顶的地址。</p>
+<p>初始，<code>BP</code> 和 <code>SP</code> 分别有一个初始状态。</p>
+<p><code>main</code> 函数执行的时候，先根据 <code>main</code> 函数栈帧大小确定 <code>SP</code> 的新指向，使得 <code>main</code> 函数栈帧大小达到 <code>96B</code>。之后把老的 <code>BP</code> 保存到 <code>main</code>  函数栈帧的底部，并使 <code>BP</code> 寄存器重新指向新的栈底，也就是 <code>main</code> 函数栈帧的栈底。</p>
+<p>最后，当 <code>main</code> 函数执行完毕，把它栈底的 <code>BP</code> 给回弹回到 <code>BP</code> 寄存器，恢复调用前的初始状态。一切都像是没有发生一样，完美的现场。</p>
+<p><img src="https://user-images.githubusercontent.com/7698088/54874022-24821100-4e1e-11e9-805b-408c29b3c1c4.png" alt="栈帧变化"></p>
+<p>这部分，又详细地分析了一遍函数调用的过程。一方面，让大家复习一下上一篇文章讲的内容；另一方面，向大家展示如何找到 Go 中的一个函数背后真实调用了哪些函数。像例子中，我们就看到了 <code>make</code> 函数背后，实际上是调用了 <code>makeslice</code> 函数；还有一点，让大家对汇编不那么“惧怕”，可以轻松地分析一些东西。</p>
+<h2 id="截取"><a href="#截取" class="headerlink" title="截取"></a>截取</h2><p>截取也是比较常见的一种创建 slice 的方法，可以从数组或者 slice 直接截取，当然需要指定起止索引位置。</p>
+<p>基于已有 slice 创建新 slice 对象，被称为 <code>reslice</code>。新 slice 和老 slice 共用底层数组，新老 slice 对底层数组的更改都会影响到彼此。基于数组创建的新 slice 对象也是同样的效果：对数组或 slice 元素作的更改都会影响到彼此。</p>
+<p>值得注意的是，新老 slice 或者新 slice 老数组互相影响的前提是两者共用底层数组，如果因为执行 <code>append</code> 操作使得新 slice 底层数组扩容，移动到了新的位置，两者就不会相互影响了。所以，<code>问题的关键在于两者是否会共用底层数组</code>。</p>
+<p>截取操作采用如下方式：</p>
+<pre class=" language-golang"><code class="language-golang"> data := [...]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+ slice := data[2:4:6] // data[low, high, max]</code></pre>
+<p>对 <code>data</code> 使用3个索引值，截取出新的  <code>slice</code>。这里 <code>data</code> 可以是数组或者 <code>slice</code>。<code>low</code> 是最低索引值，这里是闭区间，也就是说第一个元素是 <code>data</code> 位于 <code>low</code> 索引处的元素；而 <code>high</code> 和 <code>max</code> 则是开区间，表示最后一个元素只能是索引 <code>high-1</code> 处的元素，而最大容量则只能是索引 <code>max-1</code> 处的元素。</p>
+<pre class=" language-golang"><code class="language-golang">max >= high >= low</code></pre>
+<p>当 <code>high == low</code> 时，新 <code>slice</code> 为空。</p>
+<p>还有一点，<code>high</code> 和 <code>max</code> 必须在老数组或者老 <code>slice</code> 的容量（<code>cap</code>）范围内。</p>
+<p>来看一个例子，来自雨痕大佬《Go学习笔记》第四版，P43页，参考资料里有开源书籍地址。这里我会进行扩展，并会作详细说明：</p>
+<pre class=" language-golang"><code class="language-golang">package main
+
+import "fmt"
+
+func main() {
+    slice := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+    s1 := slice[2:5]
+    s2 := s1[2:6:7]
+
+    s2 = append(s2, 100)
+    s2 = append(s2, 200)
+
+    s1[2] = 20
+
+    fmt.Println(s1)
+    fmt.Println(s2)
+    fmt.Println(slice)
+}</code></pre>
+<p>先看下代码运行的结果：</p>
+<pre class=" language-shell"><code class="language-shell">[2 3 20]
+[4 5 6 7 100 200]
+[0 1 2 3 20 5 6 7 100 9]</code></pre>
+<p>我们来走一遍代码，初始状态如下：</p>
+<pre class=" language-golang"><code class="language-golang">slice := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+s1 := slice[2:5]
+s2 := s1[2:6:7]</code></pre>
+<p><code>s1</code> 从 <code>slice</code> 索引2（闭区间）到索引5（开区间，元素真正取到索引4），长度为3，容量默认到数组结尾，为8。<br><code>s2</code> 从 <code>s1</code> 的索引2（闭区间）到索引6（开区间，元素真正取到索引5），容量到索引7（开区间，真正到索引6），为5。</p>
+<p><img src="https://user-images.githubusercontent.com/7698088/54960948-c5490b80-4f99-11e9-8772-66d102caae8e.png" alt="slice origin"></p>
+<p>接着，向 <code>s2</code> 尾部追加一个元素 100：</p>
+<pre class=" language-golang"><code class="language-golang">s2 = append(s2, 100)</code></pre>
+<p><code>s2</code> 容量刚好够，直接追加。不过，这会修改原始数组对应位置的元素。这一改动，数组和 <code>s1</code> 都可以看得到。</p>
+<p><img src="https://user-images.githubusercontent.com/7698088/54960896-8ca93200-4f99-11e9-86de-df4d85cca135.png" alt="append 100"></p>
+<p>再次向 <code>s2</code> 追加元素200：</p>
+<pre class=" language-golang"><code class="language-golang">s2 = append(s2, 100)</code></pre>
+<p>这时，<code>s2</code> 的容量不够用，该扩容了。于是，<code>s2</code> 另起炉灶，将原来的元素复制新的位置，扩大自己的容量。并且为了应对未来可能的 <code>append</code> 带来的再一次扩容，<code>s2</code> 会在此次扩容的时候多留一些 <code>buffer</code>，将新的容量将扩大为原始容量的2倍，也就是10了。</p>
+<p><img src="https://user-images.githubusercontent.com/7698088/54961368-4654d280-4f9b-11e9-9b00-de96c6eedea9.png" alt="append 200"></p>
+<p>最后，修改 <code>s1</code> 索引为2位置的元素：</p>
+<pre class=" language-golang"><code class="language-golang">s1[2] = 20</code></pre>
+<p>这次只会影响原始数组相应位置的元素。它影响不到 <code>s2</code> 了，人家已经远走高飞了。</p>
+<p><img src="https://user-images.githubusercontent.com/7698088/54961330-29200400-4f9b-11e9-88d0-a29308a818ae.png" alt="s1[2]=20"></p>
+<p>再提一点，打印 <code>s1</code> 的时候，只会打印出 <code>s1</code> 长度以内的元素。所以，只会打印出3个元素，虽然它的底层数组不止3个元素。</p>
+<p>至于，我们想在汇编层面看看到底它们是如何共享底层数组的，限于篇幅，这里不再展开。感兴趣的同学可以在公众号后台回复：<code>切片截取</code>。</p>
+<p>我会给你详细分析函数调用关系，对共享底层数组的行为也会一目了然。二维码见文章底部。</p>
+<h1 id="slice-和数组的区别在哪"><a href="#slice-和数组的区别在哪" class="headerlink" title="slice 和数组的区别在哪"></a>slice 和数组的区别在哪</h1><p>slice 的底层数据是数组，slice 是对数组的封装，它描述一个数组的片段。两者都可以通过下标来访问单个元素。</p>
+<p>数组是定长的，长度定义好之后，不能再更改。在 Go 中，数组是不常见的，因为其长度是类型的一部分，限制了它的表达能力，比如 <code>[3]int</code> 和 <code>[4]int</code> 就是不同的类型。</p>
+<p>而切片则非常灵活，它可以动态地扩容。切片的类型和长度无关。</p>
+<h1 id="append-到底做了什么"><a href="#append-到底做了什么" class="headerlink" title="append 到底做了什么"></a>append 到底做了什么</h1><p>先来看看 <code>append</code> 函数的原型：</p>
+<pre class=" language-golang"><code class="language-golang">func append(slice []Type, elems ...Type) []Type</code></pre>
+<p>append 函数的参数长度可变，因此可以追加多个值到 slice 中，还可以用 <code>...</code> 传入 slice，直接追加一个切片。</p>
+<pre class=" language-golang"><code class="language-golang">slice = append(slice, elem1, elem2)
+slice = append(slice, anotherSlice...)</code></pre>
+<p><code>append</code>函数返回值是一个新的slice，Go编译器不允许调用了 append 函数后不使用返回值。</p>
+<pre class=" language-golang"><code class="language-golang">append(slice, elem1, elem2)
+append(slice, anotherSlice...)</code></pre>
+<p>所以上面的用法是错的，不能编译通过。</p>
+<p>使用 append 可以向 slice 追加元素，实际上是往底层数组添加元素。但是底层数组的长度是固定的，如果索引 <code>len-1</code> 所指向的元素已经是底层数组的最后一个元素，就没法再添加了。</p>
+<p>这时，slice 会迁移到新的内存位置，新底层数组的长度也会增加，这样就可以放置新增的元素。同时，为了应对未来可能再次发生的 append 操作，新的底层数组的长度，也就是新 <code>slice</code> 的容量是留了一定的 <code>buffer</code> 的。否则，每次添加元素的时候，都会发生迁移，成本太高。</p>
+<p>新 slice 预留的 <code>buffer</code> 大小是有一定规律的。网上大多数的文章都是这样描述的：</p>
+<blockquote>
+<p>当原 slice 容量小于 <code>1024</code> 的时候，新 slice 容量变成原来的 <code>2</code> 倍；原 slice 容量超过 <code>1024</code>，新 slice 容量变成原来的<code>1.25</code>倍。</p>
+</blockquote>
+<p>我在这里先说结论：以上描述是错误的。</p>
+<p>为了说明上面的规律是错误的，我写了一小段玩具代码：</p>
+<pre class=" language-golang"><code class="language-golang">package main
+
+import "fmt"
+
+func main() {
+    s := make([]int, 0)
+
+    oldCap := cap(s)
+
+    for i := 0; i < 2048; i++ {
+        s = append(s, i)
+
+        newCap := cap(s)
+
+        if newCap != oldCap {
+            fmt.Printf("[%d -> %4d] cap = %-4d  |  after append %-4d  cap = %-4d\n", 0, i-1, oldCap, i, newCap)
+            oldCap = newCap
+        }
+    }
+}</code></pre>
+<p>我先创建了一个空的 <code>slice</code>，然后，在一个循环里不断往里面 <code>append</code> 新的元素。然后记录容量的变化，并且每当容量发生变化的时候，记录下老的容量，以及添加完元素之后的容量，同时记下此时 <code>slice</code> 里的元素。这样，我就可以观察，新老 <code>slice</code> 的容量变化情况，从而找出规律。</p>
+<p>运行结果：</p>
+<pre class=" language-shell"><code class="language-shell">[0 ->   -1] cap = 0     |  after append 0     cap = 1   
+[0 ->    0] cap = 1     |  after append 1     cap = 2   
+[0 ->    1] cap = 2     |  after append 2     cap = 4   
+[0 ->    3] cap = 4     |  after append 4     cap = 8   
+[0 ->    7] cap = 8     |  after append 8     cap = 16  
+[0 ->   15] cap = 16    |  after append 16    cap = 32  
+[0 ->   31] cap = 32    |  after append 32    cap = 64  
+[0 ->   63] cap = 64    |  after append 64    cap = 128 
+[0 ->  127] cap = 128   |  after append 128   cap = 256 
+[0 ->  255] cap = 256   |  after append 256   cap = 512 
+[0 ->  511] cap = 512   |  after append 512   cap = 1024
+[0 -> 1023] cap = 1024  |  after append 1024  cap = 1280
+[0 -> 1279] cap = 1280  |  after append 1280  cap = 1696
+[0 -> 1695] cap = 1696  |  after append 1696  cap = 2304</code></pre>
+<p>在老 slice 容量小于1024的时候，新 slice 的容量的确是老 slice 的2倍。目前还算正确。</p>
+<p>但是，当老 slice 容量大于等于 <code>1024</code> 的时候，情况就有变化了。当向 slice 中添加元素 <code>1280</code> 的时候，老 slice 的容量为 <code>1280</code>，之后变成了 <code>1696</code>，两者并不是 <code>1.25</code> 倍的关系（1696/1280=1.325）。添加完 <code>1696</code> 后，新的容量 <code>2304</code> 当然也不是 <code>1696</code> 的 <code>1.25</code> 倍。</p>
+<p>可见，现在网上各种文章中的扩容策略并不正确。我们直接搬出源码：源码面前，了无秘密。</p>
+<p>从前面汇编代码我们也看到了，向 slice 追加元素的时候，若容量不够，会调用 <code>growslice</code> 函数，所以我们直接看它的代码。</p>
+<pre class=" language-golang"><code class="language-golang">// go 1.9.5 src/runtime/slice.go:82
+func growslice(et *_type, old slice, cap int) slice {
+    // ……
+    newcap := old.cap
+    doublecap := newcap + newcap
+    if cap > doublecap {
+        newcap = cap
+    } else {
+        if old.len < 1024 {
+            newcap = doublecap
+        } else {
+            for newcap < cap {
+                newcap += newcap / 4
+            }
+        }
+    }
+    // ……
+
+    capmem = roundupsize(uintptr(newcap) * ptrSize)
+    newcap = int(capmem / ptrSize)
+}</code></pre>
+<p>看到了吗？如果只看前半部分，现在网上各种文章里说的 <code>newcap</code> 的规律是对的。现实是，后半部分还对 <code>newcap</code> 作了一个<code>内存对齐</code>，这个和内存分配策略相关。进行内存对齐之后，新 slice 的容量是要 <code>大于等于</code> 老 slice 容量的 <code>2倍</code>或者<code>1.25倍</code>。</p>
+<p>之后，向 Go 内存管理器申请内存，将老 slice 中的数据复制过去，并且将 append 的元素添加到新的底层数组中。</p>
+<p>最后，向 <code>growslice</code> 函数调用者返回一个新的 slice，这个 slice 的长度并没有变化，而容量却增大了。</p>
+<p>关于 <code>append</code>，我们最后来看一个例子，来源于参考资料部分的【Golang Slice的扩容规则】。</p>
+<pre class=" language-golang"><code class="language-golang">package main
+
+import "fmt"
+
+func main() {
+    s := []int{1,2}
+    s = append(s,4,5,6)
+    fmt.Printf("len=%d, cap=%d",len(s),cap(s))
+}</code></pre>
+<p>运行结果是：</p>
+<pre class=" language-shell"><code class="language-shell">len=5, cap=6</code></pre>
+<p>如果按网上各种文章中总结的那样：小于原 slice 长度小于 1024 的时候，容量每次增加 1 倍。添加元素 4 的时候，容量变为4；添加元素 5 的时候不变；添加元素 6 的时候容量增加 1 倍，变成 8。</p>
+<p>那上面代码的运行结果就是：</p>
+<pre class=" language-shell"><code class="language-shell">len=5, cap=8</code></pre>
+<p>这是错误的！我们来仔细看看，为什么会这样，再次搬出代码：</p>
+<pre class=" language-golang"><code class="language-golang">// go 1.9.5 src/runtime/slice.go:82
+func growslice(et *_type, old slice, cap int) slice {
+    // ……
+    newcap := old.cap
+    doublecap := newcap + newcap
+    if cap > doublecap {
+        newcap = cap
+    } else {
+        // ……
+    }
+    // ……
+
+    capmem = roundupsize(uintptr(newcap) * ptrSize)
+    newcap = int(capmem / ptrSize)
+}</code></pre>
+<p>这个函数的参数依次是 <code>元素的类型，老的 slice，新 slice 最小求的容量</code>。</p>
+<p>例子中 <code>s</code> 原来只有 2 个元素，<code>len</code> 和 <code>cap</code> 都为 2，<code>append</code> 了三个元素后，长度变为 3，容量最小要变成 5，即调用 <code>growslice</code> 函数时，传入的第三个参数应该为 5。即 <code>cap=5</code>。而一方面，<code>doublecap</code> 是原 <code>slice</code>容量的 2 倍，等于 4。满足第一个 <code>if</code> 条件，所以 <code>newcap</code> 变成了 5。</p>
+<p>接着调用了 <code>roundupsize</code> 函数，传入 40。（代码中ptrSize是指一个指针的大小，在64位机上是8）</p>
+<p>我们再看内存对齐，搬出 <code>roundupsize</code> 函数的代码：</p>
+<pre class=" language-golang"><code class="language-golang">// src/runtime/msize.go:13
+func roundupsize(size uintptr) uintptr {
+    if size < _MaxSmallSize {
+        if size <= smallSizeMax-8 {
+            return uintptr(class_to_size[size_to_class8[(size+smallSizeDiv-1)/smallSizeDiv]])
+        } else {
+            //……
+        }
+    }
+    //……
+}
+
+const _MaxSmallSize = 32768
+const smallSizeMax = 1024
+const smallSizeDiv = 8</code></pre>
+<p>很明显，我们最终将返回这个式子的结果：</p>
+<pre class=" language-golang"><code class="language-golang">class_to_size[size_to_class8[(size+smallSizeDiv-1)/smallSizeDiv]]</code></pre>
+<p>这是 <code>Go</code> 源码中有关内存分配的两个 <code>slice</code>。<code>class_to_size</code>通过 <code>spanClass</code>获取 <code>span</code>划分的 <code>object</code>大小。而 <code>size_to_class8</code> 表示通过 <code>size</code> 获取它的 <code>spanClass</code>。</p>
+<pre class=" language-golang"><code class="language-golang">var size_to_class8 = [smallSizeMax/smallSizeDiv + 1]uint8{0, 1, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 18, 18, 19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 23, 23, 23, 23, 24, 24, 24, 24, 25, 25, 25, 25, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27, 27, 27, 27, 27, 27, 27, 28, 28, 28, 28, 28, 28, 28, 28, 29, 29, 29, 29, 29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31}
+
+var class_to_size = [_NumSizeClasses]uint16{0, 8, 16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224, 240, 256, 288, 320, 352, 384, 416, 448, 480, 512, 576, 640, 704, 768, 896, 1024, 1152, 1280, 1408, 1536, 1792, 2048, 2304, 2688, 3072, 3200, 3456, 4096, 4864, 5376, 6144, 6528, 6784, 6912, 8192, 9472, 9728, 10240, 10880, 12288, 13568, 14336, 16384, 18432, 19072, 20480, 21760, 24576, 27264, 28672, 32768}</code></pre>
+<p>我们传进去的 <code>size</code> 等于 40。所以 <code>(size+smallSizeDiv-1)/smallSizeDiv = 5</code>；获取 <code>size_to_class8</code> 数组中索引为 <code>5</code> 的元素为 <code>4</code>；获取 <code>class_to_size</code> 中索引为 <code>4</code> 的元素为 <code>48</code>。</p>
+<p>最终，新的 slice 的容量为 <code>6</code>：</p>
+<pre class=" language-golang"><code class="language-golang">newcap = int(capmem / ptrSize) // 6</code></pre>
+<p>至于，上面的两个<code>魔法数组</code>的由来，暂时就不展开了。</p>
+<h1 id="为什么-nil-slice-可以直接-append"><a href="#为什么-nil-slice-可以直接-append" class="headerlink" title="为什么 nil slice 可以直接 append"></a>为什么 nil slice 可以直接 append</h1><p>其实 <code>nil slice</code> 或者 <code>empty slice</code> 都是可以通过调用 append 函数来获得底层数组的扩容。最终都是调用 <code>mallocgc</code> 来向 Go 的内存管理器申请到一块内存，然后再赋给原来的<code>nil slice</code> 或 <code>empty slice</code>，然后摇身一变，成为“真正”的 <code>slice</code> 了。</p>
+<h1 id="传-slice-和-slice-指针有什么区别"><a href="#传-slice-和-slice-指针有什么区别" class="headerlink" title="传 slice 和 slice 指针有什么区别"></a>传 slice 和 slice 指针有什么区别</h1><p>前面我们说到，slice 其实是一个结构体，包含了三个成员：len, cap, array。分别表示切片长度，容量，底层数据的地址。</p>
+<p>当 slice 作为函数参数时，就是一个普通的结构体。其实很好理解：若直接传 slice，在调用者看来，实参 slice 并不会被函数中的操作改变；若传的是 slice 的指针，在调用者看来，是会被改变原 slice 的。</p>
+<p>值的注意的是，不管传的是 slice 还是 slice 指针，如果改变了 slice 底层数组的数据，会反应到实参 slice 的底层数据。为什么能改变底层数组的数据？很好理解：底层数据在 slice 结构体里是一个指针，仅管 slice 结构体自身不会被改变，也就是说底层数据地址不会被改变。 但是通过指向底层数据的指针，可以改变切片的底层数据，没有问题。</p>
+<p>通过 slice 的 array 字段就可以拿到数组的地址。在代码里，是直接通过类似 <code>s[i]=10</code> 这种操作改变 slice 底层数组元素值。</p>
+<p>另外，啰嗦一句，Go 语言的函数参数传递，只有值传递，没有引用传递。后面会再写一篇相关的文章，敬请期待。</p>
+<p>再来看一个年幼无知的代码片段：</p>
+<pre class=" language-golang"><code class="language-golang">package main
+
+func main() {
+    s := []int{1, 1, 1}
+    f(s)
+    fmt.Println(s)
+}
+
+func f(s []int) {
+    // i只是一个副本，不能改变s中元素的值
+    /*for _, i := range s {
+        i++
+    }
+    */
+
+    for i := range s {
+        s[i] += 1
+    }
+}</code></pre>
+<p>运行一下，程序输出：</p>
+<pre class=" language-shell"><code class="language-shell">[2 2 2]</code></pre>
+<p>果真改变了原始 slice 的底层数据。这里传递的是一个 slice 的副本，在 <code>f</code> 函数中，<code>s</code> 只是 <code>main</code> 函数中 <code>s</code> 的一个拷贝。在<code>f</code> 函数内部，对 <code>s</code> 的作用并不会改变外层 <code>main</code> 函数的 <code>s</code>。</p>
+<p>要想真的改变外层 <code>slice</code>，只有将返回的新的 slice 赋值到原始 slice，或者向函数传递一个指向 slice 的指针。我们再来看一个例子：</p>
+<pre class=" language-golang"><code class="language-golang">package main
+
+import "fmt"
+
+func myAppend(s []int) []int {
+    // 这里 s 虽然改变了，但并不会影响外层函数的 s
+    s = append(s, 100)
+    return s
+}
+
+func myAppendPtr(s *[]int) {
+    // 会改变外层 s 本身
+    *s = append(*s, 100)
+    return
+}
+
+func main() {
+    s := []int{1, 1, 1}
+    newS := myAppend(s)
+
+    fmt.Println(s)
+    fmt.Println(newS)
+
+    s = newS
+
+    myAppendPtr(&s)
+    fmt.Println(s)
+}</code></pre>
+<p>运行结果：</p>
+<pre class=" language-shell"><code class="language-shell">[1 1 1]
+[1 1 1 100]
+[1 1 1 100 100]</code></pre>
+<p><code>myAppend</code> 函数里，虽然改变了 <code>s</code>，但它只是一个值传递，并不会影响外层的 <code>s</code>，因此第一行打印出来的结果仍然是 <code>[1 1 1]</code>。</p>
+<p>而 <code>newS</code> 是一个新的 <code>slice</code>，它是基于 <code>s</code> 得到的。因此它打印的是追加了一个 <code>100</code> 之后的结果： <code>[1 1 1 100]</code>。</p>
+<p>最后，将 <code>newS</code> 赋值给了 <code>s</code>，<code>s</code> 这时才真正变成了一个新的slice。之后，再给 <code>myAppendPtr</code> 函数传入一个 <code>s  指针</code>，这回它真的被改变了：<code>[1 1 1 100 100]</code>。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>到此，关于 <code>slice</code> 的部分就讲完了，不知大家有没有看过瘾。我们最后来总结一下：</p>
+<ul>
+<li>切片是对底层数组的一个抽象，描述了它的一个片段。</li>
+<li>切片实际上是一个结构体，它有三个字段：长度，容量，底层数据的地址。</li>
+<li>多个切片可能共享同一个底层数组，这种情况下，对其中一个切片或者底层数组的更改，会影响到其他切片。</li>
+<li><code>append</code> 函数会在切片容量不够的情况下，调用 <code>growslice</code> 函数获取所需要的内存，这称为扩容，扩容会改变元素原来的位置。</li>
+<li>扩容策略并不是简单的扩为原切片容量的 <code>2</code> 倍或 <code>1.25</code> 倍，还有内存对齐的操作。扩容后的容量 &gt;= 原容量的 <code>2</code> 倍或 <code>1.25</code> 倍。</li>
+<li>当直接用切片作为函数参数时，可以改变切片的元素，不能改变切片本身；想要改变切片本身，可以将改变后的切片返回，函数调用者接收改变后的切片或者将切片指针作为函数参数。</li>
+</ul>
+<p>最后，如果你觉得本文对你有帮助的话，帮我点一下右下角的“推荐”吧，感谢！</p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51420568-305b1800-1bce-11e9-962a-52b12be7eb2e.png" alt="QR"></p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>【码洞《深度解析 Go 语言中「切片」的三种特殊状态》】<a href="https://juejin.im/post/5bea58df6fb9a049f153bca8" target="_blank" rel="noopener">https://juejin.im/post/5bea58df6fb9a049f153bca8</a></p>
+<p>【老钱 数组】<a href="https://juejin.im/post/5be53bc251882516c15af2e0" target="_blank" rel="noopener">https://juejin.im/post/5be53bc251882516c15af2e0</a></p>
+<p>【老钱 切片】<a href="https://juejin.im/post/5be8e0b1f265da614d08b45a" target="_blank" rel="noopener">https://juejin.im/post/5be8e0b1f265da614d08b45a</a></p>
+<p>【golang interface源码】<a href="https://i6448038.github.io/2018/10/01/Golang-interface/" target="_blank" rel="noopener">https://i6448038.github.io/2018/10/01/Golang-interface/</a></p>
+<p>【golang interface源码】<a href="http://legendtkl.com/2017/07/01/golang-interface-implement/" target="_blank" rel="noopener">http://legendtkl.com/2017/07/01/golang-interface-implement/</a></p>
+<p>【interface】<a href="https://www.jishuwen.com/d/2C9z#tuit" target="_blank" rel="noopener">https://www.jishuwen.com/d/2C9z#tuit</a></p>
+<p>【雨痕开源Go学习笔记】<a href="https://github.com/qyuhen/book">https://github.com/qyuhen/book</a></p>
+<p>【slice 图很漂亮】<a href="https://halfrost.com/go_slice/" target="_blank" rel="noopener">https://halfrost.com/go_slice/</a></p>
+<p>【Golang Slice的扩容规则】<a href="https://jodezer.github.io/2017/05/golangSlice%E7%9A%84%E6%89%A9%E5%AE%B9%E8%A7%84%E5%88%99" target="_blank" rel="noopener">https://jodezer.github.io/2017/05/golangSlice%E7%9A%84%E6%89%A9%E5%AE%B9%E8%A7%84%E5%88%99</a></p>
+<p>【slice作为参数】<a href="https://www.cnblogs.com/fwdqxl/p/9317769.html" target="_blank" rel="noopener">https://www.cnblogs.com/fwdqxl/p/9317769.html</a></p>
+<p>【源码】<a href="https://ictar.xyz/2018/10/25/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA-go-slice/" target="_blank" rel="noopener">https://ictar.xyz/2018/10/25/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA-go-slice/</a></p>
+<p>【append机制 译文】<a href="https://brantou.github.io/2017/05/24/go-array-slice-string/" target="_blank" rel="noopener">https://brantou.github.io/2017/05/24/go-array-slice-string/</a></p>
+<p>【slice 汇编】<a href="http://xargin.com/go-slice/" target="_blank" rel="noopener">http://xargin.com/go-slice/</a></p>
+<p>【slice tricks】<a href="https://colobu.com/2017/03/22/Slice-Tricks/" target="_blank" rel="noopener">https://colobu.com/2017/03/22/Slice-Tricks/</a></p>
+<p>【有图】<a href="https://i6448038.github.io/2018/08/11/array-and-slice-principle/" target="_blank" rel="noopener">https://i6448038.github.io/2018/08/11/array-and-slice-principle/</a></p>
+<p>【slice的本质】<a href="https://www.flysnow.org/2018/12/21/golang-sliceheader.html" target="_blank" rel="noopener">https://www.flysnow.org/2018/12/21/golang-sliceheader.html</a></p>
+<p>【slice使用技巧】<a href="https://blog.thinkeridea.com/201901/go/slice_de_yi_xie_shi_yong_ji_qiao.html" target="_blank" rel="noopener">https://blog.thinkeridea.com/201901/go/slice_de_yi_xie_shi_yong_ji_qiao.html</a></p>
+<p>【slice/array、内存增长】<a href="https://blog.thinkeridea.com/201901/go/shen_ru_pou_xi_slice_he_array.html" target="_blank" rel="noopener">https://blog.thinkeridea.com/201901/go/shen_ru_pou_xi_slice_he_array.html</a></p>
+
+            </div>
+            <hr/>
+
+            
+            <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.88rem;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-large waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fa fa-close"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.jpeg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.JPG" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+
+            <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    <div class="social-share" data-disabled="qzone" data-wechat-qrcode-helper="<p>微信里点“发现”->“扫一扫”二维码便可查看分享。</p>"></div>
+    
+</div>
+
+<script src="/libs/share/js/social-share.min.js"></script>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        <p class="reprint-tip">
+            <i class="fa fa-exclamation-triangle"></i>&nbsp;&nbsp;
+            <span>转载规则</span>
+        </p>
+        
+            <div class="center-align">
+                <a rel="license" href="https://creativecommons.org/licenses/by/4.0/deed.zh">
+                    <img alt=""
+                         style="border-width:0"
+                         src="https://i.creativecommons.org/l/by/4.0/88x31.png"/>
+                </a>
+            </div>
+            <br/>
+            <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text"
+                  property="dct:title" rel="dct:type">
+                    《深度解密Go语言之slice》
+                </span> 由
+            <a xmlns:cc="http://creativecommons.org/ns#" href="/2019/04/02/dive-into-go-slice/" property="cc:attributionName"
+               rel="cc:attributionURL">
+                Stefno
+            </a> 采用
+            <a rel="license" href="https://creativecommons.org/licenses/by/4.0/deed.zh">
+                知识共享署名 4.0 国际许可协议
+            </a>进行许可。
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+        </div>
+    </div>
+
+    
+        <link rel="stylesheet" href="/libs/gitalk/gitalk.css">
+<link rel="stylesheet" href="/css/my-gitalk.css">
+
+<div class="card gitalk-card" data-aos="fade-up">
+    <div id="gitalk-container" class="card-content"></div>
+</div>
+
+<script src="/libs/gitalk/gitalk.min.js"></script>
+<script>
+    let gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: '',
+        owner: '',
+        admin: null,
+        id: '2019-04-02T08-38-00',
+        distractionFreeMode: false  // Facebook-like distraction free mode
+    });
+
+    gitalk.render('gitalk-container');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2019/04/25/dive-into-go-interface/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="深度解密Go语言之关于interface的 10 个问题">
+                        
+                        <span class="card-title">深度解密Go语言之关于interface的 10 个问题</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            这次文章依然很长，基本上涵盖了 interface 的方方面面，有例子，有源码分析，有汇编分析，前前后后写了 20 多天。洋洋洒洒，长篇大论，依然有些东西没有涉及到，比如文章里没有写到反射，当然，后面会单独写一篇关于反射的文章，这是后话。
+
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2019-04-25
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/编程语言/" class="post-category" target="_blank">
+                                    编程语言
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/golang/" target="_blank">
+                        <span class="chip bg-color">golang</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2019/03/20/dive-into-go-asm/">
+                    <div class="card-image">
+                        
+                        <img src="https://user-images.githubusercontent.com/7698088/61765369-5d071b00-ae0f-11e9-9b04-1fc98f9548d5.png" class="responsive-img" alt="深入Go的底层，带你走进一群有追求的人">
+                        
+                        <span class="card-title">深入Go的底层，带你走进一群有追求的人</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            上周六晚上，我参加了“Go夜读”活动，这期主要讲Go汇编语言，由滴滴大佬曹春晖大神主讲。活动结束后，我感觉打通了任督二脉。活动从晚上9点到深夜11点多，全程深度参与，大呼过瘾，以至于活动结束之后，久久不能平静。
+可以说理解了Go汇编语言，就
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-03-20
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/编程语言/" class="post-category" target="_blank">
+                                    编程语言
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/golang/" target="_blank">
+                        <span class="chip bg-color">golang</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+</div>
+
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="fa fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fa fa-list"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h1, h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h1, h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).slideUp(500);
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).slideDown(500);
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+    
+
+</main>
+
+
+<footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            本站由&copy;<a href="https://github.com/qcrao/qcrao.github.io" target="_blank">Stefno</a>基于
+            <a href="https://hexo.io/" target="_blank">Hexo</a> 的
+            <a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">hexo-theme-matery</a>主题搭建.
+
+            
+                &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
+                <span class="white-color">82.2k</span>
+            
+
+            
+			
+                <br>
+                
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa fa-heart-o"></i>
+                    本站总访问量 <span id="busuanzi_value_site_pv" class="white-color"></span>
+                </span>
+                
+                
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa fa-users"></i>
+                    次,&nbsp;访客数 <span id="busuanzi_value_site_uv" class="white-color"></span> 人.
+                </span>
+                
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+
+
+    <a href="mailto:qcrao91@gmail.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fa fa-rss"></i>
+    </a>
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+<!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fa fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+<!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fa fa-angle-up"></i>
+    </a>
+</div>
+
+
+<script src="/libs/materialize/materialize.min.js"></script>
+<script src="/libs/masonry/masonry.pkgd.min.js"></script>
+<script src="/libs/aos/aos.js"></script>
+<script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+<script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+<script src="/js/matery.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+
+
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+
+
+</body>
+</html>
