@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/07/22/dive-into-go-channel/</loc>
+    <lastmod>2019-07-30</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/07/24/how-go-runs/</loc>
+    <lastmod>2019-07-30</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/01/16/dive-into-three-way-handshake/</loc>
+    <lastmod>2019-07-30</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/06/17/cch-says-memory-reorder/</loc>
+    <lastmod>2019-07-24</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/05/07/dive-into-go-reflection/</loc>
+    <lastmod>2019-07-24</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/04/02/dive-into-go-slice/</loc>
+    <lastmod>2019-07-24</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/06/03/dive-into-go-unsafe/</loc>
+    <lastmod>2019-07-24</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/01/30/byte-travel-story/</loc>
+    <lastmod>2019-07-24</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/06/12/dive-into-go-context/</loc>
+    <lastmod>2019-07-24</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/04/25/dive-into-go-interface/</loc>
+    <lastmod>2019-07-24</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/05/22/dive-into-go-map/</loc>
+    <lastmod>2019-07-24</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
+    <lastmod>2019-07-24</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/03/20/dive-into-go-asm/</loc>
+    <lastmod>2019-07-24</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/03/13/graphic-go-memory-allocation/</loc>
+    <lastmod>2019-07-24</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/03/01/where-go-variables-go/</loc>
+    <lastmod>2019-07-24</lastmod>
+  </url>  <url>
+    <loc>https://github.com/qcrao/qcrao.github.io/2019/07/08/how-to-write-resume-gracefully/</loc>
+    <lastmod>2019-07-24</lastmod>
+  </url>
+</urlset>

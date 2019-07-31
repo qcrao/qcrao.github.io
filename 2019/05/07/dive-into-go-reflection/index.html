@@ -1,414 +1,4 @@
-<!DOCTYPE HTML>
-<html lang="zh-CN">
-
-
-<head><meta name="generator" content="Hexo 3.9.0">
-    <meta charset="utf-8">
-    <meta name="keywords" content="深度解密Go语言之反射, Stefno">
-    <meta name="description" content="反射和 Interface 息息相关，而 Interface 是我们上一篇文章的内容。在开始正文前，和大家说点题外话。
-上一篇关于 Interface 的文章发出后，获得了很多的关注和阅读。比如，登上了 GoCN 的每日新闻第一条：
-
-可能">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="renderer" content="webkit|ie-stand|ie-comp">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>深度解密Go语言之反射 | Stefno</title>
-    <link rel="icon" type="image/png" href="/qq.JPG">
-
-    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
-    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
-    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/matery.css">
-    <link rel="stylesheet" type="text/css" href="/css/my.css">
-    <style type="text/css">
-        
-        code[class*="language-"], pre[class*="language-"] {
-            white-space: pre !important;
-        }
-        
-    </style>
-
-    <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
-
-
-<body>
-
-<header class="navbar-fixed">
-    <nav id="headNav" class="bg-color nav-transparent">
-        <div id="navContainer" class="nav-wrapper container">
-            <div class="brand-logo">
-                <a href="/" class="waves-effect waves-light">
-                    
-                    <img src="/medias/qq.JPG" class="logo-img" alt="LOGO">
-                    
-                    <span class="logo-span">Stefno</span>
-                </a>
-            </div>
-            
-
-<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fa fa-navicon"></i></a>
-<ul class="right">
-    
-    <li class="hide-on-med-and-down">
-        <a href="/" class="waves-effect waves-light">
-            
-            <i class="fa fa-home"></i>
-            
-            <span>首页</span>
-        </a>
-    </li>
-    
-    <li class="hide-on-med-and-down">
-        <a href="/categories" class="waves-effect waves-light">
-            
-            <i class="fa fa-bookmark"></i>
-            
-            <span>分类</span>
-        </a>
-    </li>
-    
-    <li class="hide-on-med-and-down">
-        <a href="/archives" class="waves-effect waves-light">
-            
-            <i class="fa fa-archive"></i>
-            
-            <span>归档</span>
-        </a>
-    </li>
-    
-    <li class="hide-on-med-and-down">
-        <a href="/about" class="waves-effect waves-light">
-            
-            <i class="fa fa-user-circle-o"></i>
-            
-            <span>关于</span>
-        </a>
-    </li>
-    
-    <li>
-        <a href="#searchModal" class="modal-trigger waves-effect waves-light">
-            <i id="searchIcon" class="fa fa-search" title="搜索"></i>
-        </a>
-    </li>
-</ul>
-
-<div id="mobile-nav" class="side-nav sidenav">
-
-    <div class="mobile-head bg-color">
-        
-        <img src="/medias/qq.JPG" class="logo-img circle responsive-img">
-        
-        <div class="logo-name">Stefno</div>
-        <div class="logo-desc">
-            
-            日拱一卒，终有所成！
-            
-        </div>
-    </div>
-
-    
-
-    <ul class="menu-list mobile-menu-list">
-        
-        <li>
-            <a href="/" class="waves-effect waves-light">
-                
-                <i class="fa fa-fw fa-home"></i>
-                
-                首页
-            </a>
-        </li>
-        
-        <li>
-            <a href="/categories" class="waves-effect waves-light">
-                
-                <i class="fa fa-fw fa-bookmark"></i>
-                
-                分类
-            </a>
-        </li>
-        
-        <li>
-            <a href="/archives" class="waves-effect waves-light">
-                
-                <i class="fa fa-fw fa-archive"></i>
-                
-                归档
-            </a>
-        </li>
-        
-        <li>
-            <a href="/about" class="waves-effect waves-light">
-                
-                <i class="fa fa-fw fa-user-circle-o"></i>
-                
-                关于
-            </a>
-        </li>
-        
-        
-        <li><div class="divider"></div></li>
-        <li>
-            <a href="https://github.com/qcrao/Go-Questions" class="waves-effect waves-light" target="_blank">
-                <i class="fa fa-github-square fa-fw"></i>Fork Me
-            </a>
-        </li>
-        
-    </ul>
-</div>
-
-        </div>
-
-        
-            <style>
-    .nav-transparent .github-corner {
-        display: none !important;
-    }
-
-    .github-corner {
-        position: absolute;
-        z-index: 10;
-        top: 0;
-        right: 0;
-        border: 0;
-        transform: scale(1.1);
-    }
-
-    .github-corner svg {
-        color: #0f9d58;
-        fill: #fff;
-        height: 64px;
-        width: 64px;
-    }
-
-    .github-corner:hover .octo-arm {
-        animation: a 0.56s ease-in-out;
-    }
-
-    .github-corner .octo-arm {
-        animation: none;
-    }
-
-    @keyframes a {
-        0%,
-        to {
-            transform: rotate(0);
-        }
-        20%,
-        60% {
-            transform: rotate(-25deg);
-        }
-        40%,
-        80% {
-            transform: rotate(10deg);
-        }
-    }
-</style>
-
-<a href="https://github.com/qcrao/Go-Questions" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
-   data-tooltip="Fork Me" data-position="left" data-delay="50">
-    <svg viewBox="0 0 250 250" aria-hidden="true">
-        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
-        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
-              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
-        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
-              fill="currentColor" class="octo-body"></path>
-    </svg>
-</a>
-        
-    </nav>
-
-</header>
-
-
-
-
-
-<div class="bg-cover pd-header post-cover" style="background-image: url('http://mmbiz.qpic.cn/mmbiz_jpg/ASQrEXvmx60GExDkF8AeqlI0jS0E2kiaficF1zvIQWJNheOG5j2jw3qovyC8hWVZMnEBrepxntP9ibd4iau5ZcBFZg/0?wx_fmt=jpeg')">
-    <div class="container">
-        <div class="row">
-            <div class="col s12 m12 l12">
-                <div class="brand">
-                    <div class="description center-align post-title">
-                        深度解密Go语言之反射
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-<main class="post-container content">
-
-    
-    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
-<style>
-    #articleContent h1::before,
-    #articleContent h2::before,
-    #articleContent h3::before,
-    #articleContent h4::before,
-    #articleContent h5::before,
-    #articleContent h6::before {
-        display: block;
-        content: " ";
-        height: 100px;
-        margin-top: -100px;
-        visibility: hidden;
-    }
-
-    #articleContent :focus {
-        outline: none;
-    }
-
-    .toc-fixed {
-        position: fixed;
-        top: 64px;
-    }
-
-    .toc-widget {
-        padding-left: 20px;
-    }
-
-    .toc-widget .toc-title {
-        margin: 35px 0 15px 0;
-        padding-left: 17px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        line-height: 1.5rem;
-    }
-
-    .toc-widget ol {
-        padding: 0;
-        list-style: none;
-    }
-
-    #toc-content ol {
-        padding-left: 10px;
-    }
-
-    #toc-content ol li {
-        padding-left: 10px;
-    }
-
-    #toc-content .toc-link:hover {
-        color: #42b983;
-        font-weight: 700;
-        text-decoration: underline;
-    }
-
-    #toc-content .toc-link::before {
-        background-color: transparent;
-        max-height: 25px;
-    }
-
-    #toc-content .is-active-link {
-        color: #42b983;
-    }
-
-    #toc-content .is-active-link::before {
-        background-color: #42b983;
-    }
-
-    #floating-toc-btn {
-        position: fixed;
-        right: 20px;
-        bottom: 76px;
-        padding-top: 15px;
-        margin-bottom: 0;
-        z-index: 998;
-    }
-
-    #floating-toc-btn .btn-floating {
-        width: 48px;
-        height: 48px;
-    }
-
-    #floating-toc-btn .btn-floating i {
-        line-height: 48px;
-        font-size: 1.4rem;
-    }
-</style>
-<div class="row">
-    <div id="main-content" class="col s12 m12 l9">
-        <!-- 文章内容详情 -->
-<div id="artDetail">
-    <div class="card">
-        <div class="card-content article-info">
-            <div class="row tag-cate">
-                <div class="col s7">
-                    
-                    <div class="article-tag">
-                        
-                            <a href="/tags/golang/" target="_blank">
-                                <span class="chip bg-color">golang</span>
-                            </a>
-                        
-                    </div>
-                    
-                </div>
-                <div class="col s5 right-align">
-                    
-                    <div class="post-cate">
-                        <i class="fa fa-bookmark fa-fw icon-category"></i>
-                        
-                            <a href="/categories/编程语言/" class="post-category" target="_blank">
-                                编程语言
-                            </a>
-                        
-                    </div>
-                    
-                </div>
-            </div>
-
-            <div class="post-info">
-                <div class="post-date info-break-policy">
-                    <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2019-05-07
-                </div>
-
-                <div class="info-break-policy">
-                
-                    <i class="fa fa-at"></i> Stefno
-                
-                </div>
-
-                
-                    
-                    <div class="info-break-policy">
-                        <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        8.5k
-                    </div>
-                    
-
-                    
-                    <div class="info-break-policy">
-                        <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        33 分
-                    </div>
-                    
-                
-				
-				
-                    <div id="busuanzi_container_page_pv" class="info-break-policy">
-                        <i class="fa fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
-                        <span id="busuanzi_value_page_pv"></span>
-                    </div>
-				
-            </div>
-        </div>
-        <hr class="clearfix">
-        <div class="card-content article-card-content">
-            <div id="articleContent">
-                <p>反射和 Interface 息息相关，而 Interface 是我们<a href="https://mp.weixin.qq.com/s/EbxkBokYBajkCR-MazL0ZA" target="_blank" rel="noopener">上一篇文章</a>的内容。在开始正文前，和大家说点题外话。</p>
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.9.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="日拱一卒，终有所成！"><title>深度解密Go语言之反射 | Stefno</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">深度解密Go语言之反射</h1><a id="logo" href="/.">Stefno</a><p class="description">码农桃花源</p></div><div id="nav-menu"><a href="/"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">深度解密Go语言之反射</h1><div class="post-meta">May 7, 2019<span> | </span><span class="category"><a href="/categories/编程语言/">编程语言</a></span><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 8.6k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 34</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#什么是反射"><span class="toc-number">1.</span> <span class="toc-text">什么是反射</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#为什么要用反射"><span class="toc-number">2.</span> <span class="toc-text">为什么要用反射</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#反射是如何实现的"><span class="toc-number">3.</span> <span class="toc-text">反射是如何实现的</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#types-和-interface"><span class="toc-number">3.1.</span> <span class="toc-text">types 和 interface</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#反射的基本函数"><span class="toc-number">3.2.</span> <span class="toc-text">反射的基本函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#反射的三大定律"><span class="toc-number">3.3.</span> <span class="toc-text">反射的三大定律</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#反射相关函数的使用"><span class="toc-number">4.</span> <span class="toc-text">反射相关函数的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#代码样例"><span class="toc-number">4.1.</span> <span class="toc-text">代码样例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#未导出成员"><span class="toc-number">4.2.</span> <span class="toc-text">未导出成员</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#反射的实际应用"><span class="toc-number">5.</span> <span class="toc-text">反射的实际应用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#json-序列化"><span class="toc-number">5.1.</span> <span class="toc-text">json 序列化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DeepEqual-的作用及原理"><span class="toc-number">5.2.</span> <span class="toc-text">DeepEqual 的作用及原理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#参考资料"><span class="toc-number">7.</span> <span class="toc-text">参考资料</span></a></li></ol></div></div><div class="post-content"><p>反射和 Interface 息息相关，而 Interface 是我们<a href="https://mp.weixin.qq.com/s/EbxkBokYBajkCR-MazL0ZA" target="_blank" rel="noopener">上一篇文章</a>的内容。在开始正文前，和大家说点题外话。</p>
 <p>上一篇关于 Interface 的文章发出后，获得了很多的关注和阅读。比如，登上了 GoCN 的每日新闻第一条：</p>
 <p><img src="https://user-images.githubusercontent.com/7698088/57132448-3c13c880-6dd2-11e9-91b0-4d6b846a605e.png" alt="gocn"></p>
 <p>可能是编辑者觉得这篇文章称不上“深度解密”，把标题给小小地改动了下，哈哈~~</p>
@@ -447,360 +37,99 @@
 <p>Go 语言在 reflect 包里定义了各种类型，实现了反射的各种函数，通过它们可以在运行时检测类型的信息、改变类型的值。</p>
 <h2 id="types-和-interface"><a href="#types-和-interface" class="headerlink" title="types 和 interface"></a>types 和 interface</h2><p>Go 语言中，每个变量都有一个静态类型，在编译阶段就确定了的，比如 <code>int, float64, []int</code> 等等。注意，这个类型是声明时候的类型，不是底层数据类型。</p>
 <p>Go 官方博客里就举了一个例子：</p>
-<pre class=" language-golang"><code class="language-golang">type MyInt int
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> MyInt <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> i <span class="keyword">int</span></span><br><span class="line"><span class="keyword">var</span> j MyInt</span><br></pre></td></tr></table></figure>
 
-var i int
-var j MyInt</code></pre>
 <p>尽管 i，j 的底层类型都是 int，但我们知道，他们是不同的静态类型，除非进行类型转换，否则，i 和 j 不能同时出现在等号两侧。j 的静态类型就是 <code>MyInt</code>。</p>
 <p>反射主要与 interface{} 类型相关。前面一篇关于 interface 相关的文章已经探讨过 interface 的底层结构，这里再来复习一下。</p>
-<pre class=" language-golang"><code class="language-golang">type iface struct {
-    tab  *itab
-    data unsafe.Pointer
-}
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> iface <span class="keyword">struct</span> &#123;</span><br><span class="line">	tab  *itab</span><br><span class="line">	data unsafe.Pointer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> itab <span class="keyword">struct</span> &#123;</span><br><span class="line">	inter  *interfacetype</span><br><span class="line">	_type  *_type</span><br><span class="line">	link   *itab</span><br><span class="line">	hash   <span class="keyword">uint32</span></span><br><span class="line">	bad    <span class="keyword">bool</span></span><br><span class="line">	inhash <span class="keyword">bool</span></span><br><span class="line">	unused [<span class="number">2</span>]<span class="keyword">byte</span></span><br><span class="line">	fun    [<span class="number">1</span>]<span class="keyword">uintptr</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-type itab struct {
-    inter  *interfacetype
-    _type  *_type
-    link   *itab
-    hash   uint32
-    bad    bool
-    inhash bool
-    unused [2]byte
-    fun    [1]uintptr
-}</code></pre>
 <p>其中 <code>itab</code> 由具体类型 <code>_type</code> 以及 <code>interfacetype</code> 组成。<code>_type</code> 表示具体类型，而 <code>interfacetype</code> 则表示具体类型实现的接口类型。</p>
 <p><img src="https://user-images.githubusercontent.com/7698088/56564826-82527600-65e1-11e9-956d-d98a212bc863.png" alt="iface 结构体全景"></p>
 <p>实际上，iface 描述的是非空接口，它包含方法；与之相对的是 <code>eface</code>，描述的是空接口，不包含任何方法，Go 语言里有的类型都 <code>“实现了”</code> 空接口。</p>
-<pre class=" language-golang"><code class="language-golang">type eface struct {
-    _type *_type
-    data  unsafe.Pointer
-}</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> eface <span class="keyword">struct</span> &#123;</span><br><span class="line">    _type *_type</span><br><span class="line">    data  unsafe.Pointer</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>相比 <code>iface</code>，<code>eface</code> 就比较简单了。只维护了一个 <code>_type</code> 字段，表示空接口所承载的具体的实体类型。<code>data</code> 描述了具体的值。</p>
 <p><img src="https://user-images.githubusercontent.com/7698088/56565105-318f4d00-65e2-11e9-96bd-4b2e192791dc.png" alt="eface 结构体全景"></p>
 <p>还是用 Go 官方关于反射的博客里的例子，当然，我会用图形来详细解释，结合两者来看会更清楚。顺便提一下，搞技术的不要害怕英文资料，要想成为技术专家，读英文原始资料是技术提高的一条必经之路。</p>
 <p>先明确一点：接口变量可以存储任何实现了接口定义的所有方法的变量。</p>
 <p>Go 语言中最常见的就是 <code>Reader</code> 和 <code>Writer</code> 接口：</p>
-<pre class=" language-golang"><code class="language-golang">type Reader interface {
-    Read(p []byte) (n int, err error)
-}
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Reader <span class="keyword">interface</span> &#123;</span><br><span class="line">    Read(p []<span class="keyword">byte</span>) (n <span class="keyword">int</span>, err error)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Writer <span class="keyword">interface</span> &#123;</span><br><span class="line">    Write(p []<span class="keyword">byte</span>) (n <span class="keyword">int</span>, err error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-type Writer interface {
-    Write(p []byte) (n int, err error)
-}</code></pre>
 <p>接下来，就是接口之间的各种转换和赋值了：</p>
-<pre class=" language-golang"><code class="language-golang">var r io.Reader
-tty, err := os.OpenFile("/Users/qcrao/Desktop/test", os.O_RDWR, 0)
-if err != nil {
-    return nil, err
-}
-r = tty</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> r io.Reader</span><br><span class="line">tty, err := os.OpenFile(<span class="string">"/Users/qcrao/Desktop/test"</span>, os.O_RDWR, <span class="number">0</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">&#125;</span><br><span class="line">r = tty</span><br></pre></td></tr></table></figure>
+
 <p>首先声明 <code>r</code> 的类型是 <code>io.Reader</code>，注意，这是 <code>r</code> 的静态类型，此时它的动态类型为 <code>nil</code>，并且它的动态值也是 <code>nil</code>。</p>
 <p>之后，<code>r = tty</code> 这一语句，将 <code>r</code> 的动态类型变成 <code>*os.File</code>，动态值则变成非空，表示打开的文件对象。这时，r 可以用<code>&lt;value, type&gt;</code>对来表示为： <code>&lt;tty, *os.File&gt;</code>。</p>
 <p><img src="https://user-images.githubusercontent.com/7698088/56844299-b29b5c80-68e0-11e9-8211-d227448806b7.png" alt="r=tty"></p>
 <p>注意看上图，此时虽然 <code>fun</code> 所指向的函数只有一个 <code>Read</code> 函数，其实 <code>*os.File</code> 还包含 <code>Write</code> 函数，也就是说 <code>*os.File</code> 其实还实现了 <code>io.Writer</code> 接口。因此下面的断言语句可以执行：</p>
-<pre class=" language-golang"><code class="language-golang">var w io.Writer
-w = r.(io.Writer)</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> w io.Writer</span><br><span class="line">w = r.(io.Writer)</span><br></pre></td></tr></table></figure>
+
 <p>之所以用断言，而不能直接赋值，是因为 <code>r</code> 的静态类型是 <code>io.Reader</code>，并没有实现 <code>io.Writer</code> 接口。断言能否成功，看 <code>r</code> 的动态类型是否符合要求。</p>
 <p>这样，w 也可以表示成 <code>&lt;tty, *os.File&gt;</code>，仅管它和 <code>r</code> 一样，但是 w 可调用的函数取决于它的静态类型 <code>io.Writer</code>，也就是说它只能有这样的调用形式： <code>w.Write()</code> 。<code>w</code> 的内存形式如下图：</p>
 <p><img src="https://user-images.githubusercontent.com/7698088/57341967-09215a00-716f-11e9-99cc-cfaa0f312b54.png" alt="w = r.(io.Writer)"></p>
 <p>和 <code>r</code> 相比，仅仅是 <code>fun</code> 对应的函数变了：<code>Read -&gt; Write</code>。</p>
 <p>最后，再来一个赋值：</p>
-<pre class=" language-golang"><code class="language-golang">var empty interface{}
-empty = w</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> empty <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">empty = w</span><br></pre></td></tr></table></figure>
+
 <p>由于 <code>empty</code> 是一个空接口，因此所有的类型都实现了它，w 可以直接赋给它，不需要执行断言操作。</p>
 <p><img src="https://user-images.githubusercontent.com/7698088/56844669-9b5f6d80-68e6-11e9-8a31-8d38951c7742.png" alt="empty=w"></p>
 <p>从上面的三张图可以看到，interface 包含三部分信息：<code>_type</code> 是类型信息，<code>*data</code> 指向实际类型的实际值，<code>itab</code> 包含实际类型的信息，包括大小、包路径，还包含绑定在类型上的各种方法（图上没有画出方法），补充一下关于 os.File 结构体的图：</p>
 <p><img src="https://user-images.githubusercontent.com/7698088/56946658-4bd6a700-6b5d-11e9-9a3d-0e781957be31.png" alt="struct_type"></p>
 <p>这一节的最后，复习一下上一篇关于 interface 的文章，提到的一个技巧，这里再展示一下：</p>
 <p>先参考源码，分别定义一个<code>“伪装”</code>的 iface 和 eface 结构体。</p>
-<pre class=" language-golang"><code class="language-golang">type iface struct {
-    tab  *itab
-    data unsafe.Pointer
-}
-type itab struct {
-    inter uintptr
-    _type uintptr
-    link uintptr
-    hash  uint32
-    _     [4]byte
-    fun   [1]uintptr
-}
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> iface <span class="keyword">struct</span> &#123;</span><br><span class="line">	tab  *itab</span><br><span class="line">	data unsafe.Pointer</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> itab <span class="keyword">struct</span> &#123;</span><br><span class="line">	inter <span class="keyword">uintptr</span></span><br><span class="line">	_type <span class="keyword">uintptr</span></span><br><span class="line">	link <span class="keyword">uintptr</span></span><br><span class="line">	hash  <span class="keyword">uint32</span></span><br><span class="line">	_     [<span class="number">4</span>]<span class="keyword">byte</span></span><br><span class="line">	fun   [<span class="number">1</span>]<span class="keyword">uintptr</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> eface <span class="keyword">struct</span> &#123;</span><br><span class="line">	_type <span class="keyword">uintptr</span></span><br><span class="line">	data unsafe.Pointer</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-type eface struct {
-    _type uintptr
-    data unsafe.Pointer
-}</code></pre>
 <p>接着，将接口变量占据的内存内容强制解释成上面定义的类型，再打印出来：</p>
-<pre class=" language-golang"><code class="language-golang">package main
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"io"</span></span><br><span class="line">	<span class="string">"unsafe"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> r io.Reader</span><br><span class="line">	fmt.Printf(<span class="string">"initial r: %T, %v\n"</span>, r, r)</span><br><span class="line"></span><br><span class="line">	tty, _ := os.OpenFile(<span class="string">"/Users/qcrao/Desktop/test"</span>, os.O_RDWR, <span class="number">0</span>)</span><br><span class="line">	fmt.Printf(<span class="string">"tty: %T, %v\n"</span>, tty, tty)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 给 r 赋值</span></span><br><span class="line">	r = tty</span><br><span class="line">	fmt.Printf(<span class="string">"r: %T, %v\n"</span>, r, r)</span><br><span class="line"></span><br><span class="line">	rIface := (*iface)(unsafe.Pointer(&amp;r))</span><br><span class="line">	fmt.Printf(<span class="string">"r: iface.tab._type = %#x, iface.data = %#x\n"</span>, rIface.tab._type, rIface.data)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 给 w 赋值</span></span><br><span class="line">	<span class="keyword">var</span> w io.Writer</span><br><span class="line">	w = r.(io.Writer)</span><br><span class="line">	fmt.Printf(<span class="string">"w: %T, %v\n"</span>, w, w)</span><br><span class="line"></span><br><span class="line">	wIface := (*iface)(unsafe.Pointer(&amp;w))</span><br><span class="line">	fmt.Printf(<span class="string">"w: iface.tab._type = %#x, iface.data = %#x\n"</span>, wIface.tab._type, wIface.data)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 给 empty 赋值</span></span><br><span class="line">	<span class="keyword">var</span> empty <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">	empty = w</span><br><span class="line">	fmt.Printf(<span class="string">"empty: %T, %v\n"</span>, empty, empty)</span><br><span class="line"></span><br><span class="line">	emptyEface := (*eface)(unsafe.Pointer(&amp;empty))</span><br><span class="line">	fmt.Printf(<span class="string">"empty: eface._type = %#x, eface.data = %#x\n"</span>, emptyEface._type, emptyEface.data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-import (
-    "os"
-    "fmt"
-    "io"
-    "unsafe"
-)
-
-func main() {
-    var r io.Reader
-    fmt.Printf("initial r: %T, %v\n", r, r)
-
-    tty, _ := os.OpenFile("/Users/qcrao/Desktop/test", os.O_RDWR, 0)
-    fmt.Printf("tty: %T, %v\n", tty, tty)
-
-    // 给 r 赋值
-    r = tty
-    fmt.Printf("r: %T, %v\n", r, r)
-
-    rIface := (*iface)(unsafe.Pointer(&r))
-    fmt.Printf("r: iface.tab._type = %#x, iface.data = %#x\n", rIface.tab._type, rIface.data)
-
-    // 给 w 赋值
-    var w io.Writer
-    w = r.(io.Writer)
-    fmt.Printf("w: %T, %v\n", w, w)
-
-    wIface := (*iface)(unsafe.Pointer(&w))
-    fmt.Printf("w: iface.tab._type = %#x, iface.data = %#x\n", wIface.tab._type, wIface.data)
-
-    // 给 empty 赋值
-    var empty interface{}
-    empty = w
-    fmt.Printf("empty: %T, %v\n", empty, empty)
-
-    emptyEface := (*eface)(unsafe.Pointer(&empty))
-    fmt.Printf("empty: eface._type = %#x, eface.data = %#x\n", emptyEface._type, emptyEface.data)
-}</code></pre>
 <p>运行结果：</p>
-<pre class=" language-golang"><code class="language-golang">initial r: <nil>, <nil>
-tty: *os.File, &{0xc4200820f0}
-r: *os.File, &{0xc4200820f0}
-r: iface.tab._type = 0x10bfcc0, iface.data = 0xc420080020
-w: *os.File, &{0xc4200820f0}
-w: iface.tab._type = 0x10bfcc0, iface.data = 0xc420080020
-empty: *os.File, &{0xc4200820f0}
-empty: eface._type = 0x10bfcc0, eface.data = 0xc420080020</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">initial r: &lt;<span class="literal">nil</span>&gt;, &lt;<span class="literal">nil</span>&gt;</span><br><span class="line">tty: *os.File, &amp;&#123;<span class="number">0xc4200820f</span>0&#125;</span><br><span class="line">r: *os.File, &amp;&#123;<span class="number">0xc4200820f</span>0&#125;</span><br><span class="line">r: iface.tab._type = <span class="number">0x10bf</span>cc0, iface.data = <span class="number">0xc420080020</span></span><br><span class="line">w: *os.File, &amp;&#123;<span class="number">0xc4200820f</span>0&#125;</span><br><span class="line">w: iface.tab._type = <span class="number">0x10bf</span>cc0, iface.data = <span class="number">0xc420080020</span></span><br><span class="line">empty: *os.File, &amp;&#123;<span class="number">0xc4200820f</span>0&#125;</span><br><span class="line">empty: eface._type = <span class="number">0x10bf</span>cc0, eface.data = <span class="number">0xc420080020</span></span><br></pre></td></tr></table></figure>
+
 <p><code>r，w，empty</code> 的动态类型和动态值都一样。不再详细解释了，结合前面的图可以看得非常清晰。</p>
 <h2 id="反射的基本函数"><a href="#反射的基本函数" class="headerlink" title="反射的基本函数"></a>反射的基本函数</h2><p>reflect 包里定义了一个接口和一个结构体，即 <code>reflect.Type</code> 和 <code>reflect.Value</code>，它们提供很多函数来获取存储在接口里的类型信息。</p>
 <p><code>reflect.Type</code> 主要提供关于类型相关的信息，所以它和 <code>_type</code> 关联比较紧密；<code>reflect.Value</code> 则结合 <code>_type</code> 和 <code>data</code> 两者，因此程序员可以获取甚至改变类型的值。</p>
 <p>reflect 包中提供了两个基础的关于反射的函数来获取上述的接口和结构体：</p>
-<pre class=" language-golang"><code class="language-golang">func TypeOf(i interface{}) Type 
-func ValueOf(i interface{}) Value</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TypeOf</span><span class="params">(i <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">Type</span> </span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">ValueOf</span><span class="params">(i <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">Value</span></span></span><br></pre></td></tr></table></figure>
+
 <p><code>TypeOf</code> 函数用来提取一个接口中值的类型信息。由于它的输入参数是一个空的 <code>interface{}</code>，调用此函数时，实参会先被转化为 <code>interface{}</code>类型。这样，实参的类型信息、方法集、值信息都存储到 <code>interface{}</code> 变量里了。</p>
 <p>看下源码：</p>
-<pre class=" language-golang"><code class="language-golang">func TypeOf(i interface{}) Type {
-    eface := *(*emptyInterface)(unsafe.Pointer(&i))
-    return toType(eface.typ)
-}</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TypeOf</span><span class="params">(i <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">Type</span></span> &#123;</span><br><span class="line">	eface := *(*emptyInterface)(unsafe.Pointer(&amp;i))</span><br><span class="line">	<span class="keyword">return</span> toType(eface.typ)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>这里的 <code>emptyInterface</code> 和上面提到的 <code>eface</code> 是一回事（字段名略有差异，字段是相同的），且在不同的源码包：前者在 <code>reflect</code> 包，后者在 <code>runtime</code> 包。 <code>eface.typ</code> 就是动态类型。</p>
-<pre class=" language-golang"><code class="language-golang">type emptyInterface struct {
-    typ  *rtype
-    word unsafe.Pointer
-}</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> emptyInterface <span class="keyword">struct</span> &#123;</span><br><span class="line">	typ  *rtype</span><br><span class="line">	word unsafe.Pointer</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>至于 <code>toType</code> 函数，只是做了一个类型转换：</p>
-<pre class=" language-golang"><code class="language-golang">func toType(t *rtype) Type {
-    if t == nil {
-        return nil
-    }
-    return t
-}</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">toType</span><span class="params">(t *rtype)</span> <span class="title">Type</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> t == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> t</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>注意，返回值 <code>Type</code> 实际上是一个接口，定义了很多方法，用来获取类型相关的各种信息，而 <code>*rtype</code> 实现了 <code>Type</code> 接口。</p>
-<pre class=" language-golang"><code class="language-golang">type Type interface {
-    // 所有的类型都可以调用下面这些函数
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Type <span class="keyword">interface</span> &#123;</span><br><span class="line">    <span class="comment">// 所有的类型都可以调用下面这些函数</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 此类型的变量对齐后所占用的字节数</span></span><br><span class="line">	Align() <span class="keyword">int</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 如果是 struct 的字段，对齐后占用的字节数</span></span><br><span class="line">	FieldAlign() <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 返回类型方法集里的第 `i` (传入的参数)个方法</span></span><br><span class="line">	Method(<span class="keyword">int</span>) Method</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 通过名称获取方法</span></span><br><span class="line">	MethodByName(<span class="keyword">string</span>) (Method, <span class="keyword">bool</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 获取类型方法集里导出的方法个数</span></span><br><span class="line">	NumMethod() <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 类型名称</span></span><br><span class="line">	Name() <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 返回类型所在的路径，如：encoding/base64</span></span><br><span class="line">	PkgPath() <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 返回类型的大小，和 unsafe.Sizeof 功能类似</span></span><br><span class="line">	Size() <span class="keyword">uintptr</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 返回类型的字符串表示形式</span></span><br><span class="line">	String() <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 返回类型的类型值</span></span><br><span class="line">	Kind() Kind</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 类型是否实现了接口 u</span></span><br><span class="line">	Implements(u Type) <span class="keyword">bool</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 是否可以赋值给 u</span></span><br><span class="line">	AssignableTo(u Type) <span class="keyword">bool</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 是否可以类型转换成 u</span></span><br><span class="line">	ConvertibleTo(u Type) <span class="keyword">bool</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 类型是否可以比较</span></span><br><span class="line">	Comparable() <span class="keyword">bool</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 下面这些函数只有特定类型可以调用</span></span><br><span class="line">	<span class="comment">// 如：Key, Elem 两个方法就只能是 Map 类型才能调用</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 类型所占据的位数</span></span><br><span class="line">	Bits() <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 返回通道的方向，只能是 chan 类型调用</span></span><br><span class="line">	ChanDir() ChanDir</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 返回类型是否是可变参数，只能是 func 类型调用</span></span><br><span class="line">	<span class="comment">// 比如 t 是类型 func(x int, y ... float64)</span></span><br><span class="line">	<span class="comment">// 那么 t.IsVariadic() == true</span></span><br><span class="line">	IsVariadic() <span class="keyword">bool</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 返回内部子元素类型，只能由类型 Array, Chan, Map, Ptr, or Slice 调用</span></span><br><span class="line">	Elem() Type</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 返回结构体类型的第 i 个字段，只能是结构体类型调用</span></span><br><span class="line">	<span class="comment">// 如果 i 超过了总字段数，就会 panic</span></span><br><span class="line">	Field(i <span class="keyword">int</span>) StructField</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 返回嵌套的结构体的字段</span></span><br><span class="line">	FieldByIndex(index []<span class="keyword">int</span>) StructField</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 通过字段名称获取字段</span></span><br><span class="line">	FieldByName(name <span class="keyword">string</span>) (StructField, <span class="keyword">bool</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// FieldByNameFunc returns the struct field with a name</span></span><br><span class="line">	<span class="comment">// 返回名称符合 func 函数的字段</span></span><br><span class="line">	FieldByNameFunc(match <span class="function"><span class="keyword">func</span><span class="params">(<span class="keyword">string</span>)</span> <span class="title">bool</span>) <span class="params">(StructField, <span class="keyword">bool</span>)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">	// 获取函数类型的第 <span class="title">i</span> 个参数的类型</span></span><br><span class="line"><span class="function">	<span class="title">In</span><span class="params">(i <span class="keyword">int</span>)</span> <span class="title">Type</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">	// 返回 <span class="title">map</span> 的 <span class="title">key</span> 类型，只能由类型 <span class="title">map</span> 调用</span></span><br><span class="line"><span class="function">	<span class="title">Key</span><span class="params">()</span> <span class="title">Type</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">	// 返回 <span class="title">Array</span> 的长度，只能由类型 <span class="title">Array</span> 调用</span></span><br><span class="line"><span class="function">	<span class="title">Len</span><span class="params">()</span> <span class="title">int</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">	// 返回类型字段的数量，只能由类型 <span class="title">Struct</span> 调用</span></span><br><span class="line"><span class="function">	<span class="title">NumField</span><span class="params">()</span> <span class="title">int</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">	// 返回函数类型的输入参数个数</span></span><br><span class="line"><span class="function">	<span class="title">NumIn</span><span class="params">()</span> <span class="title">int</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">	// 返回函数类型的返回值个数</span></span><br><span class="line"><span class="function">	<span class="title">NumOut</span><span class="params">()</span> <span class="title">int</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">	// 返回函数类型的第 <span class="title">i</span> 个值的类型</span></span><br><span class="line"><span class="function">	<span class="title">Out</span><span class="params">(i <span class="keyword">int</span>)</span> <span class="title">Type</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    // 返回类型结构体的相同部分</span></span><br><span class="line"><span class="function">	<span class="title">common</span><span class="params">()</span> *<span class="title">rtype</span></span></span><br><span class="line"><span class="function">	</span></span><br><span class="line"><span class="function">	// 返回类型结构体的不同部分</span></span><br><span class="line"><span class="function">	<span class="title">uncommon</span><span class="params">()</span> *<span class="title">uncommonType</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
 
-    // 此类型的变量对齐后所占用的字节数
-    Align() int
-
-    // 如果是 struct 的字段，对齐后占用的字节数
-    FieldAlign() int
-
-    // 返回类型方法集里的第 `i` (传入的参数)个方法
-    Method(int) Method
-
-    // 通过名称获取方法
-    MethodByName(string) (Method, bool)
-
-    // 获取类型方法集里导出的方法个数
-    NumMethod() int
-
-    // 类型名称
-    Name() string
-
-    // 返回类型所在的路径，如：encoding/base64
-    PkgPath() string
-
-    // 返回类型的大小，和 unsafe.Sizeof 功能类似
-    Size() uintptr
-
-    // 返回类型的字符串表示形式
-    String() string
-
-    // 返回类型的类型值
-    Kind() Kind
-
-    // 类型是否实现了接口 u
-    Implements(u Type) bool
-
-    // 是否可以赋值给 u
-    AssignableTo(u Type) bool
-
-    // 是否可以类型转换成 u
-    ConvertibleTo(u Type) bool
-
-    // 类型是否可以比较
-    Comparable() bool
-
-    // 下面这些函数只有特定类型可以调用
-    // 如：Key, Elem 两个方法就只能是 Map 类型才能调用
-
-    // 类型所占据的位数
-    Bits() int
-
-    // 返回通道的方向，只能是 chan 类型调用
-    ChanDir() ChanDir
-
-    // 返回类型是否是可变参数，只能是 func 类型调用
-    // 比如 t 是类型 func(x int, y ... float64)
-    // 那么 t.IsVariadic() == true
-    IsVariadic() bool
-
-    // 返回内部子元素类型，只能由类型 Array, Chan, Map, Ptr, or Slice 调用
-    Elem() Type
-
-    // 返回结构体类型的第 i 个字段，只能是结构体类型调用
-    // 如果 i 超过了总字段数，就会 panic
-    Field(i int) StructField
-
-    // 返回嵌套的结构体的字段
-    FieldByIndex(index []int) StructField
-
-    // 通过字段名称获取字段
-    FieldByName(name string) (StructField, bool)
-
-    // FieldByNameFunc returns the struct field with a name
-    // 返回名称符合 func 函数的字段
-    FieldByNameFunc(match func(string) bool) (StructField, bool)
-
-    // 获取函数类型的第 i 个参数的类型
-    In(i int) Type
-
-    // 返回 map 的 key 类型，只能由类型 map 调用
-    Key() Type
-
-    // 返回 Array 的长度，只能由类型 Array 调用
-    Len() int
-
-    // 返回类型字段的数量，只能由类型 Struct 调用
-    NumField() int
-
-    // 返回函数类型的输入参数个数
-    NumIn() int
-
-    // 返回函数类型的返回值个数
-    NumOut() int
-
-    // 返回函数类型的第 i 个值的类型
-    Out(i int) Type
-
-    // 返回类型结构体的相同部分
-    common() *rtype
-
-    // 返回类型结构体的不同部分
-    uncommon() *uncommonType
-}</code></pre>
 <p>可见 <code>Type</code> 定义了非常多的方法，通过它们可以获取类型的一切信息，大家一定要完整的过一遍上面所有的方法。</p>
 <p>注意到 <code>Type</code> 方法集的倒数第二个方法 <code>common</code><br> 返回的 <code>rtype</code>类型，它和上一篇文章讲到的 <code>_type</code> 是一回事，而且源代码里也注释了：两边要保持同步：</p>
-<pre class=" language-golang"><code class="language-golang"> // rtype must be kept in sync with ../runtime/type.go:/^type._type.</code></pre>
-<pre class=" language-golang"><code class="language-golang">type rtype struct {
-    size       uintptr
-    ptrdata    uintptr
-    hash       uint32
-    tflag      tflag
-    align      uint8
-    fieldAlign uint8
-    kind       uint8
-    alg        *typeAlg
-    gcdata     *byte
-    str        nameOff
-    ptrToThis  typeOff
-}</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// rtype must be kept in sync with ../runtime/type.go:/^type._type.</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> rtype <span class="keyword">struct</span> &#123;</span><br><span class="line">	size       <span class="keyword">uintptr</span></span><br><span class="line">	ptrdata    <span class="keyword">uintptr</span></span><br><span class="line">	hash       <span class="keyword">uint32</span></span><br><span class="line">	tflag      tflag</span><br><span class="line">	align      <span class="keyword">uint8</span></span><br><span class="line">	fieldAlign <span class="keyword">uint8</span></span><br><span class="line">	kind       <span class="keyword">uint8</span></span><br><span class="line">	alg        *typeAlg</span><br><span class="line">	gcdata     *<span class="keyword">byte</span></span><br><span class="line">	str        nameOff</span><br><span class="line">	ptrToThis  typeOff</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
 <p>所有的类型都会包含 <code>rtype</code> 这个字段，表示各种类型的公共信息；另外，不同类型包含自己的一些独特的部分。</p>
 <p>比如下面的 <code>arrayType</code> 和 <code>chanType</code> 都包含 <code>rytpe</code>，而前者还包含 slice，len 等和数组相关的信息；后者则包含 <code>dir</code> 表示通道方向的信息。</p>
-<pre class=" language-golang"><code class="language-golang">// arrayType represents a fixed array type.
-type arrayType struct {
-    rtype `reflect:"array"`
-    elem  *rtype // array element type
-    slice *rtype // slice type
-    len   uintptr
-}
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// arrayType represents a fixed array type.</span></span><br><span class="line"><span class="keyword">type</span> arrayType <span class="keyword">struct</span> &#123;</span><br><span class="line">	rtype <span class="string">`reflect:"array"`</span></span><br><span class="line">	elem  *rtype <span class="comment">// array element type</span></span><br><span class="line">	slice *rtype <span class="comment">// slice type</span></span><br><span class="line">	<span class="built_in">len</span>   <span class="keyword">uintptr</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// chanType represents a channel type.</span></span><br><span class="line"><span class="keyword">type</span> chanType <span class="keyword">struct</span> &#123;</span><br><span class="line">	rtype <span class="string">`reflect:"chan"`</span></span><br><span class="line">	elem  *rtype  <span class="comment">// channel element type</span></span><br><span class="line">	dir   <span class="keyword">uintptr</span> <span class="comment">// channel direction (ChanDir)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-// chanType represents a channel type.
-type chanType struct {
-    rtype `reflect:"chan"`
-    elem  *rtype  // channel element type
-    dir   uintptr // channel direction (ChanDir)
-}</code></pre>
 <p>注意到，<code>Type</code> 接口实现了 <code>String()</code> 函数，满足 <code>fmt.Stringer</code> 接口，因此使用 <code>fmt.Println</code> 打印的时候，输出的是 <code>String()</code> 的结果。另外，<code>fmt.Printf()</code> 函数，如果使用 <code>%T</code> 来作为格式参数，输出的是 <code>reflect.TypeOf</code> 的结果，也就是动态类型。例如：</p>
-<pre class=" language-golang"><code class="language-golang">fmt.Printf("%T", 3) // int</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fmt.Printf(<span class="string">"%T"</span>, <span class="number">3</span>) <span class="comment">// int</span></span><br></pre></td></tr></table></figure>
+
 <hr>
 <p>讲完了 <code>TypeOf</code> 函数，再来看一下 <code>ValueOf</code> 函数。返回值 <code>reflect.Value</code> 表示 <code>interface{}</code> 里存储的实际变量，它能提供实际变量的各种信息。相关的方法常常是需要结合类型信息和值信息。例如，如果要提取一个结构体的字段信息，那就需要用到 _type (具体到这里是指 structType) 类型持有的关于结构体的字段信息、偏移信息，以及 <code>*data</code> 所指向的内容 —— 结构体的实际值。</p>
 <p>源码如下：</p>
-<pre class=" language-golang"><code class="language-golang">func ValueOf(i interface{}) Value {
-    if i == nil {
-        return Value{}
-    }
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ValueOf</span><span class="params">(i <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">Value</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> i == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> Value&#123;&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">   <span class="comment">// ……</span></span><br><span class="line">	<span class="keyword">return</span> unpackEface(i)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 分解 eface</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">unpackEface</span><span class="params">(i <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">Value</span></span> &#123;</span><br><span class="line">	e := (*emptyInterface)(unsafe.Pointer(&amp;i))</span><br><span class="line"></span><br><span class="line">	t := e.typ</span><br><span class="line">	<span class="keyword">if</span> t == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> Value&#123;&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	f := flag(t.Kind())</span><br><span class="line">	<span class="keyword">if</span> ifaceIndir(t) &#123;</span><br><span class="line">		f |= flagIndir</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> Value&#123;t, e.word, f&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-   // ……
-    return unpackEface(i)
-}
-
-// 分解 eface
-func unpackEface(i interface{}) Value {
-    e := (*emptyInterface)(unsafe.Pointer(&i))
-
-    t := e.typ
-    if t == nil {
-        return Value{}
-    }
-
-    f := flag(t.Kind())
-    if ifaceIndir(t) {
-        f |= flagIndir
-    }
-    return Value{t, e.word, f}
-}</code></pre>
 <p>从源码看，比较简单：将先将 <code>i</code> 转换成 <code>*emptyInterface</code> 类型， 再将它的 <code>typ</code> 字段和 <code>word</code> 字段以及一个标志位字段组装成一个 <code>Value</code> 结构体，而这就是 <code>ValueOf</code> 函数的返回值，它包含类型结构体指针、真实数据的地址、标志位。</p>
 <p>Value 结构体定义了很多方法，通过这些方法可以直接操作 Value 字段 ptr 所指向的实际数据：</p>
-<pre class=" language-golang"><code class="language-golang">// 设置切片的 len 字段，如果类型不是切片，就会panic
- func (v Value) SetLen(n int)
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置切片的 len 字段，如果类型不是切片，就会panic</span></span><br><span class="line"> <span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">SetLen</span><span class="params">(n <span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"> </span></span><br><span class="line"><span class="function"> // 设置切片的 <span class="title">cap</span> 字段</span></span><br><span class="line"><span class="function"> <span class="title">func</span> <span class="params">(v Value)</span> <span class="title">SetCap</span><span class="params">(n <span class="keyword">int</span>)</span></span></span><br><span class="line"><span class="function"> </span></span><br><span class="line"><span class="function"> // 设置字典的 <span class="title">kv</span></span></span><br><span class="line"><span class="function"> <span class="title">func</span> <span class="params">(v Value)</span> <span class="title">SetMapIndex</span><span class="params">(key, val Value)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"> // 返回切片、字符串、数组的索引 <span class="title">i</span> 处的值</span></span><br><span class="line"><span class="function"> <span class="title">func</span> <span class="params">(v Value)</span> <span class="title">Index</span><span class="params">(i <span class="keyword">int</span>)</span> <span class="title">Value</span></span></span><br><span class="line"><span class="function"> </span></span><br><span class="line"><span class="function"> // 根据名称获取结构体的内部字段值</span></span><br><span class="line"><span class="function"> <span class="title">func</span> <span class="params">(v Value)</span> <span class="title">FieldByName</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="title">Value</span></span></span><br><span class="line"><span class="function"> </span></span><br><span class="line"><span class="function"> // ……</span></span><br></pre></td></tr></table></figure>
 
- // 设置切片的 cap 字段
- func (v Value) SetCap(n int)
-
- // 设置字典的 kv
- func (v Value) SetMapIndex(key, val Value)
-
- // 返回切片、字符串、数组的索引 i 处的值
- func (v Value) Index(i int) Value
-
- // 根据名称获取结构体的内部字段值
- func (v Value) FieldByName(name string) Value
-
- // ……</code></pre>
 <p><code>Value</code> 字段还有很多其他的方法。例如：</p>
-<pre class=" language-golang"><code class="language-golang">// 用来获取 int 类型的值
-func (v Value) Int() int64
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 用来获取 int 类型的值</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(v Value)</span> <span class="title">Int</span><span class="params">()</span> <span class="title">int64</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">// 用来获取结构体字段（成员）数量</span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(v Value)</span> <span class="title">NumField</span><span class="params">()</span> <span class="title">int</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">// 尝试向通道发送数据（不会阻塞）</span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(v Value)</span> <span class="title">TrySend</span><span class="params">(x reflect.Value)</span> <span class="title">bool</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">// 通过参数列表 <span class="title">in</span> 调用 <span class="title">v</span> 值所代表的函数（或方法</span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(v Value)</span> <span class="title">Call</span><span class="params">(in []Value)</span> <span class="params">(r []Value)</span> </span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">// 调用变参长度可变的函数</span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(v Value)</span> <span class="title">CallSlice</span><span class="params">(in []Value)</span> []<span class="title">Value</span></span></span><br></pre></td></tr></table></figure>
 
-// 用来获取结构体字段（成员）数量
-func (v Value) NumField() int
-
-// 尝试向通道发送数据（不会阻塞）
-func (v Value) TrySend(x reflect.Value) bool
-
-// 通过参数列表 in 调用 v 值所代表的函数（或方法
-func (v Value) Call(in []Value) (r []Value) 
-
-// 调用变参长度可变的函数
-func (v Value) CallSlice(in []Value) []Value </code></pre>
 <p>不一一列举了，反正是非常多。可以去 <code>src/reflect/value.go</code> 去看看源码，搜索 <code>func (v Value)</code> 就能看到。</p>
 <p>另外，通过 <code>Type()</code> 方法和 <code>Interface()</code> 方法可以打通 <code>interface</code>、<code>Type</code>、<code>Value</code> 三者。Type() 方法也可以返回变量的类型信息，与 reflect.TypeOf() 函数等价。Interface() 方法可以将 Value 还原成原来的 interface。</p>
 <p>这里引用老钱《快学Go语言第十五课——反射》的一张图：</p>
@@ -829,136 +158,26 @@ func (v Value) CallSlice(in []Value) []Value </code></pre>
 <p>前两条就是说 <code>接口型变量</code> 和 <code>反射类型对象</code> 可以相互转化，反射类型对象实际上就是指的前面说的 <code>reflect.Type</code> 和 <code>reflect.Value</code>。</p>
 <p>第三条不太好懂：如果需要操作一个反射变量，那么它必须是可设置的。反射变量可设置的本质是它存储了原变量本身，这样对反射变量的操作，就会反映到原变量本身；反之，如果反射变量不能代表原变量，那么操作了反射变量，不会对原变量产生任何影响，这会给使用者带来疑惑。所以第二种情况在语言层面是不被允许的。</p>
 <p>举一个经典例子：</p>
-<pre class=" language-golang"><code class="language-golang">var x float64 = 3.4
-v := reflect.ValueOf(x)
-v.SetFloat(7.1) // Error: will panic.</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> x <span class="keyword">float64</span> = <span class="number">3.4</span></span><br><span class="line">v := reflect.ValueOf(x)</span><br><span class="line">v.SetFloat(<span class="number">7.1</span>) <span class="comment">// Error: will panic.</span></span><br></pre></td></tr></table></figure>
+
 <p>执行上面的代码会产生 panic，原因是反射变量 <code>v</code> 不能代表 <code>x</code> 本身，为什么？因为调用 <code>reflect.ValueOf(x)</code> 这一行代码的时候，传入的参数在函数内部只是一个拷贝，是值传递，所以 <code>v</code> 代表的只是 <code>x</code> 的一个拷贝，因此对 <code>v</code> 进行操作是被禁止的。</p>
 <p>可设置是反射变量 <code>Value</code> 的一个性质，但不是所有的 <code>Value</code> 都是可被设置的。</p>
 <p>就像在一般的函数里那样，当我们想改变传入的变量时，使用指针就可以解决了。</p>
-<pre class=" language-golang"><code class="language-golang">var x float64 = 3.4
-p := reflect.ValueOf(&x)
-fmt.Println("type of p:", p.Type())
-fmt.Println("settability of p:", p.CanSet())</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> x <span class="keyword">float64</span> = <span class="number">3.4</span></span><br><span class="line">p := reflect.ValueOf(&amp;x)</span><br><span class="line">fmt.Println(<span class="string">"type of p:"</span>, p.Type())</span><br><span class="line">fmt.Println(<span class="string">"settability of p:"</span>, p.CanSet())</span><br></pre></td></tr></table></figure>
+
 <p>输出是这样的：</p>
-<pre class=" language-golang"><code class="language-golang">type of p: *float64
-settability of p: false</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> of p: *<span class="keyword">float64</span></span><br><span class="line">settability of p: <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
 <p><code>p</code> 还不是代表 <code>x</code>，<code>p.Elem()</code> 才真正代表 <code>x</code>，这样就可以真正操作 <code>x</code> 了：</p>
-<pre class=" language-golang"><code class="language-golang">v := p.Elem()
-v.SetFloat(7.1)
-fmt.Println(v.Interface()) // 7.1
-fmt.Println(x) // 7.1</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">v := p.Elem()</span><br><span class="line">v.SetFloat(<span class="number">7.1</span>)</span><br><span class="line">fmt.Println(v.Interface()) <span class="comment">// 7.1</span></span><br><span class="line">fmt.Println(x) <span class="comment">// 7.1</span></span><br></pre></td></tr></table></figure>
+
 <p>关于第三条，记住一句话：如果想要操作原变量，反射变量 <code>Value</code> 必须要 hold 住原变量的地址才行。</p>
 <h1 id="反射相关函数的使用"><a href="#反射相关函数的使用" class="headerlink" title="反射相关函数的使用"></a>反射相关函数的使用</h1><h2 id="代码样例"><a href="#代码样例" class="headerlink" title="代码样例"></a>代码样例</h2><p>网络上各种博客文章里使用反射的样例代码非常多，读过这篇文章后，基本没有看不懂的，哈哈！不过，我这里还是举一个例子，并讲解一番：</p>
-<pre class=" language-golang"><code class="language-golang">package main
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"reflect"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Child <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name     <span class="keyword">string</span></span><br><span class="line">	Grade    <span class="keyword">int</span></span><br><span class="line">	Handsome <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Adult <span class="keyword">struct</span> &#123;</span><br><span class="line">	ID         <span class="keyword">string</span> <span class="string">`qson:"Name"`</span></span><br><span class="line">	Occupation <span class="keyword">string</span></span><br><span class="line">	Handsome   <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果输入参数 i 是 Slice，元素是结构体，有一个字段名为 `Handsome`，</span></span><br><span class="line"><span class="comment">// 并且有一个字段的 tag 或者字段名是 `Name` ，</span></span><br><span class="line"><span class="comment">// 如果该 `Name` 字段的值是 `qcrao`，</span></span><br><span class="line"><span class="comment">// 就把结构体中名为 `Handsome` 的字段值设置为 true。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">handsome</span><span class="params">(i <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">	<span class="comment">// 获取 i 的反射变量 Value</span></span><br><span class="line">	v := reflect.ValueOf(i)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 确定 v 是一个 Slice</span></span><br><span class="line">	<span class="keyword">if</span> v.Kind() != reflect.Slice &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 确定 v 是的元素为结构体</span></span><br><span class="line">	<span class="keyword">if</span> e := v.Type().Elem(); e.Kind() != reflect.Struct &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 确定结构体的字段名含有 "ID" 或者 json tag 标签为 `name`</span></span><br><span class="line">	<span class="comment">// 确定结构体的字段名 "Handsome"</span></span><br><span class="line">	st := v.Type().Elem()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 寻找字段名为 Name 或者 tag 的值为 Name 的字段</span></span><br><span class="line">	foundName := <span class="literal">false</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; st.NumField(); i++ &#123;</span><br><span class="line">		f := st.Field(i)</span><br><span class="line">		tag := f.Tag.Get(<span class="string">"qson"</span>)</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (tag == <span class="string">"Name"</span> || f.Name == <span class="string">"Name"</span>) &amp;&amp; f.Type.Kind() == reflect.String &#123;</span><br><span class="line">			foundName = <span class="literal">true</span></span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> !foundName &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> niceField, foundHandsome := st.FieldByName(<span class="string">"Handsome"</span>); foundHandsome == <span class="literal">false</span> || niceField.Type.Kind() != reflect.Bool &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 设置名字为 "qcrao" 的对象的 "Handsome" 字段为 true</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; v.Len(); i++ &#123;</span><br><span class="line">		e := v.Index(i)</span><br><span class="line">		handsome := e.FieldByName(<span class="string">"Handsome"</span>)</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 寻找字段名为 Name 或者 tag 的值为 Name 的字段</span></span><br><span class="line">		<span class="keyword">var</span> name reflect.Value</span><br><span class="line">		<span class="keyword">for</span> j := <span class="number">0</span>; j &lt; st.NumField(); j++ &#123;</span><br><span class="line">			f := st.Field(j)</span><br><span class="line">			tag := f.Tag.Get(<span class="string">"qson"</span>)</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> tag == <span class="string">"Name"</span> || f.Name == <span class="string">"Name"</span> &#123;</span><br><span class="line">				name = v.Index(i).Field(j)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> name.String() == <span class="string">"qcrao"</span> &#123;</span><br><span class="line">			handsome.SetBool(<span class="literal">true</span>)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	children := []Child&#123;</span><br><span class="line">		&#123;Name: <span class="string">"Ava"</span>, Grade: <span class="number">3</span>, Handsome: <span class="literal">true</span>&#125;,</span><br><span class="line">		&#123;Name: <span class="string">"qcrao"</span>, Grade: <span class="number">6</span>, Handsome: <span class="literal">false</span>&#125;,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	adults := []Adult&#123;</span><br><span class="line">		&#123;ID: <span class="string">"Steve"</span>, Occupation: <span class="string">"Clerk"</span>, Handsome: <span class="literal">true</span>&#125;,</span><br><span class="line">		&#123;ID: <span class="string">"qcrao"</span>, Occupation: <span class="string">"Go Programmer"</span>, Handsome: <span class="literal">false</span>&#125;,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	fmt.Printf(<span class="string">"adults before handsome: %v\n"</span>, adults)</span><br><span class="line">	handsome(adults)</span><br><span class="line">	fmt.Printf(<span class="string">"adults after handsome: %v\n"</span>, adults)</span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">"-------------"</span>)</span><br><span class="line"></span><br><span class="line">	fmt.Printf(<span class="string">"children before handsome: %v\n"</span>, children)</span><br><span class="line">	handsome(children)</span><br><span class="line">	fmt.Printf(<span class="string">"children after handsome: %v\n"</span>, children)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-import (
-    "reflect"
-    "fmt"
-)
-
-type Child struct {
-    Name     string
-    Grade    int
-    Handsome bool
-}
-
-type Adult struct {
-    ID         string `qson:"Name"`
-    Occupation string
-    Handsome   bool
-}
-
-// 如果输入参数 i 是 Slice，元素是结构体，有一个字段名为 `Handsome`，
-// 并且有一个字段的 tag 或者字段名是 `Name` ，
-// 如果该 `Name` 字段的值是 `qcrao`，
-// 就把结构体中名为 `Handsome` 的字段值设置为 true。
-func handsome(i interface{}) {
-    // 获取 i 的反射变量 Value
-    v := reflect.ValueOf(i)
-
-    // 确定 v 是一个 Slice
-    if v.Kind() != reflect.Slice {
-        return
-    }
-
-    // 确定 v 是的元素为结构体
-    if e := v.Type().Elem(); e.Kind() != reflect.Struct {
-        return
-    }
-
-    // 确定结构体的字段名含有 "ID" 或者 json tag 标签为 `name`
-    // 确定结构体的字段名 "Handsome"
-    st := v.Type().Elem()
-
-    // 寻找字段名为 Name 或者 tag 的值为 Name 的字段
-    foundName := false
-    for i := 0; i < st.NumField(); i++ {
-        f := st.Field(i)
-        tag := f.Tag.Get("qson")
-
-        if (tag == "Name" || f.Name == "Name") && f.Type.Kind() == reflect.String {
-            foundName = true
-            break
-        }
-    }
-
-    if !foundName {
-        return
-    }
-
-    if niceField, foundHandsome := st.FieldByName("Handsome"); foundHandsome == false || niceField.Type.Kind() != reflect.Bool {
-        return
-    }
-
-    // 设置名字为 "qcrao" 的对象的 "Handsome" 字段为 true
-    for i := 0; i < v.Len(); i++ {
-        e := v.Index(i)
-        handsome := e.FieldByName("Handsome")
-
-        // 寻找字段名为 Name 或者 tag 的值为 Name 的字段
-        var name reflect.Value
-        for j := 0; j < st.NumField(); j++ {
-            f := st.Field(j)
-            tag := f.Tag.Get("qson")
-
-            if tag == "Name" || f.Name == "Name" {
-                name = v.Index(i).Field(j)
-            }
-        }
-
-        if name.String() == "qcrao" {
-            handsome.SetBool(true)
-        }
-    }
-}
-
-func main() {
-    children := []Child{
-        {Name: "Ava", Grade: 3, Handsome: true},
-        {Name: "qcrao", Grade: 6, Handsome: false},
-    }
-
-    adults := []Adult{
-        {ID: "Steve", Occupation: "Clerk", Handsome: true},
-        {ID: "qcrao", Occupation: "Go Programmer", Handsome: false},
-    }
-
-    fmt.Printf("adults before handsome: %v\n", adults)
-    handsome(adults)
-    fmt.Printf("adults after handsome: %v\n", adults)
-
-    fmt.Println("-------------")
-
-    fmt.Printf("children before handsome: %v\n", children)
-    handsome(children)
-    fmt.Printf("children after handsome: %v\n", children)
-}</code></pre>
 <p>代码运行结果：</p>
-<pre class=" language-shell"><code class="language-shell">adults before handsome: [{Steve Clerk true} {qcrao Go Programmer false}]
-adults after handsome: [{Steve Clerk true} {qcrao Go Programmer true}]
--------------
-children before handsome: [{Ava 3 true} {qcrao 6 false}]
-children after handsome: [{Ava 3 true} {qcrao 6 true}]</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">adults before handsome: [&#123;Steve Clerk true&#125; &#123;qcrao Go Programmer false&#125;]</span><br><span class="line">adults after handsome: [&#123;Steve Clerk true&#125; &#123;qcrao Go Programmer true&#125;]</span><br><span class="line">-------------</span><br><span class="line">children before handsome: [&#123;Ava 3 true&#125; &#123;qcrao 6 false&#125;]</span><br><span class="line">children after handsome: [&#123;Ava 3 true&#125; &#123;qcrao 6 true&#125;]</span><br></pre></td></tr></table></figure>
+
 <p>代码主要做的事情是：找出传入的参数为 Slice，并且 Slice 的元素为结构体，如果其中有一个字段名是 <code>Name</code> 或者是 标签名称为 <code>Name</code>，并且还有一个字段名是 <code>Handsome</code> 的情形。如果找到，并且字段名称为 <code>Name</code> 的实际值是 <code>qcrao</code> 的话，就把另一个字段 <code>Handsome</code> 的值置为 true。</p>
 <p>程序并不关心传入的结构体到底是什么，只要它的字段名包含 <code>Name</code> 和 <code>Handsome</code>，都是 handsome 函数要工作的对象。</p>
 <p>注意一点，<code>Adult</code> 结构体的标签 <code>qson:&quot;Name&quot;</code>，中间是没有空格的，否则 <code>Tag.Get(&quot;qson&quot;)</code> 识别不出来。</p>
@@ -967,63 +186,29 @@ children after handsome: [{Ava 3 true} {qcrao 6 true}]</code></pre>
 <blockquote>
 <p>一个可取地址的 reflect.Value 变量会记录一个结构体成员是否是未导出成员，如果是的话则拒绝修改操作。<br>CanAddr 不能说明一个变量是否可以被修改。<br>CanSet 则可以检查对应的 reflect.Value 是否可取地址并可被修改。</p>
 </blockquote>
-<pre class=" language-golang"><code class="language-golang">package main
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"reflect"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Child <span class="keyword">struct</span> &#123;</span><br><span class="line">	Name     <span class="keyword">string</span></span><br><span class="line">	handsome <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	qcrao := Child&#123;Name: <span class="string">"qcrao"</span>, handsome: <span class="literal">true</span>&#125;</span><br><span class="line"></span><br><span class="line">	v := reflect.ValueOf(&amp;qcrao)</span><br><span class="line"></span><br><span class="line">	f := v.Elem().FieldByName(<span class="string">"Name"</span>)</span><br><span class="line">	fmt.Println(f.String())</span><br><span class="line"></span><br><span class="line">	f.SetString(<span class="string">"stefno"</span>)</span><br><span class="line">	fmt.Println(f.String())</span><br><span class="line"></span><br><span class="line">	f = v.Elem().FieldByName(<span class="string">"handsome"</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 这一句会导致 panic，因为 handsome 字段未导出</span></span><br><span class="line">	<span class="comment">//f.SetBool(true)</span></span><br><span class="line">	fmt.Println(f.Bool())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-import (
-    "reflect"
-    "fmt"
-)
-
-type Child struct {
-    Name     string
-    handsome bool
-}
-
-func main() {
-    qcrao := Child{Name: "qcrao", handsome: true}
-
-    v := reflect.ValueOf(&qcrao)
-
-    f := v.Elem().FieldByName("Name")
-    fmt.Println(f.String())
-
-    f.SetString("stefno")
-    fmt.Println(f.String())
-
-    f = v.Elem().FieldByName("handsome")
-
-    // 这一句会导致 panic，因为 handsome 字段未导出
-    //f.SetBool(true)
-    fmt.Println(f.Bool())
-}</code></pre>
 <p>执行结果：</p>
-<pre class=" language-shell"><code class="language-shell">qcrao
-stefno
-true</code></pre>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">qcrao</span><br><span class="line">stefno</span><br><span class="line">true</span><br></pre></td></tr></table></figure>
+
 <p>上面的例子中，handsome 字段未导出，可以读取，但不能调用相关 set 方法，否则会 panic。反射用起来一定要小心，调用类型不匹配的方法，会导致各种 panic。</p>
 <h1 id="反射的实际应用"><a href="#反射的实际应用" class="headerlink" title="反射的实际应用"></a>反射的实际应用</h1><p>反射的实际应用非常广：IDE 中的代码自动补全功能、对象序列化（json 函数库）、fmt 相关函数的实现、ORM（全称是：Object Relational Mapping，对象关系映射）……</p>
 <p>这里举 2 个例子：json 序列化和 DeepEqual 函数。</p>
 <h2 id="json-序列化"><a href="#json-序列化" class="headerlink" title="json 序列化"></a>json 序列化</h2><p>开发过 web 服务的同学，一定用过 <code>json</code> 数据格式。<code>json</code> 是一种独立于语言的数据格式。最早用于浏览器和服务器之间的实时无状态的数据交换，并由此发展起来。</p>
 <p>Go 语言中，主要提供 2 个函数用于序列化和反序列化：</p>
-<pre class=" language-golang"><code class="language-golang">func Marshal(v interface{}) ([]byte, error)
-func Unmarshal(data []byte, v interface{}) error</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Marshal</span><span class="params">(v <span class="keyword">interface</span>&#123;&#125;)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">Unmarshal</span><span class="params">(data []<span class="keyword">byte</span>, v <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">error</span></span></span><br></pre></td></tr></table></figure>
+
 <p>两个函数的参数都包含 <code>interface</code>，具体实现的时候，都会用到反射相关的特性。</p>
 <p>对于序列化和反序列化函数，均需要知道参数的所有字段，包括字段类型和值，再调用相关的 get 函数或者 set 函数进行实际的操作。</p>
 <h2 id="DeepEqual-的作用及原理"><a href="#DeepEqual-的作用及原理" class="headerlink" title="DeepEqual 的作用及原理"></a>DeepEqual 的作用及原理</h2><p>在测试函数中，经常会需要这样的函数：判断两个变量的实际内容完全一致。</p>
 <p>例如：如何判断两个 slice 所有的元素完全相同；如何判断两个 map 的 key 和 value 完全相同等等。</p>
 <p>上述问题，可以通过 <code>DeepEqual</code> 函数实现。</p>
-<pre class=" language-golang"><code class="language-golang">func DeepEqual(x, y interface{}) bool</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DeepEqual</span><span class="params">(x, y <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">bool</span></span></span><br></pre></td></tr></table></figure>
+
 <p><code>DeepEqual</code> 函数的参数是两个 <code>interface</code>，实际上也就是可以输入任意类型，输出 true 或者 flase 表示输入的两个变量是否是“深度”相等。</p>
 <p>先明白一点，如果是不同的类型，即使是底层类型相同，相应的值也相同，那么两者也不是“深度”相等。</p>
-<pre class=" language-golang"><code class="language-golang">type MyInt int
-type YourInt int
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> MyInt <span class="keyword">int</span></span><br><span class="line"><span class="keyword">type</span> YourInt <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	m := MyInt(<span class="number">1</span>)</span><br><span class="line">	y := YourInt(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">	fmt.Println(reflect.DeepEqual(m, y)) <span class="comment">// false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-func main() {
-    m := MyInt(1)
-    y := YourInt(1)
-
-    fmt.Println(reflect.DeepEqual(m, y)) // false
-}</code></pre>
 <p>上面的代码中，m, y 底层都是 int，而且值都是 1，但是两者静态类型不同，前者是 <code>MyInt</code>，后者是 <code>YourInt</code>，因此两者不是“深度”相等。</p>
 <p>在源码里，有对 DeepEqual 函数的非常清楚地注释，列举了不同类型，DeepEqual 的比较情形，这里做一个总结：</p>
 <table>
@@ -1072,60 +257,25 @@ func main() {
 <p>同样，对于指向相同 slice， map 的两个变量也是“深度”相等的，不关心 slice， map 具体的内容。</p>
 <p>对于“有环”的类型，比如循环链表，比较两者是否“深度”相等的过程中，需要对已比较的内容作一个标记，一旦发现两个指针之前比较过，立即停止比较，并判定二者是深度相等的。这样做的原因是，及时停止比较，避免陷入无限循环。</p>
 <p>来看源码：</p>
-<pre class=" language-golang"><code class="language-golang">func DeepEqual(x, y interface{}) bool {
-    if x == nil || y == nil {
-        return x == y
-    }
-    v1 := ValueOf(x)
-    v2 := ValueOf(y)
-    if v1.Type() != v2.Type() {
-        return false
-    }
-    return deepValueEqual(v1, v2, make(map[visit]bool), 0)
-}</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DeepEqual</span><span class="params">(x, y <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> x == <span class="literal">nil</span> || y == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> x == y</span><br><span class="line">	&#125;</span><br><span class="line">	v1 := ValueOf(x)</span><br><span class="line">	v2 := ValueOf(y)</span><br><span class="line">	<span class="keyword">if</span> v1.Type() != v2.Type() &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> deepValueEqual(v1, v2, <span class="built_in">make</span>(<span class="keyword">map</span>[visit]<span class="keyword">bool</span>), <span class="number">0</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>首先查看两者是否有一个是 nil 的情况，这种情况下，只有两者都是 nil，函数才会返回 true。</p>
 <p>接着，使用反射，获取x，y 的反射对象，并且立即比较两者的类型，根据前面的内容，这里实际上是动态类型，如果类型不同，直接返回 false。</p>
 <p>最后，最核心的内容在子函数 <code>deepValueEqual</code> 中。</p>
 <p>代码比较长，思路却比较简单清晰：核心是一个 switch 语句，识别输入参数的不同类型，分别递归调用 deepValueEqual 函数，一直递归到最基本的数据类型，比较 int，string 等可以直接得出 true 或者 false，再一层层地返回，最终得到“深度”相等的比较结果。</p>
 <p>实际上，各种类型的比较套路比较相似，这里就直接节选一个稍微复杂一点的 <code>map</code> 类型的比较：</p>
-<pre class=" language-golang"><code class="language-golang">// deepValueEqual 函数
-// ……
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// deepValueEqual 函数</span></span><br><span class="line"><span class="comment">// ……</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">case</span> Map:</span><br><span class="line">	<span class="keyword">if</span> v1.IsNil() != v2.IsNil() &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> v1.Len() != v2.Len() &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> v1.Pointer() == v2.Pointer() &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> _, k := <span class="keyword">range</span> v1.MapKeys() &#123;</span><br><span class="line">		val1 := v1.MapIndex(k)</span><br><span class="line">		val2 := v2.MapIndex(k)</span><br><span class="line">		<span class="keyword">if</span> !val1.IsValid() || !val2.IsValid() || !deepValueEqual(v1.MapIndex(k), v2.MapIndex(k), visited, depth+<span class="number">1</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">	</span><br><span class="line"><span class="comment">// ……</span></span><br></pre></td></tr></table></figure>
 
-case Map:
-    if v1.IsNil() != v2.IsNil() {
-        return false
-    }
-    if v1.Len() != v2.Len() {
-        return false
-    }
-    if v1.Pointer() == v2.Pointer() {
-        return true
-    }
-    for _, k := range v1.MapKeys() {
-        val1 := v1.MapIndex(k)
-        val2 := v2.MapIndex(k)
-        if !val1.IsValid() || !val2.IsValid() || !deepValueEqual(v1.MapIndex(k), v2.MapIndex(k), visited, depth+1) {
-            return false
-        }
-    }
-    return true
-
-// ……    </code></pre>
 <p>和前文总结的表格里，比较 map 是否相等的思路比较一致，也不需要多说什么。说明一点，<code>visited</code> 是一个 map，记录递归过程中，比较过的“对”：</p>
-<pre class=" language-golang"><code class="language-golang">type visit struct {
-    a1  unsafe.Pointer
-    a2  unsafe.Pointer
-    typ Type
-}
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> visit <span class="keyword">struct</span> &#123;</span><br><span class="line">	a1  unsafe.Pointer</span><br><span class="line">	a2  unsafe.Pointer</span><br><span class="line">	typ Type</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">map</span>[visit]<span class="keyword">bool</span></span><br></pre></td></tr></table></figure>
 
-map[visit]bool</code></pre>
 <p>比较过程中，一旦发现比较的“对”，已经在 map 里出现过的话，直接判定“深度”比较结果的是 <code>true</code>。</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Go 作为一门静态语言，相比 Python 等动态语言，在编写过程中灵活性会受到一定的限制。但是通过接口加反射实现了类似于动态语言的能力：可以在程序运行时动态地捕获甚至改变类型的信息和值。</p>
 <p>Go 语言的反射实现的基础是类型，或者说是 interface，当我们使用反射特性时，实际上用到的就是存储在 interface 变量中的和类型相关的信息，也就是常说的 <code>&lt;type, value&gt;</code> 对。</p>
 <p>只有 interface 才有反射的说法。</p>
 <p>反射在 reflect 包中实现，涉及到两个相关函数：</p>
-<pre class=" language-golang"><code class="language-golang">func TypeOf ( i interface{} ) Type
-func ValueOf ( i interface{} ) Value</code></pre>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TypeOf</span> <span class="params">( i <span class="keyword">interface</span>&#123;&#125; )</span> <span class="title">Type</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">ValueOf</span> <span class="params">( i <span class="keyword">interface</span>&#123;&#125; )</span> <span class="title">Value</span></span></span><br></pre></td></tr></table></figure>
+
 <p>Type 是一个接口，定义了很多相关方法，用于获取类型信息。Value 则持有类型的具体值。Type、Value、Interface 三者间通过函数 TypeOf，ValueOf，Interface 进行相互转换。</p>
 <p>最后温习一下反射三大定律：</p>
 <blockquote>
@@ -1157,517 +307,17 @@ func ValueOf ( i interface{} ) Value</code></pre>
 <p>【讲得比较清晰简单】<a href="https://www.lijiaocn.com/%E7%BC%96%E7%A8%8B/2017/11/06/golang-reflection.html" target="_blank" rel="noopener">https://www.lijiaocn.com/%E7%BC%96%E7%A8%8B/2017/11/06/golang-reflection.html</a></p>
 <p>【DeepEqual】<a href="https://github.com/Chasiny/Blog/blob/master/blog/go/package/go-reflect-deepequal.md">https://github.com/Chasiny/Blog/blob/master/blog/go/package/go-reflect-deepequal.md</a></p>
 <p>【反射使用场景】<a href="https://yq.aliyun.com/articles/599584" target="_blank" rel="noopener">https://yq.aliyun.com/articles/599584</a></p>
-
-            </div>
-            <hr/>
-
-            
-            <style>
-    #reward {
-        margin: 40px 0;
-        text-align: center;
-    }
-
-    #reward .reward-link {
-        font-size: 1.88rem;
-    }
-
-    #reward .btn-floating:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    #rewardModal {
-        width: 320px;
-        height: 350px;
-    }
-
-    #rewardModal .reward-title {
-        margin: 15px auto;
-        padding-bottom: 5px;
-    }
-
-    #rewardModal .modal-content {
-        padding: 10px;
-    }
-
-    #rewardModal .close {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-        color: rgba(0, 0, 0, 0.5);
-        font-size: 1.3rem;
-        line-height: 20px;
-        cursor: pointer;
-    }
-
-    #rewardModal .close:hover {
-        color: #ef5350;
-        transform: scale(1.3);
-        -moz-transform:scale(1.3);
-        -webkit-transform:scale(1.3);
-        -o-transform:scale(1.3);
-    }
-
-    #rewardModal .reward-tabs {
-        margin: 0 auto;
-        width: 210px;
-    }
-
-    .reward-tabs .tabs {
-        height: 38px;
-        margin: 10px auto;
-        padding-left: 0;
-    }
-
-    .reward-content ul {
-        padding-left: 0 !important;
-    }
-
-    .reward-tabs .tabs .tab {
-        height: 38px;
-        line-height: 38px;
-    }
-
-    .reward-tabs .tab a {
-        color: #fff;
-        background-color: #ccc;
-    }
-
-    .reward-tabs .tab a:hover {
-        background-color: #ccc;
-        color: #fff;
-    }
-
-    .reward-tabs .wechat-tab .active {
-        color: #fff !important;
-        background-color: #22AB38 !important;
-    }
-
-    .reward-tabs .alipay-tab .active {
-        color: #fff !important;
-        background-color: #019FE8 !important;
-    }
-
-    .reward-tabs .reward-img {
-        width: 210px;
-        height: 210px;
-    }
-</style>
-
-<div id="reward">
-    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-large waves-effect waves-light red">赏</a>
-
-    <!-- Modal Structure -->
-    <div id="rewardModal" class="modal">
-        <div class="modal-content">
-            <a class="close modal-close"><i class="fa fa-close"></i></a>
-            <h4 class="reward-title">你的赏识是我前进的动力</h4>
-            <div class="reward-content">
-                <div class="reward-tabs">
-                    <ul class="tabs row">
-                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
-                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
-                    </ul>
-                    <div id="alipay">
-                        <img src="/medias/reward/alipay.jpeg" class="reward-img" alt="支付宝打赏二维码">
-                    </div>
-                    <div id="wechat">
-                        <img src="/medias/reward/wechat.JPG" class="reward-img" alt="微信打赏二维码">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    $(function () {
-        $('.tabs').tabs();
-    });
-</script>
-            
-
-            <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
-
-<div id="article-share">
-    
-    <div class="social-share" data-disabled="qzone" data-wechat-qrcode-helper="<p>微信里点“发现”->“扫一扫”二维码便可查看分享。</p>"></div>
-    
-</div>
-
-<script src="/libs/share/js/social-share.min.js"></script>
-
-            
-
-    <div class="reprint" id="reprint-statement">
-        <p class="reprint-tip">
-            <i class="fa fa-exclamation-triangle"></i>&nbsp;&nbsp;
-            <span>转载规则</span>
-        </p>
-        
-            <div class="center-align">
-                <a rel="license" href="https://creativecommons.org/licenses/by/4.0/deed.zh">
-                    <img alt=""
-                         style="border-width:0"
-                         src="https://i.creativecommons.org/l/by/4.0/88x31.png"/>
-                </a>
-            </div>
-            <br/>
-            <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text"
-                  property="dct:title" rel="dct:type">
-                    《深度解密Go语言之反射》
-                </span> 由
-            <a xmlns:cc="http://creativecommons.org/ns#" href="/2019/05/07/dive-into-go-reflection/" property="cc:attributionName"
-               rel="cc:attributionURL">
-                Stefno
-            </a> 采用
-            <a rel="license" href="https://creativecommons.org/licenses/by/4.0/deed.zh">
-                知识共享署名 4.0 国际许可协议
-            </a>进行许可。
-        
-    </div>
-
-    <script async defer>
-      document.addEventListener("copy", function (e) {
-        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
-        M.toast({html: toastHTML})
-      });
-
-      function navToReprintStatement() {
-        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
-      }
-    </script>
-
-
-        </div>
-    </div>
-
-    
-        <link rel="stylesheet" href="/libs/gitalk/gitalk.css">
-<link rel="stylesheet" href="/css/my-gitalk.css">
-
-<div class="card gitalk-card" data-aos="fade-up">
-    <div id="gitalk-container" class="card-content"></div>
-</div>
-
-<script src="/libs/gitalk/gitalk.min.js"></script>
-<script>
-    let gitalk = new Gitalk({
-        clientID: '5162bf99c1eefa81825d',
-        clientSecret: 'f1d5fdbe6b3308918a663357723b3f14b9c355a1',
-        repo: 'qcrao.github.io',
-        owner: 'qcrao',
-        admin: ["qcrao"],
-        id: '2019-05-07T08-35-00',
-        distractionFreeMode: false  // Facebook-like distraction free mode
-    });
-
-    gitalk.render('gitalk-container');
-</script>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-<article id="prenext-posts" class="prev-next articles">
-    <div class="row article-row">
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge left-badge text-color">
-                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
-            <div class="card">
-                <a href="/2019/05/22/dive-into-go-map/">
-                    <div class="card-image">
-                        
-                        <img src="https://user-images.githubusercontent.com/7698088/61797279-abd9a280-ae59-11e9-9e58-1b30ff73f9c5.png" class="responsive-img" alt="深度解密Go语言之map">
-                        
-                        <span class="card-title">深度解密Go语言之map</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            这篇文章主要讲 map 的赋值、删除、查询、扩容的具体执行过程，仍然是从底层的角度展开。结合源码，看完本文一定会彻底明白 map 底层原理。
-我要说明的是，这里对 map 的基本用法涉及比较少，我相信可以通过阅读其他入门书籍了解。本文的内容
-                        
-                    </div>
-                    <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2019-05-22
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fa fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/编程语言/" class="post-category" target="_blank">
-                                    编程语言
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/golang/" target="_blank">
-                        <span class="chip bg-color">golang</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2019/04/25/dive-into-go-interface/">
-                    <div class="card-image">
-                        
-                        <img src="http://mmbiz.qpic.cn/mmbiz_jpg/ASQrEXvmx61tJTdWgO8Ngw5GcTPY5UOhkU5eZulSX1j1BA7I5wRcicNuVbPt3tbIeoH91uFibV40KW1Pr71uJnyw/0?wx_fmt=jpeg" class="responsive-img" alt="深度解密Go语言之关于interface的 10 个问题">
-                        
-                        <span class="card-title">深度解密Go语言之关于interface的 10 个问题</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            这次文章依然很长，基本上涵盖了 interface 的方方面面，有例子，有源码分析，有汇编分析，前前后后写了 20 多天。洋洋洒洒，长篇大论，依然有些东西没有涉及到，比如文章里没有写到反射，当然，后面会单独写一篇关于反射的文章，这是后话。
-
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-04-25
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fa fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/编程语言/" class="post-category" target="_blank">
-                                    编程语言
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/golang/" target="_blank">
-                        <span class="chip bg-color">golang</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-    </div>
-</article>
-</div>
-
-
-
-    </div>
-    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
-        <div class="toc-widget">
-            <div class="toc-title"><i class="fa fa-list-alt"></i>&nbsp;&nbsp;目录</div>
-            <div id="toc-content"></div>
-        </div>
-    </div>
-</div>
-
-<!-- TOC 悬浮按钮. -->
-
-<div id="floating-toc-btn" class="hide-on-med-and-down">
-    <a class="btn-floating btn-large bg-color">
-        <i class="fa fa-list"></i>
-    </a>
-</div>
-
-
-<script src="/libs/tocbot/tocbot.min.js"></script>
-<script>
-    $(function () {
-        tocbot.init({
-            tocSelector: '#toc-content',
-            contentSelector: '#articleContent',
-            headingsOffset: -($(window).height() * 0.4 - 45),
-            // headingsOffset: -205,
-            headingSelector: 'h1, h2, h3, h4'
-        });
-
-        // modify the toc link href to support Chinese.
-        let i = 0;
-        let tocHeading = 'toc-heading-';
-        $('#toc-content a').each(function () {
-            $(this).attr('href', '#' + tocHeading + (++i));
-        });
-
-        // modify the heading title id to support Chinese.
-        i = 0;
-        $('#articleContent').children('h1, h2, h3, h4').each(function () {
-            $(this).attr('id', tocHeading + (++i));
-        });
-
-        // Set scroll toc fixed.
-        let tocHeight = parseInt($(window).height() * 0.4 - 64);
-        let $tocWidget = $('.toc-widget');
-        $(window).scroll(function () {
-            let scroll = $(window).scrollTop();
-            /* add post toc fixed. */
-            if (scroll > tocHeight) {
-                $tocWidget.addClass('toc-fixed');
-            } else {
-                $tocWidget.removeClass('toc-fixed');
-            }
-        });
-
-        
-        /* 修复文章卡片 div 的宽度. */
-        let fixPostCardWidth = function (srcId, targetId) {
-            let srcDiv = $('#' + srcId);
-            if (srcDiv.length === 0) {
-                return;
-            }
-
-            let w = srcDiv.width();
-            if (w >= 450) {
-                w = w + 21;
-            } else if (w >= 350 && w < 450) {
-                w = w + 18;
-            } else if (w >= 300 && w < 350) {
-                w = w + 16;
-            } else {
-                w = w + 14;
-            }
-            $('#' + targetId).width(w);
-        };
-
-        // 切换TOC目录展开收缩的相关操作.
-        const expandedClass = 'expanded';
-        let $tocAside = $('#toc-aside');
-        let $mainContent = $('#main-content');
-        $('#floating-toc-btn .btn-floating').click(function () {
-            if ($tocAside.hasClass(expandedClass)) {
-                $tocAside.removeClass(expandedClass).slideUp(500);
-                $mainContent.removeClass('l9');
-            } else {
-                $tocAside.addClass(expandedClass).slideDown(500);
-                $mainContent.addClass('l9');
-            }
-            fixPostCardWidth('artDetail', 'prenext-posts');
-        });
-        
-    });
-</script>
-    
-
-</main>
-
-
-<footer class="page-footer bg-color">
-    <div class="container row center-align">
-        <div class="col s12 m8 l8 copy-right">
-            本站由&copy;<a href="https://github.com/qcrao/qcrao.github.io" target="_blank">Stefno</a>基于
-            <a href="https://hexo.io/" target="_blank">Hexo</a> 的
-            <a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">hexo-theme-matery</a>主题搭建.
-
-            
-                &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">87.5k</span>
-            
-
-            
-			
-                <br>
-                
-                <span id="busuanzi_container_site_pv">
-                    <i class="fa fa-heart-o"></i>
-                    本站总访问量 <span id="busuanzi_value_site_pv" class="white-color"></span>
-                </span>
-                
-                
-                <span id="busuanzi_container_site_uv">
-                    <i class="fa fa-users"></i>
-                    次,&nbsp;访客数 <span id="busuanzi_value_site_uv" class="white-color"></span> 人.
-                </span>
-                
-            
-        </div>
-        <div class="col s12 m4 l4 social-link social-statis">
-
-
-    <a href="mailto:qcrao91@gmail.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
-        <i class="fa fa-envelope-open"></i>
-    </a>
-
-
-
-
-
-    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
-        <i class="fa fa-rss"></i>
-    </a>
-</div>
-    </div>
-</footer>
-
-<div class="progress-bar"></div>
-
-<!-- 搜索遮罩框 -->
-<div id="searchModal" class="modal">
-    <div class="modal-content">
-        <div class="search-header">
-            <span class="title"><i class="fa fa-search"></i>&nbsp;&nbsp;搜索</span>
-            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
-                   class="search-input">
-        </div>
-        <div id="searchResult"></div>
-    </div>
-</div>
-
-<script src="/js/search.js"></script>
-<script type="text/javascript">
-$(function () {
-    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
-});
-</script>
-<!-- 回到顶部按钮 -->
-<div id="backTop" class="top-scroll">
-    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
-        <i class="fa fa-angle-up"></i>
-    </a>
-</div>
-
-
-<script src="/libs/materialize/materialize.min.js"></script>
-<script src="/libs/masonry/masonry.pkgd.min.js"></script>
-<script src="/libs/aos/aos.js"></script>
-<script src="/libs/scrollprogress/scrollProgress.min.js"></script>
-<script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
-<script src="/js/matery.js"></script>
-
-<!-- Global site tag (gtag.js) - Google Analytics -->
-
-
-
-
-    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
-
-
-</body>
-</html>
+</div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>饶全成</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2019/05/07/dive-into-go-reflection/">https://github.com/qcrao/qcrao.github.io/2019/05/07/dive-into-go-reflection/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本文章著作权归作者所有，任何形式的转载都请注明出处。</li></ul></div><br><div class="tags"><a href="/tags/golang/">golang</a></div><div class="post-nav"><a class="pre" href="/2019/05/22/dive-into-go-map/">深度解密Go语言之map</a><a class="next" href="/2019/04/25/dive-into-go-interface/">深度解密Go语言之关于interface的 10 个问题</a></div><div id="container"></div><link rel="stylesheet" type="text/css" href="//unpkg.com/gitalk/dist/gitalk.css?v=0.0.0"><script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js?v=0.0.0"></script><script type="text/javascript" src="//unpkg.com/gitalk/dist/gitalk.min.js?v=0.0.0"></script><script>var gitalk = new Gitalk({
+  clientID: '',
+  clientSecret: '',
+  repo: 'qcrao.github.io',
+  owner: 'qcrao',
+  admin: ['qcrao'],
+  id: md5(location.pathname),
+  distractionFreeMode: false
+})
+gitalk.render('container')
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="https://github.com/qcrao/qcrao.github.io"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/操作系统/">操作系统</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/求职/">求职</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">2</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/协议/" style="font-size: 15px;">协议</a> <a href="/tags/内存重排/" style="font-size: 15px;">内存重排</a> <a href="/tags/golang/" style="font-size: 15px;">golang</a> <a href="/tags/简历/" style="font-size: 15px;">简历</a> <a href="/tags/编译原理/" style="font-size: 15px;">编译原理</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/07/24/how-go-runs/">Go 程序是怎样跑起来的</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/22/dive-into-go-channel/">深度解密Go语言之channel</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/08/how-to-write-resume-gracefully/">如何打造一份优雅的简历</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/17/cch-says-memory-reorder/">曹大谈内存重排</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/12/dive-into-go-context/">深度解密Go语言之context</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/06/03/dive-into-go-unsafe/">深度解密Go语言之unsafe</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/22/dive-into-go-map/">深度解密Go语言之map</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/07/dive-into-go-reflection/">深度解密Go语言之反射</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/25/dive-into-go-interface/">深度解密Go语言之关于interface的 10 个问题</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/02/dive-into-go-slice/">深度解密Go语言之slice</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://github.com/qcrao/Go-Questions" title="Go-Questions" target="_blank">Go-Questions</a><ul></ul><a href="http://xargin.com/" title="No HeadBack" target="_blank">No HeadBack</a><ul></ul><a href="https://draveness.me/" title="面向信仰编程" target="_blank">面向信仰编程</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async="async"></script><span> | </span><i class="fa fa-user"></i><span id="busuanzi_value_site_uv"></span><span> | </span><i class="fa fa-eye"></i><span id="busuanzi_value_site_pv"></span><span> | </span><i class="fa fa-keyboard-o"></i><span class="post-count">111.8k</span><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">Stefno.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script><script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
