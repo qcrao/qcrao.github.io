@@ -1,0 +1,369 @@
+= Asciidoc 笔记
+qcrao <qcrao91@gmail.com>
+v0.1, 2019-07-30
+:toc: left
+:imagesdir: assets/images
+:homepage: http://qcrao.github.io
+
+最近听了几次曹大的分享，用的讲义非常酷炫，于是也跟风学一下，将来有机会做技术分享的时候也可以来“装”一下。
+
+下面就来记录一些常用的语法。首先得保证满足平时的 MarkdDwn 写作。
+
+== 常用语法
+这一部分能够代替日常 MarkDown 写作。
+
+=== 标题层级
+文章标题为 Level 0 层级，在文档首部用 `= 文章标题` 来表示，整篇文章只能有一个 Level 0 层级的标题。
+
+其他层次的标题依次添加 `== Level 1`、`=== Level 2` 来表示。
+
+当然，也可以直接用 `#` 来定义层级，和 `=` 等价。 
+
+=== 文字链接
+和 MarkDown 一致：
+
+ https://github.com/qcrao/Go-Questions[Go-Questions 项目]
+
+https://github.com/qcrao/Go-Questions[Go-Questions 项目]
+
+=== 图片
+
+和 MarkDown 一样的效果的写法：
+
+`image::https://user-images.githubusercontent.com/7698088/51420568-305b1800-1bce-11e9-962a-52b12be7eb2e.png[QR]`
+
+image::https://user-images.githubusercontent.com/7698088/51420568-305b1800-1bce-11e9-962a-52b12be7eb2e.png[QR]
+
+可以加上一个标题，也可以限制大小：
+
+`image::https://user-images.githubusercontent.com/7698088/51420568-305b1800-1bce-11e9-962a-52b12be7eb2e.png[title="公众号二维码", width="300", height="200"]`
+
+image::https://user-images.githubusercontent.com/7698088/51420568-305b1800-1bce-11e9-962a-52b12be7eb2e.png[title="公众号二维码", width="300", height="200"]
+
+再重复一次前面的内容，标题前面的 Figure 序号是自动递增的：
+
+image::https://user-images.githubusercontent.com/7698088/51420568-305b1800-1bce-11e9-962a-52b12be7eb2e.png[title="公众号二维码", width="300", height="200"]
+
+当然，可以手动指定 Figure 的序号：
+
+`image::https://user-images.githubusercontent.com/7698088/51420568-305b1800-1bce-11e9-962a-52b12be7eb2e.png[caption="Figure 1: ", title="公众号二维码"]`
+
+image::https://user-images.githubusercontent.com/7698088/51420568-305b1800-1bce-11e9-962a-52b12be7eb2e.png[caption="Figure 100: ", title="公众号二维码"]
+
+=== 水平线
+ '''
+
+'''
+=== 代码块
+支持的代码高亮不点，曹大说直接用 `C` 一把棱就行了：
+
+[source,c]
+----
+package main
+
+import (
+	"fmt"
+	"runtime"
+) // <1>
+
+func main() {
+	fmt.Println(runtime.NumCPU()) // <2>
+}
+----
+<1> import packages
+<2> NumCPU returns the number of logical CPUs usable by the current process.
+
+=== 表格
+和 MarkDown 不太一样，稍微有点复杂，但是更清晰：
+
+```c
+[cols="2", options="header"]
+|===
+|Application
+|Language
+
+|AsciiDoc
+|Python
+
+|Asciidoctor
+|Ruby
+|===
+```
+
+[cols="2", options="header"]
+|===
+|Application
+|Language
+
+|AsciiDoc
+|Python
+
+|Asciidoctor
+|Ruby
+|===
+
+也可以带标题，和 MarkDown 格式类似：
+
+```c
+.表格标题
+|===
+|Name of Column 1 |Name of Column 2 |Name of Column 3 
+
+|Cell in column 1, row 1
+|Cell in column 2, row 1
+|Cell in column 3, row 1
+
+|Cell in column 1, row 2
+|Cell in column 2, row 2
+|Cell in column 3, row 2
+|===
+```
+
+.表格标题
+|===
+|Name of Column 1 |Name of Column 2 |Name of Column 3 
+
+|Cell in column 1, row 1
+|Cell in column 2, row 1
+|Cell in column 3, row 1
+
+|Cell in column 1, row 2
+|Cell in column 2, row 2
+|Cell in column 3, row 2
+|===
+
+=== 目录
+在文章标题下面添加作者信息，目标等：
+
+```c
+= Asciidoc 笔记
+qcrao <qcrao91@gmail.com>
+v0.1, 2019-07-30
+:toc:
+:imagesdir: assets/images
+:homepage: http://qcrao.github.io
+```
+
+=== 引用
+和 MarkDown 风格类似，不过可以引用块的下面添加一个作者和来源，很酷炫：
+
+> I hold it that a little rebellion now and then is a good thing,
+> and as necessary in the political world as storms in the physical.
+> -- Thomas Jefferson, Papers of Thomas Jefferson: Volume 11
+
+=== 无序列表
+`* Edgar Allen Poe +
+ * Sheri S. Tepper +
+ * Bill Bryson`
+
+* Edgar Allen Poe
+* Sheri S. Tepper
+* Bill Bryson
+
+=== 有序列表
+
+`. Step 1 +
+. Step 2 +
+. Step 3`
+
+. Step 1
+. Step 2
+. Step 3
+
+=== 清单
+
+```c
+- [*] checked
+- [x] also checked
+- [ ] not checked
+-     normal list item
+```
+
+- [*] checked
+- [x] also checked
+- [ ] not checked
+-     normal list item
+
+== 高级语法
+=== 换行
+
+用 + 号：
+
+ Rubies are red, +
+ Topazes are blue.
+
+Rubies are red, +
+Topazes are blue.
+
+=== 引用段落
+
+引用段落每行都缩进一个字符：
+
+A normal paragraph.
+
+ A sequence of lines that begin with at least one space is a literal paragraph.
+ Literal paragraphs are treated as preformatted text.
+ The text is shown in a fixed-width font
+ and endlines are preserved.
+
+Another normal paragraph.
+
+=== 图标
+
+可以在一个段落前加上一些提起注意的图标，引起重视，像有些书上展示的一样，效果很酷：
+
+ NOTE: 请注意！
+
+NOTE: 请注意！
+
+ TIP: 小建议
+
+TIP: 小建议
+
+ IMPORTANT: 记住！不要忘了……
+
+IMPORTANT: 记住！不要忘了……
+
+ WARNING: 当心……
+
+WARNING: 当心……
+
+ CAUTION: 确保……
+
+CAUTION: 确保……
+
+=== 字体加粗等
+
+用 `_` 号包围要变为斜体的部分：
+
+ _italic phrase_
+
+_italic phrase_
+
+如果只想要单个或多个字符，用连着两个 `_` 号包围：
+
+ __i__talic le__tt__ers
+
+__i__talic le__tt__ers
+
+用 `*` 包围要加粗的部分：
+
+ *bold phrase*
+
+*bold phrase*
+
+同样的，如果只想加粗几个字符，用连着两个 `*` 号包围：
+
+ **b**old le**tt**ers
+
+**b**old le**tt**ers
+
+加粗和斜体一起上：
+
+ *_bold italic phrase_*
+
+*_bold italic phrase_*
+
+部分加粗与斜体一起上：
+
+ **__b__**old italic le**__tt__**ers
+
+**__b__**old italic le**__tt__**ers
+
+突出显示，用 ```` 号表示，突出显示部分字符同上：
+
+ `monospace phrase` and le``tt``ers
+
+`monospace phrase` and le``tt``ers
+
+斜体与突出显示一起上：
+
+ `_monospace italic phrase_` and le``__tt__``ers
+
+`_monospace italic phrase_` and le``__tt__``ers
+
+加粗与突出显示一起上：
+
+ `*monospace bold phrase*` and le``**tt**``ers
+
+`*monospace bold phrase*` and le``**tt**``ers
+
+ `*_monospace bold italic phrase_*` and le``**__tt__**``ers
+
+`*_monospace bold italic phrase_*` and le``**__tt__**``ers
+
+涂色重点突出：
+
+ Werewolves are #allergic to cinnamon#.
+
+Werewolves are #allergic to cinnamon#.
+
+=== 快捷键
+
+```c
+|===
+|Shortcut |Purpose
+
+|kbd:[F11]
+|Toggle fullscreen
+
+|kbd:[Ctrl+T]
+|Open a new tab
+
+|kbd:[Ctrl+Shift+N]
+|New incognito window
+
+|kbd:[Ctrl + +]
+|Increase zoom
+|===
+```
+
+|===
+|Shortcut |Purpose
+
+|kbd:[F11]
+|Toggle fullscreen
+
+|kbd:[Ctrl+T]
+|Open a new tab
+
+|kbd:[Ctrl+Shift+N]
+|New incognito window
+
+|kbd:[Ctrl + +]
+|Increase zoom
+|===
+
+=== 按钮
+
+```c
+Press the btn:[OK] button when you are finished.
+
+Select a file in the file navigator and click btn:[Open].
+```
+
+Press the btn:[OK] button when you are finished.
+
+Select a file in the file navigator and click btn:[Open].
+
+=== 脚注
+
+脚本还可以重复使用：
+
+```c
+A statement.footnote:[Clarification about this statement.]
+
+A bold statement.footnoteref:[disclaimer,Opinions are my own.]
+
+Another bold statement.footnoteref:[disclaimer]
+```
+
+A statement.footnote:[Clarification about this statement.]
+
+A bold statement.footnoteref:[disclaimer,Opinions are my own.]
+
+Another bold statement.footnoteref:[disclaimer]
+
+== 参考资料
+
+https://asciidoctor.cn/docs/asciidoc-syntax-quick-reference/#text-replacement
