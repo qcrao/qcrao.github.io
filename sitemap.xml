@@ -2,142 +2,142 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/01/18/dive-into-http/</loc>
+    <loc>https://qcrao.com/404.html</loc>
+    
+    <lastmod>2019-07-31T09:48:21.962Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/03/20/dive-into-go-asm/</loc>
+    
+    <lastmod>2019-07-31T09:41:26.203Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
+    
+    <lastmod>2019-07-31T09:40:56.708Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/07/24/how-go-runs/</loc>
+    
+    <lastmod>2019-07-31T09:40:38.844Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
     
     <lastmod>2019-07-31T08:28:57.688Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/01/30/byte-travel-story/</loc>
+    <loc>https://qcrao.com/2019/01/30/byte-travel-story/</loc>
     
     <lastmod>2019-07-31T08:01:46.749Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/06/17/cch-says-memory-reorder/</loc>
+    <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
     
     <lastmod>2019-07-31T08:01:44.618Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/03/20/dive-into-go-asm/</loc>
-    
-    <lastmod>2019-07-31T08:01:42.377Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/07/22/dive-into-go-channel/</loc>
+    <loc>https://qcrao.com/2019/07/22/dive-into-go-channel/</loc>
     
     <lastmod>2019-07-31T08:01:40.229Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/06/12/dive-into-go-context/</loc>
+    <loc>https://qcrao.com/2019/06/12/dive-into-go-context/</loc>
     
     <lastmod>2019-07-31T08:01:37.906Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/04/25/dive-into-go-interface/</loc>
+    <loc>https://qcrao.com/2019/04/25/dive-into-go-interface/</loc>
     
     <lastmod>2019-07-31T08:01:36.047Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/05/22/dive-into-go-map/</loc>
+    <loc>https://qcrao.com/2019/05/22/dive-into-go-map/</loc>
     
     <lastmod>2019-07-31T08:01:34.160Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/05/07/dive-into-go-reflection/</loc>
+    <loc>https://qcrao.com/2019/05/07/dive-into-go-reflection/</loc>
     
     <lastmod>2019-07-31T08:01:31.740Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/04/02/dive-into-go-slice/</loc>
+    <loc>https://qcrao.com/2019/04/02/dive-into-go-slice/</loc>
     
     <lastmod>2019-07-31T08:01:29.843Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/06/03/dive-into-go-unsafe/</loc>
+    <loc>https://qcrao.com/2019/06/03/dive-into-go-unsafe/</loc>
     
     <lastmod>2019-07-31T08:01:28.133Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/01/16/dive-into-three-way-handshake/</loc>
+    <loc>https://qcrao.com/2019/01/16/dive-into-three-way-handshake/</loc>
     
     <lastmod>2019-07-31T08:01:25.392Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/03/13/graphic-go-memory-allocation/</loc>
+    <loc>https://qcrao.com/2019/03/13/graphic-go-memory-allocation/</loc>
     
     <lastmod>2019-07-31T08:01:22.275Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/07/24/how-go-runs/</loc>
-    
-    <lastmod>2019-07-31T08:01:20.290Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
-    
-    <lastmod>2019-07-31T08:01:18.247Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/07/08/how-to-write-resume-gracefully/</loc>
+    <loc>https://qcrao.com/2019/07/08/how-to-write-resume-gracefully/</loc>
     
     <lastmod>2019-07-31T08:01:16.197Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/2019/03/01/where-go-variables-go/</loc>
+    <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
     
     <lastmod>2019-07-31T08:01:09.349Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/about/index.html</loc>
+    <loc>https://qcrao.com/about/index.html</loc>
     
     <lastmod>2019-07-31T03:32:52.635Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/404.html</loc>
+    <loc>https://qcrao.com/categories/index.html</loc>
     
-    <lastmod>2019-07-23T15:24:28.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://github.com/qcrao/qcrao.github.io/categories/index.html</loc>
-    
-    <lastmod>2019-07-23T15:24:28.000Z</lastmod>
+    <lastmod>2019-07-23T15:24:28.425Z</lastmod>
     
   </url>
   
