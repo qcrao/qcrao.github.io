@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://qcrao.com/2019/07/03/how-go-runs/</loc>
+    <lastmod>2019-08-01</lastmod>
+  </url>  <url>
     <loc>https://qcrao.com/2019/03/20/dive-into-go-asm/</loc>
     <lastmod>2019-07-31</lastmod>
   </url>  <url>
     <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
-    <lastmod>2019-07-31</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/07/24/how-go-runs/</loc>
     <lastmod>2019-07-31</lastmod>
   </url>  <url>
     <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>

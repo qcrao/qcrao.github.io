@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://qcrao.com/2019/07/03/how-go-runs/</loc>
+    
+    <lastmod>2019-08-01T06:44:24.934Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://qcrao.com/404.html</loc>
     
     <lastmod>2019-07-31T09:48:21.962Z</lastmod>
@@ -19,13 +26,6 @@
     <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
     
     <lastmod>2019-07-31T09:40:56.708Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/07/24/how-go-runs/</loc>
-    
-    <lastmod>2019-07-31T09:40:38.844Z</lastmod>
     
   </url>
   
@@ -137,7 +137,7 @@
   <url>
     <loc>https://qcrao.com/categories/index.html</loc>
     
-    <lastmod>2019-07-23T15:24:28.425Z</lastmod>
+    <lastmod>2019-07-23T15:24:28.000Z</lastmod>
     
   </url>
   
