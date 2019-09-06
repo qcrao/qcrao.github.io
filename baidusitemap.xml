@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://qcrao.com/2019/09/06/go-scheduler-life-of-goroutine/</loc>
+    <lastmod>2019-09-06</lastmod>
+  </url>  <url>
+    <loc>https://qcrao.com/2019/09/06/go-scheduler-what-sysmon-does/</loc>
+    <lastmod>2019-09-06</lastmod>
+  </url>  <url>
+    <loc>https://qcrao.com/2019/09/06/go-scheduler-cycle-of-schedul/</loc>
+    <lastmod>2019-09-06</lastmod>
+  </url>  <url>
+    <loc>https://qcrao.com/2019/09/06/go-scheduler-m-finds-work/</loc>
+    <lastmod>2019-09-06</lastmod>
+  </url>  <url>
+    <loc>https://qcrao.com/2019/09/06/go-scheduler-state-diagram-of-gpm/</loc>
+    <lastmod>2019-09-06</lastmod>
+  </url>  <url>
     <loc>https://qcrao.com/2019/09/04/go-scheduler-stack-switch-between-g0-and-user-goroutine/</loc>
     <lastmod>2019-09-04</lastmod>
   </url>  <url>
