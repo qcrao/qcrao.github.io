@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://qcrao.com/2019/09/18/golang-error-break-through/</loc>
+    
+    <lastmod>2019-09-18T04:06:37.499Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://qcrao.com/2019/09/06/go-scheduler-life-of-goroutine/</loc>
     
     <lastmod>2019-09-06T04:18:48.848Z</lastmod>
