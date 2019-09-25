@@ -30,10 +30,10 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>客户端和服务端通信前要进行连接，“3次握手”的作用就是<code>双方都能明确自己和对方的收、发能力是正常的</code>。</p>
 <p><code>第一次握手</code>：客户端发送网络包，服务端收到了。这样服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。</p>
 <p><code>第二次握手</code>：服务端发包，客户端收到了。这样客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。<br>从客户端的视角来看，我接到了服务端发送过来的响应数据包，说明服务端接收到了我在第一次握手时发送的网络包，并且成功发送了响应数据包，这就说明，服务端的接收、发送能力正常。而另一方面，我收到了服务端的响应数据包，说明我第一次发送的网络包成功到达服务端，这样，我自己的发送和接收能力也是正常的。</p>
-<p><code>第三次握手</code>：客户端发包，服务端收到了。这样服务端就能得出结论：客户端的接收、发送能力，服务端的发送、接收能力是正常的。<br>第一、二次握手后，服务端并不知道客户端的接收能力以及自己的发送能力是否正常。而在第三次握手时，服务端收到了客户端对第二次握手作的回应。从服务端的角度，我在第二次握手时的响应数据发送出去了，客户端接收到了。所以，我的发送能力是正常的。而客户端的接收能力也是正常的。</p>
+<p><code>第三次握手</code>：客户端发包，服务端收到了。这样服务端就能得出结论：客户端的接收、发送能力，服务端的发送、接收能力是正常的。<br>第一、二次握手后，服务端并不知道客户端的接收能力以及自己的发送能力是否正常。而在第三次握手时，服务端收到了客户端对第二次握手作的回应。从服务端的角度，我在第二次握手时的响应数据发送出去了，客户端接收到了。所以，我的发送能力是正常的，而客户端的接收能力也是正常的。</p>
 <p>经历了上面的三次握手过程，客户端和服务端都确认了自己的接收、发送能力是正常的。之后就可以正常通信了。</p>
 <p>每次都是接收到数据包的一方可以得到一些结论，发送的一方其实没有任何头绪。我虽然有发包的动作，但是我怎么知道我有没有发出去，而对方有没有接收到呢？</p>
-<p>而从上面的过程可以看到，最少是需要三次握手过程的。两次达不到让双方都得出自己、对方的接收、发送能力都正常的结论。其实每次收到网络包的一方至少是可以得到：对方的发送、我方的接收是正常的。而每一步都是有关联的，下一次的“响应”是由于第一次的“请求”触发，因此每次握手其实是可以得到额外的结论的。比如第三次握手时，服务端收到数据包，表明看服务端只能得到客户端的发送能力、服务端的接收能力是正常的，但是结合第二次，说明服务端在第二次发送的响应包，客户端接收到了，并且作出了响应，从而得到额外的结论：客户端的接收、服务端的发送是正常的。</p>
+<p>而从上面的过程可以看到，最少是需要三次握手过程的。两次达不到让双方都得出自己、对方的接收、发送能力都正常的结论。其实每次收到网络包的一方至少是可以得到：对方的发送、我方的接收是正常的。而每一步都是有关联的，下一次的“响应”是由于第一次的“请求”触发，因此每次握手其实是可以得到额外的结论的。比如第三次握手时，服务端收到数据包，表面看服务端只能得到客户端的发送能力、服务端的接收能力是正常的，但是结合第二次，说明服务端在第二次发送的响应包，客户端接收到了，并且作出了响应，从而得到额外的结论：客户端的接收、服务端的发送是正常的。</p>
 <p>用表格总结一下：</p>
 <table>
 <thead>
@@ -63,8 +63,8 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <h2 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h2><p>TCP连接是双向传输的对等的模式，就是说双方都可以同时向对方发送或接收数据。当有一方要关闭连接时，会发送指令告知对方，我要关闭连接了。这时对方会回一个ACK，此时一个方向的连接关闭。但是另一个方向仍然可以继续传输数据，等到发送完了所有的数据后，会发送一个FIN段来关闭此方向上的连接。接收方发送ACK确认关闭连接。注意，接收到FIN报文的一方只能回复一个ACK, 它是无法马上返回对方一个FIN报文段的，因为结束数据传输的“指令”是上层应用层给出的，我只是一个“搬运工”，我无法了解<code>“上层的意志”</code>。</p>
 <h1 id="“三次握手，四次挥手”怎么完成？"><a href="#“三次握手，四次挥手”怎么完成？" class="headerlink" title="“三次握手，四次挥手”怎么完成？"></a>“三次握手，四次挥手”怎么完成？</h1><p>其实3次握手的目的并不只是让通信双方都了解到一个连接正在建立，还在于利用数据包的选项来传输特殊的信息，交换初始序列号ISN。</p>
 <p>3次握手是指发送了3个报文段，4次挥手是指发送了4个报文段。注意，SYN和FIN段都是会利用重传进行可靠传输的。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/12234098-8604b533d42457b5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="三次握手"></p>
-<h2 id="三次握手-1"><a href="#三次握手-1" class="headerlink" title="三次握手"></a>三次握手</h2><ol>
+<h2 id="三次握手-1"><a href="#三次握手-1" class="headerlink" title="三次握手"></a>三次握手</h2><p><img src="http://upload-images.jianshu.io/upload_images/12234098-8604b533d42457b5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="三次握手"></p>
+<ol>
 <li>客户端发送一个SYN段，并指明客户端的初始序列号，即ISN(c).</li>
 <li>服务端发送自己的SYN段作为应答，同样指明自己的ISN(s)。为了确认客户端的SYN，将ISN(c)+1作为ACK数值。这样，每发送一个SYN，序列号就会加1. 如果有丢失的情况，则会重传。</li>
 <li>为了确认服务器端的SYN，客户端将ISN(s)+1作为返回的ACK数值。</li>
@@ -85,17 +85,17 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <h2 id="序列号回绕"><a href="#序列号回绕" class="headerlink" title="序列号回绕"></a>序列号回绕</h2><p>因为ISN是随机的，所以序列号容易就会超过2^31-1. 而tcp对于丢包和乱序等问题的判断都是依赖于序列号大小比较的。此时就出现了所谓的tcp序列号回绕（sequence wraparound）问题。怎么解决？</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* The next routines deal with comparing 32 bit unsigned ints</span></span><br><span class="line"><span class="comment">* and worry about wraparound (automatic with unsigned arithmetic).</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">before</span><span class="params">(__u32 seq1, __u32 seq2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (__s32)(seq1-seq2) &lt; <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> after(seq2, seq1) before(seq1, seq2)</span></span><br></pre></td></tr></table></figure>
 
-<p>上述代码是内核中的解决回绕问题代码。<strong>s32是有符号整型的意思，而</strong>u32则是无符号整型。序列号发生回绕后，序列号变小，相减之后，把结果变成有符号数了，因此结果成了负数。</p>
+<p>上述是内核中的解决回绕问题代码。<strong>s32是有符号整型的意思，而</strong>u32则是无符号整型。序列号发生回绕后，序列号变小，相减之后，把结果变成有符号数了，因此结果成了负数。</p>
 <figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">假设seq1=<span class="number">255</span>， seq2=<span class="number">1</span>（发生了回绕）。</span><br><span class="line">seq1 = <span class="number">1111</span> <span class="number">1111</span> seq2 = <span class="number">0000</span> <span class="number">0001</span></span><br><span class="line">我们希望比较结果是</span><br><span class="line"> seq1 - seq2=</span><br><span class="line"> <span class="number">1111</span> <span class="number">1111</span></span><br><span class="line"><span class="number">-0000</span> <span class="number">0001</span></span><br><span class="line">-----------</span><br><span class="line"> <span class="number">1111</span> <span class="number">1110</span></span><br><span class="line"></span><br><span class="line">由于我们将结果转化成了有符号数，由于最高位是<span class="number">1</span>，因此结果是一个负数，负数的绝对值为</span><br><span class="line"> <span class="number">0000</span> <span class="number">0001</span> + <span class="number">1</span> = <span class="number">0000</span> <span class="number">0010</span> = <span class="number">2</span></span><br><span class="line"></span><br><span class="line">因此seq1 - seq2 &lt; <span class="number">0</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="syn-flood攻击"><a href="#syn-flood攻击" class="headerlink" title="syn flood攻击"></a>syn flood攻击</h2><p>最基本的DoS攻击就是利用合理的服务请求来占用过多的服务资源，从而使合法用户无法得到服务的响应。syn flood属于Dos攻击的一种。</p>
-<p>如果恶意的向某个服务器端口发送大量的SYN包，则可以使服务器打开大量的半开连接，分配TCB（Transmission Control Block）, 从而消耗大量的服务器资源，同时也使得正常的连接请求无法被相应。当开放了一个TCP端口后，该端口就处于Listening状态，不停地监视发到该端口的Syn报文，一 旦接收到Client发来的Syn报文，就需要为该请求分配一个TCB，通常一个TCB至少需要280个字节，在某些操作系统中TCB甚至需要1300个字节，并返回一个SYN ACK命令，立即转为SYN-RECEIVED即半开连接状态。系统会为此耗尽资源。</p>
+<p>如果恶意的向某个服务器端口发送大量的SYN包，则可以使服务器打开大量的半开连接，分配TCB（Transmission Control Block）, 从而消耗大量的服务器资源，同时也使得正常的连接请求无法被响应。当开放了一个TCP端口后，该端口就处于Listening状态，不停地监视发到该端口的Syn报文，一 旦接收到Client发来的Syn报文，就需要为该请求分配一个TCB，通常一个TCB至少需要280个字节，在某些操作系统中TCB甚至需要1300个字节，并返回一个SYN ACK命令，立即转为SYN-RECEIVED即半开连接状态。系统会为此耗尽资源。</p>
 <p>常见的防攻击方法有：</p>
 <h3 id="无效连接的监视释放"><a href="#无效连接的监视释放" class="headerlink" title="无效连接的监视释放"></a>无效连接的监视释放</h3><p>监视系统的半开连接和不活动连接，当达到一定阈值时拆除这些连接，从而释放系统资源。这种方法对于所有的连接一视同仁，而且由于SYN Flood造成的半开连接数量很大，正常连接请求也被淹没在其中被这种方式误释放掉，因此这种方法属于入门级的SYN Flood方法。</p>
 <h3 id="延缓TCB分配方法"><a href="#延缓TCB分配方法" class="headerlink" title="延缓TCB分配方法"></a>延缓TCB分配方法</h3><p>消耗服务器资源主要是因为当SYN数据报文一到达，系统立即分配TCB，从而占用了资源。而SYN Flood由于很难建立起正常连接，因此，当正常连接建立起来后再分配TCB则可以有效地减轻服务器资源的消耗。常见的方法是使用Syn Cache和Syn Cookie技术。</p>
 <h4 id="Syn-Cache技术"><a href="#Syn-Cache技术" class="headerlink" title="Syn Cache技术"></a>Syn Cache技术</h4><p>系统在收到一个SYN报文时，在一个专用HASH表中保存这种半连接信息，直到收到正确的回应ACK报文再分配TCB。这个开销远小于TCB的开销。当然还需要保存序列号。</p>
 <h4 id="Syn-Cookie技术"><a href="#Syn-Cookie技术" class="headerlink" title="Syn Cookie技术"></a>Syn Cookie技术</h4><p>Syn Cookie技术则完全不使用任何存储资源，这种方法比较巧妙，它使用一种特殊的算法生成Sequence Number，这种算法考虑到了对方的IP、端口、己方IP、端口的固定信息，以及对方无法知道而己方比较固定的一些信息，如MSS(Maximum Segment Size，最大报文段大小，指的是TCP报文的最大数据报长度，其中不包括TCP首部长度。)、时间等，在收到对方 的ACK报文后，重新计算一遍，看其是否与对方回应报文中的（Sequence Number-1）相同，从而决定是否分配TCB资源。</p>
-<h3 id="使用SYN-Proxy防火墙"><a href="#使用SYN-Proxy防火墙" class="headerlink" title="使用SYN Proxy防火墙"></a>使用SYN Proxy防火墙</h3><p>一种方式是防止墙dqywb连接的有效性后，防火墙才会向内部服务器发起SYN请求。防火墙代服务器发出的SYN ACK包使用的序列号为c, 而真正的服务器回应的序列号为c’, 这样，在每个数据报文经过防火墙的时候进行序列号的修改。另一种方式是防火墙确定了连接的安全后，会发出一个safe reset命令，client会进行重新连接，这时出现的syn报文会直接放行。这样不需要修改序列号了。但是，client需要发起两次握手过程，因此建立连接的时间将会延长。</p>
+<h3 id="使用SYN-Proxy防火墙"><a href="#使用SYN-Proxy防火墙" class="headerlink" title="使用SYN Proxy防火墙"></a>使用SYN Proxy防火墙</h3><p>一种方式是确认了连接的有效性后，防火墙才会向内部服务器发起SYN请求。防火墙代服务器发出的SYN ACK包使用的序列号为c, 而真正的服务器回应的序列号为c’, 这样，在每个数据报文经过防火墙的时候进行序列号的修改。另一种方式是防火墙确定了连接的安全后，会发出一个safe reset命令，client会进行重新连接，这时出现的syn报文会直接放行。这样不需要修改序列号了。但是，client需要发起两次握手过程，因此建立连接的时间将会延长。</p>
 <h2 id="连接队列"><a href="#连接队列" class="headerlink" title="连接队列"></a>连接队列</h2><p>在外部请求到达时，被服务程序最终感知到前，连接可能处于SYN_RCVD状态或是ESTABLISHED状态，但还未被应用程序接受。</p>
 <p><img src="http://upload-images.jianshu.io/upload_images/12234098-36b3c46688c685c7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="tcp queue"></p>
 <p>对应地，服务器端也会维护两种队列，处于SYN_RCVD状态的半连接队列，而处于ESTABLISHED状态但仍未被应用程序accept的为全连接队列。如果这两个队列满了之后，就会出现各种丢包的情形。</p>
@@ -135,7 +135,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 </tbody></table>
 <h3 id="全连接队列满了"><a href="#全连接队列满了" class="headerlink" title="全连接队列满了"></a>全连接队列满了</h3><p>当第三次握手时，当server接收到ACK包之后，会进入一个新的叫 accept 的队列。</p>
 <p>当accept队列满了之后，即使client继续向server发送ACK的包，也会不被响应，此时ListenOverflows+1，同时server通过tcp_abort_on_overflow来决定如何返回，0表示直接丢弃该ACK，1表示发送RST通知client；相应的，client则会分别返回<code>read timeout</code> 或者 <code>connection reset by peer</code>。另外，tcp_abort_on_overflow是0的话，server过一段时间再次发送syn+ack给client（也就是重新走握手的第二步），如果client超时等待比较短，就很容易异常了。而客户端收到多个 SYN ACK 包，则会认为之前的 ACK 丢包了。于是促使客户端再次发送 ACK ，在 accept队列有空闲的时候最终完成连接。若 accept队列始终满员，则最终客户端收到 RST 包（此时服务端发送syn+ack的次数超出了tcp_synack_retries）。</p>
-<p>服务端仅仅只是创建一个定时器，以固定间隔重传syn和ack到服务端</p>
+<p>服务端仅仅只是创建一个定时器，以固定间隔重传syn和ack到客户端。</p>
 <table>
 <thead>
 <tr>

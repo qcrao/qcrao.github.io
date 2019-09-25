@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
+    <lastmod>2019-09-25</lastmod>
+  </url>  <url>
+    <loc>https://qcrao.com/2019/01/16/dive-into-three-way-handshake/</loc>
+    <lastmod>2019-09-25</lastmod>
+  </url>  <url>
     <loc>https://qcrao.com/2019/09/18/golang-error-break-through/</loc>
     <lastmod>2019-09-18</lastmod>
   </url>  <url>
@@ -46,9 +52,6 @@
     <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
     <lastmod>2019-07-31</lastmod>
   </url>  <url>
-    <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
-    <lastmod>2019-07-31</lastmod>
-  </url>  <url>
     <loc>https://qcrao.com/2019/01/30/byte-travel-story/</loc>
     <lastmod>2019-07-31</lastmod>
   </url>  <url>
@@ -74,9 +77,6 @@
     <lastmod>2019-07-31</lastmod>
   </url>  <url>
     <loc>https://qcrao.com/2019/06/03/dive-into-go-unsafe/</loc>
-    <lastmod>2019-07-31</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/01/16/dive-into-three-way-handshake/</loc>
     <lastmod>2019-07-31</lastmod>
   </url>  <url>
     <loc>https://qcrao.com/2019/03/13/graphic-go-memory-allocation/</loc>

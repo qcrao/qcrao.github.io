@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
+    
+    <lastmod>2019-09-25T08:46:30.850Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/01/16/dive-into-three-way-handshake/</loc>
+    
+    <lastmod>2019-09-25T08:31:47.110Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://qcrao.com/about/index.html</loc>
     
     <lastmod>2019-09-18T15:57:32.998Z</lastmod>
@@ -128,13 +142,6 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
-    
-    <lastmod>2019-07-31T08:28:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://qcrao.com/2019/01/30/byte-travel-story/</loc>
     
     <lastmod>2019-07-31T08:01:46.000Z</lastmod>
@@ -194,13 +201,6 @@
     <loc>https://qcrao.com/2019/06/03/dive-into-go-unsafe/</loc>
     
     <lastmod>2019-07-31T08:01:28.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/01/16/dive-into-three-way-handshake/</loc>
-    
-    <lastmod>2019-07-31T08:01:25.000Z</lastmod>
     
   </url>
   
