@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://qcrao.com/2019/09/06/dive-into-go-scheduler-source-code/</loc>
+    
+    <lastmod>2019-09-29T03:55:51.119Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
     
     <lastmod>2019-09-25T08:46:30.850Z</lastmod>
@@ -18,217 +25,147 @@
   <url>
     <loc>https://qcrao.com/about/index.html</loc>
     
-    <lastmod>2019-09-18T15:57:32.998Z</lastmod>
+    <lastmod>2019-09-18T15:57:32.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/09/18/golang-error-break-through/</loc>
     
-    <lastmod>2019-09-18T04:06:37.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/09/06/go-scheduler-life-of-goroutine/</loc>
-    
-    <lastmod>2019-09-06T04:18:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/09/06/go-scheduler-what-sysmon-does/</loc>
-    
-    <lastmod>2019-09-06T04:11:12.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/09/06/go-scheduler-cycle-of-schedul/</loc>
-    
-    <lastmod>2019-09-06T04:10:53.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/09/06/go-scheduler-m-finds-work/</loc>
-    
-    <lastmod>2019-09-06T04:09:02.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/09/06/go-scheduler-state-diagram-of-gpm/</loc>
-    
-    <lastmod>2019-09-06T04:08:31.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/09/04/go-scheduler-stack-switch-between-g0-and-user-goroutine/</loc>
-    
-    <lastmod>2019-09-04T13:27:51.567Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/09/04/go-scheduler-start-schedule-cycle/</loc>
-    
-    <lastmod>2019-09-04T13:25:17.873Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/09/04/go-scheduler-the-birth-of-main-goroutine/</loc>
-    
-    <lastmod>2019-09-04T13:24:09.727Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/09/04/go-scheduler-what-is-gpm/</loc>
-    
-    <lastmod>2019-09-04T13:20:24.823Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/09/04/go-scheduler-init/</loc>
-    
-    <lastmod>2019-09-04T13:19:02.481Z</lastmod>
+    <lastmod>2019-09-18T04:06:37.499Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/09/02/dive-into-go-scheduler/</loc>
     
-    <lastmod>2019-09-02T09:07:21.000Z</lastmod>
+    <lastmod>2019-09-02T09:07:21.884Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/03/20/dive-into-go-asm/</loc>
     
-    <lastmod>2019-08-19T01:08:23.230Z</lastmod>
+    <lastmod>2019-08-19T01:08:23.000Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/baidu_verify_HpBdCzQ8Ex.html</loc>
     
-    <lastmod>2019-08-01T11:50:17.000Z</lastmod>
+    <lastmod>2019-08-01T11:50:17.180Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/07/03/how-go-runs/</loc>
     
-    <lastmod>2019-08-01T06:44:24.000Z</lastmod>
+    <lastmod>2019-08-01T06:44:24.934Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/404.html</loc>
     
-    <lastmod>2019-07-31T09:48:21.000Z</lastmod>
+    <lastmod>2019-07-31T09:48:21.962Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
     
-    <lastmod>2019-07-31T09:40:56.000Z</lastmod>
+    <lastmod>2019-07-31T09:40:56.708Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/01/30/byte-travel-story/</loc>
     
-    <lastmod>2019-07-31T08:01:46.000Z</lastmod>
+    <lastmod>2019-07-31T08:01:46.749Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
     
-    <lastmod>2019-07-31T08:01:44.000Z</lastmod>
+    <lastmod>2019-07-31T08:01:44.618Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/07/22/dive-into-go-channel/</loc>
     
-    <lastmod>2019-07-31T08:01:40.000Z</lastmod>
+    <lastmod>2019-07-31T08:01:40.229Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/06/12/dive-into-go-context/</loc>
     
-    <lastmod>2019-07-31T08:01:37.000Z</lastmod>
+    <lastmod>2019-07-31T08:01:37.906Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/04/25/dive-into-go-interface/</loc>
     
-    <lastmod>2019-07-31T08:01:36.000Z</lastmod>
+    <lastmod>2019-07-31T08:01:36.047Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/05/22/dive-into-go-map/</loc>
     
-    <lastmod>2019-07-31T08:01:34.000Z</lastmod>
+    <lastmod>2019-07-31T08:01:34.160Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/05/07/dive-into-go-reflection/</loc>
     
-    <lastmod>2019-07-31T08:01:31.000Z</lastmod>
+    <lastmod>2019-07-31T08:01:31.740Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/04/02/dive-into-go-slice/</loc>
     
-    <lastmod>2019-07-31T08:01:29.000Z</lastmod>
+    <lastmod>2019-07-31T08:01:29.843Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/06/03/dive-into-go-unsafe/</loc>
     
-    <lastmod>2019-07-31T08:01:28.000Z</lastmod>
+    <lastmod>2019-07-31T08:01:28.133Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/03/13/graphic-go-memory-allocation/</loc>
     
-    <lastmod>2019-07-31T08:01:22.000Z</lastmod>
+    <lastmod>2019-07-31T08:01:22.275Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/07/08/how-to-write-resume-gracefully/</loc>
     
-    <lastmod>2019-07-31T08:01:16.000Z</lastmod>
+    <lastmod>2019-07-31T08:01:16.197Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
     
-    <lastmod>2019-07-31T08:01:09.000Z</lastmod>
+    <lastmod>2019-07-31T08:01:09.349Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/categories/index.html</loc>
     
-    <lastmod>2019-07-23T15:24:28.425Z</lastmod>
+    <lastmod>2019-07-23T15:24:28.000Z</lastmod>
     
   </url>
   

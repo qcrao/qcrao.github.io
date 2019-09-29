@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://qcrao.com/2019/09/06/dive-into-go-scheduler-source-code/</loc>
+    <lastmod>2019-09-29</lastmod>
+  </url>  <url>
     <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
     <lastmod>2019-09-25</lastmod>
   </url>  <url>
@@ -9,36 +12,6 @@
   </url>  <url>
     <loc>https://qcrao.com/2019/09/18/golang-error-break-through/</loc>
     <lastmod>2019-09-18</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/09/06/go-scheduler-life-of-goroutine/</loc>
-    <lastmod>2019-09-06</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/09/06/go-scheduler-what-sysmon-does/</loc>
-    <lastmod>2019-09-06</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/09/06/go-scheduler-cycle-of-schedul/</loc>
-    <lastmod>2019-09-06</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/09/06/go-scheduler-m-finds-work/</loc>
-    <lastmod>2019-09-06</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/09/06/go-scheduler-state-diagram-of-gpm/</loc>
-    <lastmod>2019-09-06</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/09/04/go-scheduler-stack-switch-between-g0-and-user-goroutine/</loc>
-    <lastmod>2019-09-04</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/09/04/go-scheduler-start-schedule-cycle/</loc>
-    <lastmod>2019-09-04</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/09/04/go-scheduler-the-birth-of-main-goroutine/</loc>
-    <lastmod>2019-09-04</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/09/04/go-scheduler-what-is-gpm/</loc>
-    <lastmod>2019-09-04</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/09/04/go-scheduler-init/</loc>
-    <lastmod>2019-09-04</lastmod>
   </url>  <url>
     <loc>https://qcrao.com/2019/09/02/dive-into-go-scheduler/</loc>
     <lastmod>2019-09-02</lastmod>
