@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://qcrao.com/2019/11/10/dive-into-go-pprof/</loc>
+    
+    <lastmod>2019-11-10T14:27:40.369Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://qcrao.com/2019/09/06/dive-into-go-scheduler-source-code/</loc>
     
     <lastmod>2019-10-21T01:24:36.145Z</lastmod>
