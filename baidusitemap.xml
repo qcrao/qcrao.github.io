@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://qcrao.com/2019/07/03/how-go-runs/</loc>
+    <lastmod>2019-11-28</lastmod>
+  </url>  <url>
     <loc>https://qcrao.com/2019/05/22/dive-into-go-map/</loc>
     <lastmod>2019-11-15</lastmod>
   </url>  <url>
@@ -30,9 +33,6 @@
   </url>  <url>
     <loc>https://qcrao.com/2019/03/20/dive-into-go-asm/</loc>
     <lastmod>2019-08-19</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/07/03/how-go-runs/</loc>
-    <lastmod>2019-08-01</lastmod>
   </url>  <url>
     <loc>https://qcrao.com/2019/01/30/byte-travel-story/</loc>
     <lastmod>2019-07-31</lastmod>
