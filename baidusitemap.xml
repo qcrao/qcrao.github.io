@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://qcrao.com/2019/07/22/dive-into-go-channel/</loc>
+    <lastmod>2019-12-23</lastmod>
+  </url>  <url>
+    <loc>https://qcrao.com/2019/04/25/dive-into-go-interface/</loc>
+    <lastmod>2019-12-21</lastmod>
+  </url>  <url>
+    <loc>https://qcrao.com/2019/04/02/dive-into-go-slice/</loc>
+    <lastmod>2019-12-21</lastmod>
+  </url>  <url>
+    <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
+    <lastmod>2019-12-21</lastmod>
+  </url>  <url>
+    <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
+    <lastmod>2019-12-21</lastmod>
+  </url>  <url>
     <loc>https://qcrao.com/2019/07/03/how-go-runs/</loc>
     <lastmod>2019-11-28</lastmod>
   </url>  <url>
     <loc>https://qcrao.com/2019/05/22/dive-into-go-map/</loc>
     <lastmod>2019-11-15</lastmod>
   </url>  <url>
-    <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
-    <lastmod>2019-11-14</lastmod>
-  </url>  <url>
     <loc>https://qcrao.com/2019/11/10/dive-into-go-pprof/</loc>
     <lastmod>2019-11-10</lastmod>
   </url>  <url>
     <loc>https://qcrao.com/2019/09/06/dive-into-go-scheduler-source-code/</loc>
     <lastmod>2019-10-21</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/04/02/dive-into-go-slice/</loc>
-    <lastmod>2019-10-10</lastmod>
   </url>  <url>
     <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
     <lastmod>2019-09-25</lastmod>
@@ -40,13 +49,7 @@
     <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
     <lastmod>2019-07-31</lastmod>
   </url>  <url>
-    <loc>https://qcrao.com/2019/07/22/dive-into-go-channel/</loc>
-    <lastmod>2019-07-31</lastmod>
-  </url>  <url>
     <loc>https://qcrao.com/2019/06/12/dive-into-go-context/</loc>
-    <lastmod>2019-07-31</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/04/25/dive-into-go-interface/</loc>
     <lastmod>2019-07-31</lastmod>
   </url>  <url>
     <loc>https://qcrao.com/2019/05/07/dive-into-go-reflection/</loc>
@@ -59,9 +62,6 @@
     <lastmod>2019-07-31</lastmod>
   </url>  <url>
     <loc>https://qcrao.com/2019/07/08/how-to-write-resume-gracefully/</loc>
-    <lastmod>2019-07-31</lastmod>
-  </url>  <url>
-    <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
     <lastmod>2019-07-31</lastmod>
   </url>
 </urlset>
