@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://qcrao.com/2020/02/03/high-performance-mysql-reading-notes-1/</loc>
+    
+    <lastmod>2020-02-03T13:14:16.355Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://qcrao.com/about/index.html</loc>
     
     <lastmod>2020-01-09T14:49:59.000Z</lastmod>
