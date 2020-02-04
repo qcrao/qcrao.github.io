@@ -7,7 +7,9 @@ v0.1, 2019-07-30
 
 最近听了几次曹大的分享，用的讲义非常酷炫，于是也跟风学一下，将来有机会做技术分享的时候也可以来“装”一下。
 
-下面就来记录一些常用的语法。首先得保证满足平时的 MarkdDwn 写作。
+下面就来记录一些常用的语法。首先得保证满足平时的 MarkdDown 写作。
+
+参考：link:{https://meniny.cn/docs/asciidoc}[https://meniny.cn/docs/asciidoc]
 
 == 常用语法
 这一部分能够代替日常 MarkDown 写作。
