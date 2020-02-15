@@ -29,6 +29,31 @@
     
     
     <entry>
+      <title>《高性能 MySQL》读书笔记（二）</title>
+      <link href="/2020/02/03/high-performance-mysql-reading-notes-2/"/>
+      <url>/2020/02/03/high-performance-mysql-reading-notes-2/</url>
+      
+        <content type="html"><![CDATA[<h1 id="《高性能-MySQL》读书笔记（二）"><a href="#《高性能-MySQL》读书笔记（二）" class="headerlink" title="《高性能 MySQL》读书笔记（二）"></a>《高性能 MySQL》读书笔记（二）</h1><p>标签（空格分隔）： mysql</p><hr><p>本文是《高性能 MySQL》第四章的读书笔记。</p><h1 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h1><p>选择正确的数据类型对于获得高性能至关重要，几个原则：</p><p><code>更小的通常更好</code>：尽量选择能正确存储数据的最小数据类型。<br><code>简单就好</code>：简单数据类型的操作通常需要更小的数据周期。例如，整型优于字符串，使用整型而非字符串来存储 ip。<br><code>尽量避免 NULL</code>：NULL 使得索引、索引统计、值比较都比较复杂；需要更多的存储空间；需要特殊处理。</p><p>关于数据类型，整理了一个思维导图：</p><p><img src="https://user-images.githubusercontent.com/7698088/73602178-5588b180-45aa-11ea-929b-59e020539d99.png" alt="数据类型"></p><p>设计表的时候有一些陷阱要避免：</p><ol><li>太多的列。</li><li>太多的关联。单个查询最好在 12 个表以内做关联。</li><li>全能的枚举。防止过度使用枚举。</li><li>变相的枚举。</li><li>非此发明的 NULL。避免使用 NULL，但也不要走极端。</li></ol><h1 id="范式和反范式"><a href="#范式和反范式" class="headerlink" title="范式和反范式"></a>范式和反范式</h1><p>在范式化的数据库中，每个事实数据都会出现并且只出现一次，相反，在反范式化的数据中，信息是冗余的，可能会存储在多个地方。</p><p>范式化的好处：</p><ul><li>范式化的更新操作通常比反范式化要快。</li><li>当数据较好地范式化时，只有很少或者没有重复数据，所以只需要修改更少的数据。</li><li>范式化的表通常更小，可以更好地放在内存里，所以执行操作会更快。</li><li>很少有多余的数据意味着检索列表数据时更少需要 <code>DISTINCT</code> 或者 <code>GROUP BY</code> 语句。</li></ul><p>范式化的缺点：</p><ul><li>范式化设计的 schema 的缺点是通常需要关联。</li><li>范式化可能将列存放在不同的表中，而这些列如果在一个表中本可以属于同一个索引。</li></ul><p>反范式的优点：</p><ul><li>数据通常在一张表中，可以很好地避免关联。</li><li>单独的表也能使用更有效的索引策略。</li></ul><p>真实世界中，经常混用范式化和反范式化设计。最常见的反范式化数据的方法是复制或者缓存，在不同的表中存储相同的特定列。实现上可以使用触发器更新缓存值，例如需要统计每个用户发了多少条消息，可以在 <code>user</code> 表中建一个 <code>num_messages</code> 列，每当用户发送消息时更新这个值。</p><h1 id="缓存表和汇总表"><a href="#缓存表和汇总表" class="headerlink" title="缓存表和汇总表"></a>缓存表和汇总表</h1><p>为了提升读查询的速度，经常会需要一些额外索引，增加冗余列，甚至是创建缓存表和汇总表。这些方法虽然会增加写查询的负担，也需要额外的维护任务，但在设计高性能数据库时，这些都是常见的技巧：虽然写操作变慢了，同时还增加了读操作和写操作的开发难度，但是显著地提高了读操作的性能。</p><p>当重建汇总表和缓存表时，通常需要保证数据在操作时依然可用。这就需要通过使用“影子表”来实现，“影子表”指的是一张在真实表“背后”创建的表。当完成了建表操作后，可以通过一个原子的重命名操作切换影子表和原表。</p><p>例如，需要重建 <code>my_summary</code>，可以先创建 <code>my_summary_new</code>，然后真充好数据，最后和真实表做切换：</p><p><img src="https://user-images.githubusercontent.com/7698088/74589333-50fad900-503f-11ea-8f6d-a75d70a0f739.png" alt="影子表"></p><p>在将 <code>my_summary</code> 这个名字分配给新建的表之前将原始的 <code>my_summary</code> 表重命名为 <code>my_summary_old</code>，就可以在下一次重建之前一直保留旧版本的数据。如果新表有问题，可以很容易地进行快速回滚操作。</p><h1 id="加速-ALTER-TABLE-操作"><a href="#加速-ALTER-TABLE-操作" class="headerlink" title="加速 ALTER TABLE 操作"></a>加速 ALTER TABLE 操作</h1><p>MySQL 的 ALTER TABLE 操作的性能对大表来说是个大问题。MySQL 执行大部分修改表结构操作的方法是用新的结构创建一个空表，从旧表中查出所有数据插入新表，然后删除旧表。这样操作可能会花费很长时间，如果内存不足而表又很大，而且有很多索引的情况下尤其如此。</p><p>一般而言，大部分 ALTER TABLE 操作将导致 MySQL 服务中断。</p><p>对常见的场景，有两种技巧：</p><ul><li>先在一台不提供服务的机器上执行 ALTER TABLE 操作，然后和提供服务的主库进行切换。</li><li>影子拷贝。用要求的表结构创建一张和源表无关的新表，然后通过重命名和删表操作交换两张表。</li></ul><p>不是所有的 ALTER TABLE 操作都会引起表重建。例如，有两种方法可以改变或者删除一个列的默认值。一种很慢：</p><p><img src="https://user-images.githubusercontent.com/7698088/74589542-1a25c280-5041-11ea-820b-b6ec6e6c56c4.png" alt="很慢"></p><p>因为所有的 MODIFY COLUMN 操作都将导致表重建。</p><p>另一种则很快，它无需要改动表本身，只用修改 <code>.frm</code> 文件，因为列的默认值实际上就存在表的 <code>.frm</code> 中。<br><img src="https://user-images.githubusercontent.com/7698088/74589550-2447c100-5041-11ea-9fe4-fb0372938b0b.png" alt="很快"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 数据库 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> MySQL </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>深度解密Go语言之 pprof</title>
       <link href="/2019/11/10/dive-into-go-pprof/"/>
       <url>/2019/11/10/dive-into-go-pprof/</url>
