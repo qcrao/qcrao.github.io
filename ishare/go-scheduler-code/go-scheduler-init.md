@@ -326,7 +326,7 @@ ANDQ	$~15, SP
 
 为什么要这么做？画一张图就明白了。不过先得说明一点，前面 `_rt0_amd64_linux` 函数里讲过，DI 里存的是 argc 的值，8 个字节，而 SI 里则存的是 argv 的地址，8 个字节。
 
-![SP 内存对齐]](https://user-images.githubusercontent.com/7698088/64070957-8eda8f80-cca1-11e9-91c7-0b276d7769ea.png)
+![SP 内存对齐](https://user-images.githubusercontent.com/7698088/64070957-8eda8f80-cca1-11e9-91c7-0b276d7769ea.png)
 
 ![SP 内存对齐](https://user-images.githubusercontent.com/7698088/64070959-a0239c00-cca1-11e9-8ad9-c3aefc5093f8.png)
 
