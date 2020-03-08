@@ -133,7 +133,7 @@ func gostartcall(buf *gobuf, fn, ctxt unsafe.Pointer) {
 *(*uintptr)(unsafe.Pointer(sp)) = buf.pc
 ```
 
-原来 buf.pc 只是做了一个搬运工，搞什么啊。重新设置 buf.sp 为送减掉一个指针位置之后的值，设置 buf.pc 为 fn，指向要执行的函数，这里就是指的 runtime.main 函数。
+原来 buf.pc 只是做了一个搬运工，搞什么啊。重新设置 buf.sp 为减掉一个指针位置之后的值，设置 buf.pc 为 fn，指向要执行的函数，这里就是指的 runtime.main 函数。
 
 对嘛，这才是应有的操作。之后，当调度器“光顾”此 goroutine 时，取出 buf.sp 和 buf.pc，恢复 CPU 相应的寄存器，就可以构造出 goroutine 的运行环境。
 

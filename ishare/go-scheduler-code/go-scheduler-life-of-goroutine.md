@@ -195,7 +195,7 @@ TEXT runtime·mcall(SB), NOSPLIT, $0-8
     JMP AX
     // 把 g0 的地址设置到线程本地存储中
     MOVQ    SI, g(CX)   // g = m->g0
-    // 从 g 的栈切换到了 g0 的栈D
+    // 从 g 的栈切换到了 g0 的栈
     MOVQ    (g_sched+gobuf_sp)(SI), SP  // sp = m->g0->sched.sp
     // AX = g，参数入栈
     PUSHQ   AX

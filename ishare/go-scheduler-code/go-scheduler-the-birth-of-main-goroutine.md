@@ -41,7 +41,7 @@ MOVL	$0xf1, 0xf1  // crash
 RET
 ```
 
-代码前面几行是在为调用 newproc 函数构“造栈”，执行完 `runtime·newproc(SB)` 后，就会以一个新的 goroutine 来执行 mainPC 也就是 `runtime.main()` 函数。`runtime.main()` 函数最终会执行到我们写的 main 函数，舞台交给我们。
+代码前面几行是在为调用 newproc 函数构造栈，执行完 `runtime·newproc(SB)` 后，就会以一个新的 goroutine 来执行 mainPC 也就是 `runtime.main()` 函数。`runtime.main()` 函数最终会执行到我们写的 main 函数，舞台交给我们。
 
 重点来看 `newproc` 函数：
 
@@ -86,6 +86,7 @@ func main()
 继续看代码，newproc 函数的第二个参数：
 
 ```golang
+// src/runtime/runtime2.go:195
 type funcval struct {
 	fn uintptr
 	// variable-size, fn-specific data here

@@ -469,7 +469,7 @@ g0.m = &m0
 
 于是，前面的图又增加了新的玩伴 m0：
 
-![工作线程绑定 m0，g0](https://user-images.githubusercontent.com/7698088/64071132-bcc1d300-cca5-11e9-9d63-037cef865090.png)
+![工作线程绑定 m0，g0](https://user-images.githubusercontent.com/7698088/75735730-54c47600-5d36-11ea-912a-7ab8dcbda1dc.png)
 
 # 初始化 m0
 ```golang
@@ -486,7 +486,7 @@ CALL	runtime·schedinit(SB)
 
 L1-L2 将 16(SP) 处的内容移动到 0(SP)，也就是栈顶，通过前面的图，16(SP) 处的内容为 argc；L3-L4 将 argv 存入 8(SP)，接下来调用 `runtime·args` 函数，处理命令行参数。
 
-接着，连续调用了两个 runtime 函数。osinit 函数初始化系统核心数，将全局变量 ncpu 初始化的核心数，schedinit 则是本文的核心：调度器的初始化。
+接着，连续调用了两个 runtime 函数。osinit 函数初始化系统核心数，将全局变量 ncpu 初始化为核心数，schedinit 则是本文的核心：调度器的初始化。
 
 下面，我们来重点看 schedinit 函数：
 
@@ -560,7 +560,7 @@ func schedinit() {
 
 1. call osinit。初始化系统核心数。
 2. call schedinit。初始化调度器。
-3. make & queue new G。创建新的 goroutine。
+3. make & queue new G。创建并入队新的 goroutine。
 4. call runtime·mstart。调用 mstart，启动调度。
 5. The new G calls runtime·main。在新的 goroutine 上运行 runtime.main 函数。
 
