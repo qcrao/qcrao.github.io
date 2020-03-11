@@ -6,7 +6,7 @@ v1.0, 2020-03-11
 
 == 《Go 夜读》介绍
 
-image::https://user-images.githubusercontent.com/7698088/67085429-62d38900-f1d1-11e9-9011-5c5a1f5d08ba.png[Go 夜读微信公众号]
+image::https://user-images.githubusercontent.com/7698088/67085429-62d38900-f1d1-11e9-9011-5c5a1f5d08ba.png[width="300", height="200"]
 
 image::https://raw.githubusercontent.com/developer-learning/reading-go/master/static/images/allcontributors-night-reading-go-20191107.jpg[https://allcontributors.org/]
 
@@ -1280,13 +1280,13 @@ schedule() -> execute() -> gogo() -> goroutine 任务 -> goexit() -> goexit1() -
 ## GPM 状态机
 先从最简单的 M 看起：
 
-image::https://user-images.githubusercontent.com/7698088/64058333-09d97280-cbdc-11e9-8a4d-1843d5be88d0.png[M 的状态流转图]
+image::https://user-images.githubusercontent.com/7698088/64058333-09d97280-cbdc-11e9-8a4d-1843d5be88d0.png[M 的状态流转图, width="500"]
 
 M 只有自旋和非自旋两种状态。自旋的时候，会努力找工作；找不到的时候会进入非自旋状态，之后会休眠，直到有工作需要处理时，被其他工作线程唤醒，又进入自旋状态。
 
 再来看 P，P 的数量一般不会发生变化，有多少个逻辑核心，就有多少个 P：
 
-image::https://user-images.githubusercontent.com/7698088/64058164-93d40c00-cbd9-11e9-9095-7bc7248a0fb9.png[P 的状态流转图]
+image::https://user-images.githubusercontent.com/7698088/64058164-93d40c00-cbd9-11e9-9095-7bc7248a0fb9.png[P 的状态流转图, width="500"]
 
  通常情况下（在程序运行时不调整 P 的个数），P 只会在上图中的四种状态下进行切换。 当程序刚开始运行进行初始化时，所有的 P 都处于 `_Pgcstop` 状态， 随着 P 的初始化（`runtime.procresize`），会被置于 `_Pidle`。
 
@@ -1298,10 +1298,7 @@ image::https://user-images.githubusercontent.com/7698088/64058164-93d40c00-cbd9-
 
 最后是 G：
 
-image::https://user-images.githubusercontent.com/7698088/64057782-d98dd600-cbd3-11e9-918d-8320fd9609c0.png[G 的状态流转图]
-
-# 其他一些点
-NOTE: 对正在进行系统调用的 goroutine 的抢占实质上是剥夺与其对应的工作线程所绑定的 P。
+image::https://user-images.githubusercontent.com/7698088/64057782-d98dd600-cbd3-11e9-918d-8320fd9609c0.png[G 的状态流转图, width="500"]
 
 
 # 参考资料
