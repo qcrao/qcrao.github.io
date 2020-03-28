@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://qcrao.com/2019/11/10/dive-into-go-pprof/</loc>
+    
+    <lastmod>2020-03-28T03:02:44.285Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
     
     <lastmod>2020-03-23T01:33:15.845Z</lastmod>
@@ -75,13 +82,6 @@
     <loc>https://qcrao.com/2019/05/22/dive-into-go-map/</loc>
     
     <lastmod>2019-11-15T07:19:05.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/11/10/dive-into-go-pprof/</loc>
-    
-    <lastmod>2019-11-10T14:27:40.000Z</lastmod>
     
   </url>
   
