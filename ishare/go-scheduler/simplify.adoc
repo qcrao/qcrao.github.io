@@ -332,11 +332,11 @@ go func() {
 
 ## 源码阅读
 
-### 重要的结构体
+== 重要的结构体
 
 文件位置：src/runtime/runtime2.go
 
-#### g
+=== g
 万变不离其宗，系统线程对 goroutine 的调度与内核对系统线程的调度原理是一样的，实质都是通过保存和修改 CPU 寄存器的值来达到切换线程或 goroutine 的目的。
 
 `g` 的结构体，保存了 `goroutine` 的所有信息。调度器代码可以通过 g 对象来对 goroutine 进行调度，当 goroutine 被调离 CPU 时，调度器代码负责把 CPU 寄存器的值保存在 g 对象的成员变量之中，当 goroutine 被调度起来运行时，调度器代码又负责把 g 对象的成员变量所保存的寄存器的值恢复到 CPU 的寄存器。
@@ -348,7 +348,7 @@ type g struct {
 ```
 
 
-#### p
+=== p
 
 `p` 结构体用于保存工作线程执行 `go` 代码时所必需的资源，比如 `goroutine` 的运行队列，内存分配用到的缓存等等。
 
@@ -358,7 +358,7 @@ type p struct {
 }
 ```
 
-#### m
+=== m
 
 每个工作线程在刚刚被创建出来进入调度循环之前就利用线程本地存储机制为该工作线程实现了一个指向 m 结构体实例对象的私有全局变量，这样在之后的代码中就使用该全局变量来访问自己的 m 结构体对象以及与 m 相关联的 p 和 g 对象。
 
@@ -370,7 +370,7 @@ type m struct {
 }
 ```
 
-#### stack
+=== stack
 
 `stack` 结构体主要用来记录 `goroutine` 所使用的栈的信息，包括栈顶和栈底位置：
 
@@ -384,7 +384,7 @@ type stack struct {
 }
 ```
 
-#### gobuf
+=== gobuf
 
 `gobuf` 结构体用于保存 `goroutine` 的调度信息，主要包括 `CPU` 的几个寄存器的值：
 
@@ -400,7 +400,7 @@ type gobuf struct {
 }
 ```
 
-#### schedt
+=== schedt
 
 `schedt` 结构体用来保存调度器的状态信息和 `goroutine` 的全局运行队列。
 
@@ -410,7 +410,7 @@ type schedt struct {
 }
 ```
 
-#### 一些全局变量
+=== 一些全局变量
 
 ```c
 var (
@@ -430,7 +430,7 @@ var (
 )
 ```
 
-### 调度器初始化
+== 调度器初始化
 
 任何一个由编译型语言（不管是C，C++，go还是汇编语言）所编写的程序在被操作系统加载起来运行时都会顺序经过如下几个阶段：link:https://mp.weixin.qq.com/s?__biz=MzU1OTg5NDkzOA==&mid=2247483769&idx=1&sn=3d77609a293d87e64639afc8d2219e1c&scene=19#wechat_redirect[出处]
 
@@ -457,7 +457,7 @@ TEXT _rt0_amd64_linux(SB),NOSPLIT,$-8
 
 `runtime·rt0_go` 执行完成之后，整个 Go 程序就可以跑起来了，是非常核心的代码。
 
-#### 调整 SP
+=== 调整 SP
 第一段代码，将 SP 调整到了一个地址是 16 的倍数的位置：
 
 ```asm
@@ -484,7 +484,7 @@ image::https://user-images.githubusercontent.com/7698088/64070959-a0239c00-cca1-
 
 至于为什么进行 16 个字节对齐，是因为 CPU 有一组 SSE 指令，这些指令中出现的内存地址必须是 16 的倍数。
 
-#### 初始化 g0 栈
+=== 初始化 g0 栈
 接着往后看，开始初始化 g0 的栈了。g0 栈的作用就是为运行 runtime 代码提供一个“环境”。
 
 ```asm
@@ -508,7 +508,7 @@ MOVQ	SP, (g_stack+stack_hi)(DI)
 
 image::https://user-images.githubusercontent.com/7698088/64071133-d400c080-cca5-11e9-8563-d5f882e34e0a.png[g0 栈空间]
 
-### 主线程绑定 m0
+== 主线程绑定 m0
 
 因为 m0 是全局变量，而 m0 又要绑定到工作线程才能执行。
 
@@ -557,7 +557,7 @@ IMPORTANT: 工作线程代码就可以通过 fs 寄存器来找到 m.tls。
 
 image::https://user-images.githubusercontent.com/7698088/75735730-54c47600-5d36-11ea-912a-7ab8dcbda1dc.png[工作线程绑定 m0，g0]
 
-#### 初始化 m0
+=== 初始化 m0
 
 ```c
 // src/runtime/proc.go:532
@@ -615,7 +615,7 @@ image::https://user-images.githubusercontent.com/7698088/63501720-bcd00f00-c4fe-
 
  从这个函数的源代码可以看出，`mcommoninit` 并未对 m0 做什么关于调度相关的初始化，所以可以简单的认为这个函数只是把 m0 放入全局链表 allm 之中就返回了。
 
-#### 初始化 allp
+=== 初始化 allp
 
 回到 `schedinit()` 函数里来，跳过一些其他的初始化代码，继续往后看：
 
@@ -720,7 +720,7 @@ stealOrder.reset(uint32(nprocs))
 
 image::https://user-images.githubusercontent.com/7698088/64071128-97cd6000-cca5-11e9-95a9-344f2a0a6474.png[g0-p0-m0]
 
-### 创建 main goroutine
+== 创建 main goroutine
 
 上一节我们讲完了 Go scheduler 的初始化，现在调度器一切就绪，就差被调度的实体了。本节就来讲述 main goroutine 是如何诞生，并且被调度的。
 
@@ -1034,7 +1034,7 @@ image::https://user-images.githubusercontent.com/7698088/64071321-699e4f00-ccaa-
  2. 其次，newg 已经放入与当前主线程绑定的 p 结构体对象的本地运行队列，因为它是第一个真正意义上的 goroutine，还没有其它 goroutine，所以它被放在了本地运行队列的头部；
  3. 最后，newg 的 m 成员为 nil，因为它还没有被调度起来运行，也就没有跟任何 m 进行绑定。
 
-### 开始调度循环
+== 开始调度循环
 
 前面创建了一个 goroutine，设置好了 sched 成员的 sp 和 pc 字段，并且将其添加到了 p0 的本地可运行队列，坐等调度器的调度。
 

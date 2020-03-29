@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://qcrao.com/2020/03/08/high-performance-mysql-reading-notes/</loc>
+    
+    <lastmod>2020-03-29T14:14:06.292Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://qcrao.com/2019/11/10/dive-into-go-pprof/</loc>
     
     <lastmod>2020-03-28T03:02:44.285Z</lastmod>
@@ -12,13 +19,6 @@
     <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
     
     <lastmod>2020-03-23T01:33:15.845Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/03/08/high-performance-mysql-reading-notes/</loc>
-    
-    <lastmod>2020-03-22T15:32:44.357Z</lastmod>
     
   </url>
   
