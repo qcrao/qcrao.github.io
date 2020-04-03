@@ -4,7 +4,32 @@
   
     
     <entry>
-      <title>defer 链表如何被遍历</title>
+      <title>聊聊 g0</title>
+      <link href="/2020/04/03/talk-about-g0/"/>
+      <url>/2020/04/03/talk-about-g0/</url>
+      
+        <content type="html"><![CDATA[<p>很多时候，当我们跟着源码去理解某种事物时，基本上可以认为是以时间顺序展开，这是编年体的逻辑。还有另一种逻辑，纪传体，它以人物为中心编排史事，使得读者更聚焦于某个人物。以一种新的视角，把所有的事情串连起来，令人大呼过瘾。今天我们试着以这样一种逻辑再看 g0。</p><p>回顾一下 Go 夜读<a href="https://mp.weixin.qq.com/s/Yr4L2pt-__CK7Q7JVz_guw" target="_blank" rel="noopener">第 78 期</a>，关于调度器源码分析的内容。我们讲过，与主线程绑定的 M 对应的 g0 的主要作用是提供一个比一般 goroutine 要大的多栈（64K）供 runtime 代码执行。</p><p>初始化的过程中，在函数 <code>runtime·rt0_go</code> 里会给主线程的 g0 分配栈空间：</p><p><img src="https://user-images.githubusercontent.com/7698088/64071133-d400c080-cca5-11e9-8563-d5f882e34e0a.png" alt="g0 栈空间"></p><p>之后，主线程会与 m0 绑定，m0 又与 g0 绑定：</p><p><img src="https://user-images.githubusercontent.com/7698088/75735730-54c47600-5d36-11ea-912a-7ab8dcbda1dc.png" alt="主线程绑定 m0，g0"></p><p>之后，又与 p0 绑定：</p><p><img src="https://user-images.githubusercontent.com/7698088/64071128-97cd6000-cca5-11e9-95a9-344f2a0a6474.png" alt="g0-p0-m0"></p><p>这样，主线程的这一套 GPM 就可以转起来了。接着，就创建了 main goroutine，放入 p0 的本地待运行队列。最后，通过 <code>schedule()</code> 函数进入调度循环。</p><p>前面说的是程序初始化的过程中，g0 是如何诞生的。当执行到 <code>main.main()</code> 函数，也说是用户在 main 包下写的 main 函数里，我们随手一句：</p><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 要做的事</span></span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure><p>就启动了一个 goroutine 时，在 Go 编译器的作用下，最终会转化成 newproc 函数。在 newproc 函数的内部，会在 g0 栈上调用 <code>newproc1</code> 函数，完成后续的工作。创建完成后，会将新创建的 goroutine 放入 <code>_p_</code> 的本地待运行队列。</p><p>因为新增加了一个 g，这时会尝试去唤醒一个 P 来一起执行任务。判断条件是：</p><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> atomic.Load(&amp;sched.npidle) != <span class="number">0</span> &amp;&amp; atomic.Load(&amp;sched.nmspinning) == <span class="number">0</span> &amp;&amp; mainStarted &#123;</span><br><span class="line">wakep()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>即在有空闲 P 以及没有正在“找工作的 M”的情况下，才会尝试去唤醒一个 P。我们又知道，其实 P 的数量在程序运行过程中一般不会变化，所以这里所谓的唤醒其实就是把空闲的 P 利用起来。</p><p>通过 <code>wakep() -&gt; startm() -&gt; newm() -&gt; allocm() -&gt; malg()</code> 这条链路创建 g0，这里 g0 的栈大小实际上为 <code>8KB</code>。</p><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mp.g0 = malg(<span class="number">8192</span> * sys.StackGuardMultiplier) <span class="comment">// sys.StackGuardMultiplier 在 linux 里为 1</span></span><br></pre></td></tr></table></figure><p><code>g0</code> 作为一个特殊的 goroutine，为 scheduler 执行调度循环提供了场地（栈）。对于一个线程来说，g0 总是它第一个创建的 goroutine。之后，它会不断地寻找其他普通的 goroutine 来执行，直到进程退出。</p><p>当需要执行一些任务，且不想扩栈时，就可以用到 g0 了，因为 g0 的栈比较大。g0 其他的一些“职责”有：创建 goroutine、deferproc 函数里新建 _defer、垃圾回收相关的工作（例如 stw、扫描 goroutine 的执行栈、一些标识清扫的工作、栈增长）等等。</p><p>因为 g0 这样一个特殊的 goroutine 所做的工作，使得 Go 程序运行地更快。</p><p>注：最近在 medium 上看到了一个非常赞的关于 Go 的<a href="https://medium.com/a-journey-with-go" target="_blank" rel="noopener">博客</a>，题图画得很有阅读的欲望。这篇文章也是参考于<a href="https://medium.com/a-journey-with-go/go-g0-special-goroutine-8c778c6704d8" target="_blank" rel="noopener">其中的一篇</a>。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 编程语言 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> golang </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>defer 链表如何被遍历执行</title>
       <link href="/2020/03/23/how-to-traverse-defer-links/"/>
       <url>/2020/03/23/how-to-traverse-defer-links/</url>
       
