@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://qcrao.com/2020/04/20/dive-into-go-sync-pool/</loc>
+    <loc>https://qcrao.com/2020/05/06/dive-into-go-sync-map/</loc>
     <lastmod>2020-05-06</lastmod>
   </url>  <url>
-    <loc>https://qcrao.com/2020/05/06/dive-into-go-sync-map/</loc>
+    <loc>https://qcrao.com/2020/04/20/dive-into-go-sync-pool/</loc>
     <lastmod>2020-05-06</lastmod>
   </url>  <url>
     <loc>https://qcrao.com/2020/04/27/accident/</loc>
