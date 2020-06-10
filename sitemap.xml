@@ -2,205 +2,205 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
-    
-    <lastmod>2020-06-10T03:26:13.897Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/04/03/talk-about-g0/</loc>
-    
-    <lastmod>2020-06-10T03:26:13.602Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://qcrao.com/2020/06/07/linux-performance-reading-notes/</loc>
     
-    <lastmod>2020-06-10T03:26:11.806Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/07/08/how-to-write-resume-gracefully/</loc>
-    
-    <lastmod>2020-06-10T03:26:11.804Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
-    
-    <lastmod>2020-06-10T03:26:09.995Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
-    
-    <lastmod>2020-06-10T03:26:06.135Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/07/03/how-go-runs/</loc>
-    
-    <lastmod>2020-06-10T03:26:05.988Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/03/08/high-performance-mysql-reading-notes/</loc>
-    
-    <lastmod>2020-06-10T03:26:01.765Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/05/10/head-first-design-pattern-reading-notes/</loc>
-    
-    <lastmod>2020-06-10T03:25:52.249Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/03/13/graphic-go-memory-allocation/</loc>
-    
-    <lastmod>2020-06-10T03:25:40.158Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/09/18/golang-error-break-through/</loc>
-    
-    <lastmod>2020-06-10T03:25:38.849Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/01/16/dive-into-three-way-handshake/</loc>
-    
-    <lastmod>2020-06-10T03:25:38.718Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
-    
-    <lastmod>2020-06-10T03:25:38.565Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/06/03/dive-into-go-unsafe/</loc>
-    
-    <lastmod>2020-06-10T03:25:33.537Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/04/20/dive-into-go-sync-pool/</loc>
-    
-    <lastmod>2020-06-10T03:25:32.891Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/05/06/dive-into-go-sync-map/</loc>
-    
-    <lastmod>2020-06-10T03:25:31.994Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/04/02/dive-into-go-slice/</loc>
-    
-    <lastmod>2020-06-10T03:25:31.825Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/09/02/dive-into-go-scheduler/</loc>
-    
-    <lastmod>2020-06-10T03:25:30.092Z</lastmod>
+    <lastmod>2020-06-10T04:10:20.540Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/09/06/dive-into-go-scheduler-source-code/</loc>
     
-    <lastmod>2020-06-10T03:25:27.956Z</lastmod>
+    <lastmod>2020-06-10T03:56:03.453Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/04/03/talk-about-g0/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.666Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.666Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.665Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.665Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/07/08/how-to-write-resume-gracefully/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.665Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/03/08/high-performance-mysql-reading-notes/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.664Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/07/03/how-go-runs/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.664Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/09/18/golang-error-break-through/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.663Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/05/10/head-first-design-pattern-reading-notes/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.663Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/03/13/graphic-go-memory-allocation/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.663Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/01/16/dive-into-three-way-handshake/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.662Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.662Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/06/03/dive-into-go-unsafe/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.661Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/04/20/dive-into-go-sync-pool/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.660Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/09/02/dive-into-go-scheduler/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.659Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/04/02/dive-into-go-slice/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.659Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/05/06/dive-into-go-sync-map/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.659Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/05/07/dive-into-go-reflection/</loc>
     
-    <lastmod>2020-06-10T03:25:27.955Z</lastmod>
+    <lastmod>2020-06-10T03:48:28.658Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/11/10/dive-into-go-pprof/</loc>
     
-    <lastmod>2020-06-10T03:25:26.056Z</lastmod>
+    <lastmod>2020-06-10T03:48:28.657Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/05/22/dive-into-go-map/</loc>
     
-    <lastmod>2020-06-10T03:25:23.213Z</lastmod>
+    <lastmod>2020-06-10T03:48:28.657Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/04/25/dive-into-go-interface/</loc>
     
-    <lastmod>2020-06-10T03:25:20.505Z</lastmod>
+    <lastmod>2020-06-10T03:48:28.656Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/06/12/dive-into-go-context/</loc>
     
-    <lastmod>2020-06-10T03:25:20.095Z</lastmod>
+    <lastmod>2020-06-10T03:48:28.655Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/07/22/dive-into-go-channel/</loc>
     
-    <lastmod>2020-06-10T03:25:19.151Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/03/20/dive-into-go-asm/</loc>
-    
-    <lastmod>2020-06-10T03:25:13.654Z</lastmod>
+    <lastmod>2020-06-10T03:48:28.655Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2020/04/27/codec-accident/</loc>
     
-    <lastmod>2020-06-10T03:25:12.828Z</lastmod>
+    <lastmod>2020-06-10T03:48:28.654Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
+    <loc>https://qcrao.com/2019/03/20/dive-into-go-asm/</loc>
     
-    <lastmod>2020-06-10T03:25:08.995Z</lastmod>
+    <lastmod>2020-06-10T03:48:28.654Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/01/30/byte-travel-story/</loc>
     
-    <lastmod>2020-06-10T03:25:07.665Z</lastmod>
+    <lastmod>2020-06-10T03:48:28.653Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.653Z</lastmod>
     
   </url>
   
