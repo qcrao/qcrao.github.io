@@ -4,14 +4,21 @@
   <url>
     <loc>https://qcrao.com/2020/06/07/linux-performance-reading-notes/</loc>
     
-    <lastmod>2020-06-21T13:36:36.740Z</lastmod>
+    <lastmod>2020-06-23T15:18:00.805Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2020/05/10/head-first-design-pattern-reading-notes/</loc>
     
-    <lastmod>2020-06-20T02:27:30.305Z</lastmod>
+    <lastmod>2020-06-23T15:15:46.381Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/06/07/linux-performance-reading-notes/</loc>
+    
+    <lastmod>2020-06-23T15:15:09.255Z</lastmod>
     
   </url>
   
@@ -23,14 +30,14 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2020/04/03/talk-about-g0/</loc>
+    <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
     
     <lastmod>2020-06-10T03:48:28.666Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
+    <loc>https://qcrao.com/2020/04/03/talk-about-g0/</loc>
     
     <lastmod>2020-06-10T03:48:28.666Z</lastmod>
     
@@ -86,14 +93,14 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
+    <loc>https://qcrao.com/2019/01/16/dive-into-three-way-handshake/</loc>
     
     <lastmod>2020-06-10T03:48:28.662Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/01/16/dive-into-three-way-handshake/</loc>
+    <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
     
     <lastmod>2020-06-10T03:48:28.662Z</lastmod>
     
@@ -177,13 +184,6 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/03/20/dive-into-go-asm/</loc>
-    
-    <lastmod>2020-06-10T03:48:28.654Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://qcrao.com/2020/04/27/codec-accident/</loc>
     
     <lastmod>2020-06-10T03:48:28.654Z</lastmod>
@@ -191,14 +191,21 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/01/30/byte-travel-story/</loc>
+    <loc>https://qcrao.com/2019/03/20/dive-into-go-asm/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.654Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
     
     <lastmod>2020-06-10T03:48:28.653Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
+    <loc>https://qcrao.com/2019/01/30/byte-travel-story/</loc>
     
     <lastmod>2020-06-10T03:48:28.653Z</lastmod>
     
