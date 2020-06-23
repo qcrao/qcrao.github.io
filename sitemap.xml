@@ -16,23 +16,9 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2020/06/07/linux-performance-reading-notes/</loc>
-    
-    <lastmod>2020-06-23T15:15:09.255Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://qcrao.com/2019/09/06/dive-into-go-scheduler-source-code/</loc>
     
     <lastmod>2020-06-10T03:56:03.453Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
-    
-    <lastmod>2020-06-10T03:48:28.666Z</lastmod>
     
   </url>
   
@@ -44,9 +30,9 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
+    <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
     
-    <lastmod>2020-06-10T03:48:28.665Z</lastmod>
+    <lastmod>2020-06-10T03:48:28.666Z</lastmod>
     
   </url>
   
@@ -59,6 +45,13 @@
   
   <url>
     <loc>https://qcrao.com/2019/07/08/how-to-write-resume-gracefully/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.665Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
     
     <lastmod>2020-06-10T03:48:28.665Z</lastmod>
     
@@ -79,14 +72,14 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/09/18/golang-error-break-through/</loc>
+    <loc>https://qcrao.com/2019/03/13/graphic-go-memory-allocation/</loc>
     
     <lastmod>2020-06-10T03:48:28.663Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/03/13/graphic-go-memory-allocation/</loc>
+    <loc>https://qcrao.com/2019/09/18/golang-error-break-through/</loc>
     
     <lastmod>2020-06-10T03:48:28.663Z</lastmod>
     
@@ -198,14 +191,14 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
+    <loc>https://qcrao.com/2019/01/30/byte-travel-story/</loc>
     
     <lastmod>2020-06-10T03:48:28.653Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/01/30/byte-travel-story/</loc>
+    <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
     
     <lastmod>2020-06-10T03:48:28.653Z</lastmod>
     
