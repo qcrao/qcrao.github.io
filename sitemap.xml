@@ -37,14 +37,14 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/03/20/dive-into-go-asm/</loc>
+    <loc>https://qcrao.com/2020/04/27/codec-accident/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://qcrao.com/2020/04/27/codec-accident/</loc>
+    <loc>https://qcrao.com/2019/03/20/dive-into-go-asm/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
@@ -58,7 +58,7 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/09/02/dive-into-go-scheduler/</loc>
+    <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
@@ -72,14 +72,14 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/07/08/how-to-write-resume-gracefully/</loc>
+    <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
+    <loc>https://qcrao.com/2019/07/08/how-to-write-resume-gracefully/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
@@ -100,14 +100,14 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2020/05/06/dive-into-go-sync-map/</loc>
+    <loc>https://qcrao.com/2019/06/03/dive-into-go-unsafe/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/06/03/dive-into-go-unsafe/</loc>
+    <loc>https://qcrao.com/2020/05/06/dive-into-go-sync-map/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
@@ -128,13 +128,6 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/04/02/dive-into-go-slice/</loc>
-    
-    <lastmod>2020-06-10T03:48:28.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://qcrao.com/2019/01/16/dive-into-three-way-handshake/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
@@ -149,7 +142,14 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
+    <loc>https://qcrao.com/2019/04/02/dive-into-go-slice/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/09/02/dive-into-go-scheduler/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
