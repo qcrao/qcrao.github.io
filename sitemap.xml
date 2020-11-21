@@ -44,7 +44,7 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2020/04/27/codec-accident/</loc>
+    <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
@@ -72,14 +72,14 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
+    <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
+    <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
@@ -128,7 +128,7 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
+    <loc>https://qcrao.com/2020/04/27/codec-accident/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
@@ -142,13 +142,6 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2020/03/08/high-performance-mysql-reading-notes/</loc>
-    
-    <lastmod>2020-06-10T03:48:28.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://qcrao.com/2019/01/16/dive-into-three-way-handshake/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
@@ -156,7 +149,21 @@
   </url>
   
   <url>
+    <loc>https://qcrao.com/2020/03/08/high-performance-mysql-reading-notes/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://qcrao.com/2019/09/02/dive-into-go-scheduler/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/06/12/dive-into-go-context/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
@@ -185,13 +192,6 @@
   
   <url>
     <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
-    
-    <lastmod>2020-06-10T03:48:28.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/06/12/dive-into-go-context/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
