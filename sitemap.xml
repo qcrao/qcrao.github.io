@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://qcrao.com/2020/11/16/become-contributor-of-redir/</loc>
+    
+    <lastmod>2020-11-21T11:31:54.992Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://qcrao.com/2020/09/05/concurrency-in-go-reading-notes/</loc>
     
     <lastmod>2020-09-05T03:46:54.404Z</lastmod>
@@ -51,7 +58,7 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/01/30/byte-travel-story/</loc>
+    <loc>https://qcrao.com/2020/04/03/talk-about-g0/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
@@ -65,14 +72,7 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
-    
-    <lastmod>2020-06-10T03:48:28.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
+    <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
@@ -86,7 +86,14 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
+    <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
@@ -100,14 +107,14 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2019/06/03/dive-into-go-unsafe/</loc>
+    <loc>https://qcrao.com/2020/05/06/dive-into-go-sync-map/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://qcrao.com/2020/05/06/dive-into-go-sync-map/</loc>
+    <loc>https://qcrao.com/2019/06/03/dive-into-go-unsafe/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
@@ -121,7 +128,14 @@
   </url>
   
   <url>
-    <loc>https://qcrao.com/2020/04/03/talk-about-g0/</loc>
+    <loc>https://qcrao.com/2019/01/30/byte-travel-story/</loc>
+    
+    <lastmod>2020-06-10T03:48:28.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/04/02/dive-into-go-slice/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
@@ -136,13 +150,6 @@
   
   <url>
     <loc>https://qcrao.com/2020/03/08/high-performance-mysql-reading-notes/</loc>
-    
-    <lastmod>2020-06-10T03:48:28.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/04/02/dive-into-go-slice/</loc>
     
     <lastmod>2020-06-10T03:48:28.000Z</lastmod>
     
