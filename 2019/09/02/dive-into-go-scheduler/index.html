@@ -13,9 +13,9 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>跟大家汇报一下，这段时间我在看 <code>proc.go</code> 的源码，其实就是调度器的源码。代码有几千行之多，不像以往的 map，channel 等等。想把这些代码都看明白，是一个庞大的工程。到今天为止，我也不敢说我都看明白了。</p>
 <p>要深挖下去的话，会无穷无尽，所以阶段性的探索就到这里。接下来就把这段时间的探索分享出来。</p>
 <p>其实，今天这篇文章仅仅算是一个引子，接下来会连续发布十篇系列文章。目录如下：</p>
-<p><img src="/2019/09/02/dive-into-go-scheduler/1.png" alt="系列文章目录"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/64062086-50978e80-cc15-11e9-8689-23b0989b8d7b.png" alt="系列文章目录"></p>
 <p>而这个系列的文章主要是受公众号“go 语言核心编程技术”的启发，它有一个 Go 调度器的系列教程，写得非常赞，强烈推荐大家去看，后面会经常引用到它的文章。我忍不住在这贴上公众号的二维码，一定要去关注啊。这是我在找资料的过程中发现的一个宝藏，本来想私藏着，但是好东西还是要分享给大家，不能固步自封。</p>
-<p><img src="/2019/09/02/dive-into-go-scheduler/2.png" alt="Go 语言核心编程技术"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/64062187-2c887d00-cc16-11e9-8519-00b29f05933c.png" alt="Go 语言核心编程技术"></p>
 <p>开始我们今天的正题。</p>
 <p>一个月前，《Go 语言高级编程》作者柴树杉老师在 CSDN 上发表了一篇《Go 语言十年而立，Go2 蓄势待发》，视角十分宏大。我们既要低头看路，有时也要抬头看天，这篇文章就属于“抬头”看天类的，推荐阅读。</p>
 <p>文章中提到了第一本写 Go 的小说《胡文 Go》。我找来看了下，嬉笑怒骂，还挺有意思的。书中有这样一句话：</p>
@@ -63,7 +63,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>函数栈帧的空间主要由函数参数和返回值、局部变量和被调用其它函数的参数和返回值空间组成。</p>
 </blockquote>
 <p>宏观看一下，Go 语言中函数调用的规范，引用曹大博客里的一张图：</p>
-<p><img src="/2019/09/02/dive-into-go-scheduler/3.png" alt="曹大 asmshare 函数调用规范"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/64062685-390fd400-cc1c-11e9-86e5-a2646ce3ae1f.png" alt="曹大 asmshare 函数调用规范"></p>
 <p>Go plan9 汇编通过栈传递函数参数和返回值。</p>
 <p>调用子函数时，先将参数在栈顶准备好，再执行 CALL 指令。CALL 指令会将 IP 寄存器的值压栈，这个值就是函数调用完成后即将执行的下一条指令。</p>
 <p>然后，就会进入被调用者的栈帧。首先会将 caller BP 压栈，这表示栈基址，也就是栈底。栈顶和栈基址定义函数的栈帧。</p>
@@ -101,11 +101,11 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>Goroutine 的切换约为 200 ns，相当于 2400-3600 条指令。</p>
 <p>因此，goroutines 切换成本比 threads 要小得多。</p>
 <h2 id="M-N-模型"><a href="#M-N-模型" class="headerlink" title="M:N 模型"></a>M:N 模型</h2><p>我们都知道，Go runtime 会负责 goroutine 的生老病死，从创建到销毁，都一手包办。Runtime 会在程序启动的时候，创建 M 个线程（CPU 执行调度的单位），之后创建的 N 个 goroutine 都会依附在这 M 个线程上执行。这就是 M:N 模型：</p>
-<p><img src="/2019/09/02/dive-into-go-scheduler/4.png" alt="M:N scheduling"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/61340362-8c001880-a874-11e9-9237-d97e6105cd62.png" alt="M:N scheduling"></p>
 <p>在同一时刻，一个线程上只能跑一个 goroutine。当 goroutine 发生阻塞（例如上篇文章提到的向一个 channel 发送数据，被阻塞）时，runtime 会把当前 goroutine 调度走，让其他 goroutine 来执行。目的就是不让一个线程闲着，榨干 CPU 的每一滴油水。</p>
 <h1 id="什么是-scheduler"><a href="#什么是-scheduler" class="headerlink" title="什么是 scheduler"></a>什么是 scheduler</h1><p>Go 程序的执行由两层组成：Go Program，Runtime，即用户程序和运行时。它们之间通过函数调用来实现内存管理、channel 通信、goroutines 创建等功能。用户程序进行的系统调用都会被 Runtime 拦截，以此来帮助它进行调度以及垃圾回收相关的工作。</p>
 <p>一个展现了全景式的关系如下图：</p>
-<p><img src="/2019/09/02/dive-into-go-scheduler/5.png" alt="runtime overall"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/62172655-9981cc00-b365-11e9-8912-b16b83930ad0.png" alt="runtime overall"></p>
 <h1 id="为什么要-scheduler"><a href="#为什么要-scheduler" class="headerlink" title="为什么要 scheduler"></a>为什么要 scheduler</h1><p>Go scheduler 可以说是 Go 运行时的一个最重要的部分了。Runtime 维护所有的 goroutines，并通过 scheduler 来进行调度。Goroutines 和 threads 是独立的，但是 goroutines 要依赖 threads 才能执行。</p>
 <p>Go 程序执行的高效和 scheduler 的调度是分不开的。</p>
 <h1 id="scheduler-底层原理"><a href="#scheduler-底层原理" class="headerlink" title="scheduler 底层原理"></a>scheduler 底层原理</h1><p>实际上在操作系统看来，所有的程序都是在执行多线程。将 goroutines 调度到线程上执行，仅仅是 runtime 层面的一个概念，在操作系统之上的层面。</p>
@@ -120,7 +120,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <blockquote>
 <p>For scheduling goroutines onto kernel threads.</p>
 </blockquote>
-<p><img src="/2019/09/02/dive-into-go-scheduler/6.png" alt="Go scheduler goals"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/61874535-3f26dc80-af1b-11e9-9d9c-127edf90fff9.png" alt="Go scheduler goals"></p>
 <p>Go scheduler 的核心思想是：</p>
 <ol>
 <li>reuse threads；</li>
@@ -136,10 +136,10 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 </blockquote>
 <p>翻译一下，当一个线程阻塞的时候，将和它绑定的 P 上的 goroutines 转移到其他线程。</p>
 <p>Go scheduler 会启动一个后台线程 sysmon，用来检测长时间（超过 10 ms）运行的 goroutine，将其调度到 global runqueues。这是一个全局的 runqueue，优先级比较低，以示惩罚。</p>
-<p><img src="/2019/09/02/dive-into-go-scheduler/7.png" alt="Go scheduler limitations"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/61874781-d55b0280-af1b-11e9-9965-da4efe53d2db.png" alt="Go scheduler limitations"></p>
 <h2 id="总览"><a href="#总览" class="headerlink" title="总览"></a>总览</h2><p>通常讲到 Go scheduler 都会提到 GPM 模型，我们来一个个地看。</p>
 <p>下图是我使用的 mac 的硬件信息，只有 2 个核。</p>
-<p><img src="/2019/09/02/dive-into-go-scheduler/8.png" alt="mac 硬件信息"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/62016049-63680f00-b1e2-11e9-9b6f-8566fd5e3963.png" alt="mac 硬件信息"></p>
 <p>但是配上 CPU 的超线程，1 个核可以变成 2 个，所以当我在 mac 上运行下面的程序时，会打印出 4。</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// NumCPU 返回当前进程可以用到的逻辑核心数</span></span><br><span class="line">	fmt.Println(runtime.NumCPU())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -148,7 +148,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>总结一下，当我在本地启动一个 Go 程序时，会得到 4 个系统线程去执行任务，每个线程会搭配一个 P。</p>
 <p>在初始化时，Go 程序会有一个 G（initial Goroutine），执行指令的单位。G 会在 M 上得到执行，内核线程是在 CPU 核心上调度，而 G 则是在 M 上进行调度。</p>
 <p>G、P、M 都说完了，还有两个比较重要的组件没有提到： 全局可运行队列（GRQ）和本地可运行队列（LRQ）。 LRQ 存储本地（也就是具体的 P）的可运行 goroutine，GRQ 存储全局的可运行 goroutine，这些 goroutine 还没有分配到具体的 P。</p>
-<p><img src="/2019/09/02/dive-into-go-scheduler/9.png" alt="GPM global review"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/62016513-336e3b00-b1e5-11e9-8923-d5d1743a531b.png" alt="GPM global review"></p>
 <p>Go scheduler 是 Go runtime 的一部分，它内嵌在 Go 程序里，和 Go 程序一起运行。因此它运行在用户空间，在 kernel 的上一层。和 Os scheduler 抢占式调度（preemptive）不一样，Go scheduler 采用协作式调度（cooperating）。</p>
 <blockquote>
 <p>Being a cooperating scheduler means the scheduler needs well-defined user space events that happen at safe points in the code to make scheduling decisions.</p>
@@ -177,7 +177,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 </tr>
 </tbody></table>
 <p>下面这张 GPM 全局的运行示意图见得比较多，可以留着，看完后面的系列文章之后再回头来看，还是很有感触的：</p>
-<p><img src="/2019/09/02/dive-into-go-scheduler/10.png" alt="goroutine workflow"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/62260181-a7a61a00-b443-11e9-849b-b597addeca57.png" alt="goroutine workflow"></p>
 <h2 id="goroutine-调度时机"><a href="#goroutine-调度时机" class="headerlink" title="goroutine 调度时机"></a>goroutine 调度时机</h2><p>在四种情形下，goroutine 可能会发生调度，但也并不一定会发生，只是说 Go scheduler 有机会进行调度。</p>
 <table>
 <thead>
@@ -206,20 +206,20 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <h2 id="work-stealing"><a href="#work-stealing" class="headerlink" title="work stealing"></a>work stealing</h2><p>Go scheduler 的职责就是将所有处于 runnable 的 goroutines 均匀分布到在 P 上运行的 M。</p>
 <p>当一个 P 发现自己的 LRQ 已经没有 G 时，会从其他 P “偷” 一些 G 来运行。看看这是什么精神！自己的工作做完了，为了全局的利益，主动为别人分担。这被称为 <code>Work-stealing</code>，Go 从 1.1 开始实现。</p>
 <p>Go scheduler 使用 M:N 模型，在任一时刻，M 个 goroutines（G） 要分配到 N 个内核线程（M），这些 M 跑在个数最多为 GOMAXPROCS 的逻辑处理器（P）上。每个 M 必须依附于一个 P，每个 P 在同一时刻只能运行一个 M。如果 P 上的 M 阻塞了，那它就需要其他的 M 来运行 P 的 LRQ 里的 goroutines。</p>
-<p><img src="/2019/09/02/dive-into-go-scheduler/11.png" alt="GPM relatioship"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/62031928-02a8f880-b21b-11e9-96a9-96820452463e.png" alt="GPM relatioship"></p>
 <p>个人感觉，上面这张图比常见的那些用三角形表示 M，圆形表示 G，矩形表示 P 的那些图更生动形象。</p>
 <p>实际上，Go scheduler 每一轮调度要做的工作就是找到处于 runnable 的 goroutines，并执行它。找的顺序如下：</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">runtime.schedule() &#123;</span><br><span class="line">    <span class="comment">// only 1/61 of the time, check the global runnable queue for a G.</span></span><br><span class="line">    <span class="comment">// if not found, check the local queue.</span></span><br><span class="line">    <span class="comment">// if not found,</span></span><br><span class="line">    <span class="comment">//     try to steal from other Ps.</span></span><br><span class="line">    <span class="comment">//     if not, check the global runnable queue.</span></span><br><span class="line">    <span class="comment">//     if not found, poll network.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>找到一个可执行的 goroutine 后，就会一直执行下去，直到被阻塞。</p>
 <p>当 P2 上的一个 G 执行结束，它就会去 LRQ 获取下一个 G 来执行。如果 LRQ 已经空了，就是说本地可运行队列已经没有 G 需要执行，并且这时 GRQ 也没有 G 了。这时，P2 会随机选择一个 P（称为 P1），P2 会从 P1 的 LRQ “偷”过来一半的 G。</p>
-<p><img src="/2019/09/02/dive-into-go-scheduler/12.png" alt="Work Stealing"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/62033338-4ea96c80-b21e-11e9-9167-98767c03d2d9.png" alt="Work Stealing"></p>
 <p>这样做的好处是，有更多的 P 可以一起工作，加速执行完所有的 G。</p>
 <h2 id="同步-异步系统调用"><a href="#同步-异步系统调用" class="headerlink" title="同步/异步系统调用"></a>同步/异步系统调用</h2><p>当 G 需要进行系统调用时，根据调用的类型，它所依附的 M 有两种情况：<code>同步</code>和<code>异步</code>。</p>
 <p>对于同步的情况，M 会被阻塞，进而从 P 上调度下来，P 可不养闲人，G 仍然依附于 M。之后，一个新的 M 会被调用到 P 上，接着执行 P 的 LRQ 里嗷嗷待哺的 G 们。一旦系统调用完成，G 还会加入到 P 的 LRQ 里，M 则会被“雪藏”，待到需要时再“放”出来。</p>
-<p><img src="/2019/09/02/dive-into-go-scheduler/13.png" alt="同步系统调用"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/62091677-b904f000-b2a4-11e9-8972-60ace0807ba4.png" alt="同步系统调用"></p>
 <p>对于异步的情况，M 不会被阻塞，G 的异步请求会被“代理人” network poller 接手，G 也会被绑定到 network poller，等到系统调用结束，G 才会重新回到 P 上。M 由于没被阻塞，它因此可以继续执行 LRQ 里的其他 G。</p>
-<p><img src="/2019/09/02/dive-into-go-scheduler/14.png" alt="异步系统调用"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/62091486-c2da2380-b2a3-11e9-8cf9-0e63d7f774d8.png" alt="异步系统调用"></p>
 <p>可以看到，异步情况下，通过调度，Go scheduler 成功地将 I/O 的任务转变成了 CPU 任务，或者说将内核级别的线程切换转变成了用户级别的 goroutine 切换，大大提高了效率。</p>
 <blockquote>
 <p>The ability to turn IO/Blocking work into CPU-bound work at the OS level is where we get a big win in leveraging more CPU capacity over time. </p>
@@ -296,7 +296,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
   distractionFreeMode: false
 })
 gitalk.render('container')
-</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="https://qcrao.com"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/性能优化/">性能优化</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/操作系统/">操作系统</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/求职/">求职</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">21</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">5</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/简历/" style="font-size: 15px;">简历</a> <a href="/tags/golang/" style="font-size: 15px;">golang</a> <a href="/tags/故障排查/" style="font-size: 15px;">故障排查</a> <a href="/tags/内存重排/" style="font-size: 15px;">内存重排</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/协议/" style="font-size: 15px;">协议</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/编译原理/" style="font-size: 15px;">编译原理</a> <a href="/tags/HTTP/" style="font-size: 15px;">HTTP</a> <a href="/tags/牛人/" style="font-size: 15px;">牛人</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/12/27/blogs-written-by-xargin/">那些年曹大写过的博客</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/11/16/become-contributor-of-redir/">喜提 redir contributor</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/09/05/concurrency-in-go-reading-notes/">深度阅读之《Concurrency in Go》</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/06/07/linux-performance-reading-notes/">《Linux 性能优化》读书笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/10/head-first-design-pattern-reading-notes/">《Head First 设计模式》读书笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/06/dive-into-go-sync-map/">深度解密Go语言之sync.map</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/27/codec-accident/">“���”引发的线上事故</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/20/dive-into-go-sync-pool/">深度解密Go语言之sync.pool</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/03/talk-about-g0/">聊聊 g0</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/03/23/how-to-traverse-defer-links/">defer 链表如何被遍历执行</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://github.com/qcrao/Go-Questions" title="Go-Questions" target="_blank">Go-Questions</a><ul></ul><a href="http://xargin.com/" title="No HeadBack" target="_blank">No HeadBack</a><ul></ul><a href="https://draveness.me/" title="面向信仰编程" target="_blank">面向信仰编程</a><ul></ul><a href="https://eddycjy.gitbook.io/golang/" title="跟煎鱼学 Go" target="_blank">跟煎鱼学 Go</a><ul></ul><a href="http://lessisbetter.site/" title="大彬 - Less is better" target="_blank">大彬 - Less is better</a><ul></ul><a href="https://wujunze.com/" title="Panda - Just for fun" target="_blank">Panda - Just for fun</a><ul></ul><a href="https://blog.changkun.de/" title="欧神" target="_blank">欧神</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2020 <a href="/." rel="nofollow">qcrao.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a><a rel="nofollow" target="_blank" href="http://www.beian.miit.gov.cn"> 鄂ICP备20006251号-1</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/x-mathjax-config">MathJax.Hub.Config({
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="https://qcrao.com"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/性能优化/">性能优化</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/操作系统/">操作系统</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/求职/">求职</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">21</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">5</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/牛人/" style="font-size: 15px;">牛人</a> <a href="/tags/故障排查/" style="font-size: 15px;">故障排查</a> <a href="/tags/golang/" style="font-size: 15px;">golang</a> <a href="/tags/协议/" style="font-size: 15px;">协议</a> <a href="/tags/内存重排/" style="font-size: 15px;">内存重排</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/HTTP/" style="font-size: 15px;">HTTP</a> <a href="/tags/编译原理/" style="font-size: 15px;">编译原理</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/简历/" style="font-size: 15px;">简历</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/12/27/blogs-written-by-xargin/">那些年曹大写过的博客</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/11/16/become-contributor-of-redir/">喜提 redir contributor</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/09/05/concurrency-in-go-reading-notes/">深度阅读之《Concurrency in Go》</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/06/07/linux-performance-reading-notes/">《Linux 性能优化》读书笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/10/head-first-design-pattern-reading-notes/">《Head First 设计模式》读书笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/06/dive-into-go-sync-map/">深度解密Go语言之sync.map</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/27/codec-accident/">“���”引发的线上事故</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/20/dive-into-go-sync-pool/">深度解密Go语言之sync.pool</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/03/talk-about-g0/">聊聊 g0</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/03/23/how-to-traverse-defer-links/">defer 链表如何被遍历执行</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://github.com/qcrao/Go-Questions" title="Go-Questions" target="_blank">Go-Questions</a><ul></ul><a href="http://xargin.com/" title="No HeadBack" target="_blank">No HeadBack</a><ul></ul><a href="https://draveness.me/" title="面向信仰编程" target="_blank">面向信仰编程</a><ul></ul><a href="https://eddycjy.gitbook.io/golang/" title="跟煎鱼学 Go" target="_blank">跟煎鱼学 Go</a><ul></ul><a href="http://lessisbetter.site/" title="大彬 - Less is better" target="_blank">大彬 - Less is better</a><ul></ul><a href="https://wujunze.com/" title="Panda - Just for fun" target="_blank">Panda - Just for fun</a><ul></ul><a href="https://blog.changkun.de/" title="欧神" target="_blank">欧神</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2021 <a href="/." rel="nofollow">qcrao.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a><a rel="nofollow" target="_blank" href="http://www.beian.miit.gov.cn"> 鄂ICP备20006251号-1</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/x-mathjax-config">MathJax.Hub.Config({
   tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
   });
 </script><script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

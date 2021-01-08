@@ -21,15 +21,15 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%!xxd</span><br></pre></td></tr></table></figure>
 
 <p>就能在 vim 里以十六进制查看文件内容：</p>
-<p><img src="/2019/07/03/how-go-runs/1.png" alt="hex .go"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/59696461-9d76e600-921e-11e9-9253-533d55e2c8f5.png" alt="hex .go"></p>
 <p>最左边的一列代表地址值，中间一列代表文本对应的 ASCII 字符，最右边的列就是我们的代码。再在终端里执行 <code>man ascii</code>：</p>
-<p><img src="/2019/07/03/how-go-runs/2.png" alt="ASCII"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/59696702-15dda700-921f-11e9-838f-897a5d3f21fb.png" alt="ASCII"></p>
 <p>和 ASCII 字符表一对比，就能发现，中间的列和最右边的列是一一对应的。也就是说，刚刚写完的 hello.go 文件都是由 ASCII 字符表示的，它被称为<code>文本文件</code>，其他文件被称为<code>二进制文件</code>。</p>
 <p>当然，更深入地看，计算机中的所有数据，像磁盘文件、网络中的数据其实都是一串比特位组成，取决于如何看待它。在不同的情景下，一个相同的字节序列可能表示成一个整数、浮点数、字符串或者是机器指令。</p>
 <p>而像 hello.go 这个文件，8 个 bit，也就是一个字节看成一个单位（假定源程序的字符都是 ASCII 码），最终解释成人类能读懂的 Go 源码。</p>
 <p>Go 程序并不能直接运行，每条 Go 语句必须转化为一系列的低级机器语言指令，将这些指令打包到一起，并以二进制磁盘文件的形式存储起来，也就是可执行目标文件。</p>
 <p>从源文件到可执行目标文件的转化过程：</p>
-<p><img src="/2019/07/03/how-go-runs/3.png" alt="compile"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60523966-44c74300-9d1e-11e9-9ba9-d1f594607edc.png" alt="compile"></p>
 <p>完成以上各个阶段的就是 Go 编译系统。你肯定知道大名鼎鼎的 GCC（GNU Compile Collection），中文名为 GNU 编译器套装，它支持像 C，C++，Java，Python，Objective-C，Ada，Fortran，Pascal，能够为很多不同的机器生成机器码。</p>
 <p>可执行目标文件可以直接在机器上执行。一般而言，先执行一些初始化的工作；找到 main 函数的入口，执行用户写的代码；执行完成后，main 函数退出；再执行一些收尾的工作，整个过程完毕。</p>
 <p>在接下来的文章里，我们将探索<code>编译</code>和<code>运行</code>的过程。</p>
@@ -38,7 +38,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>编译过程就是对源文件进行词法分析、语法分析、语义分析、优化，最后生成汇编代码文件，以 <code>.s</code> 作为文件后缀。</p>
 <p>之后，汇编器会将汇编代码转变成机器可以执行的指令。由于每一条汇编语句几乎都与一条机器指令相对应，所以只是一个简单的一一对应，比较简单，没有语法、语义分析，也没有优化这些步骤。</p>
 <p>编译器是将高级语言翻译成机器语言的一个工具，编译过程一般分为 6 步：扫描、语法分析、语义分析、源代码优化、代码生成、目标代码优化。下图来自《程序员的自我修养》：</p>
-<p><img src="/2019/07/03/how-go-runs/4.png" alt="编译过程总览"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/59910602-d4c6dc00-9444-11e9-8155-fbe59eec4e89.png" alt="编译过程总览"></p>
 <h3 id="词法分析"><a href="#词法分析" class="headerlink" title="词法分析"></a>词法分析</h3><p>通过前面的例子，我们知道，Go 程序文件在机器看来不过是一堆二进制位。我们能读懂，是因为 Goland 按照 ASCII 码（实际上是 UTF-8）把这堆二进制位进行了编码。例如，把 8个 bit 位分成一组，对应一个字符，通过对照 ASCII 码表就可以查出来。</p>
 <p>当把所有的二进制位都对应成了 ASCII 码字符后，我们就能看到有意义的字符串。它可能是关键字，例如：package；可能是字符串，例如：“Hello World”。</p>
 <p>词法分析其实干的就是这个。输入是原始的 Go 程序文件，在词法分析器看来，就是一堆二进制位，根本不知道是什么东西，经过它的分析后，变成有意义的记号。简单来说，词法分析是计算机科学中将字符序列转换为标记（token）序列的过程。</p>
@@ -128,7 +128,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 </blockquote>
 <h3 id="语法分析"><a href="#语法分析" class="headerlink" title="语法分析"></a>语法分析</h3><p>上一步生成的 Token 序列，需要经过进一步处理，生成一棵以<code>表达式</code>为结点的<code>语法树</code>。</p>
 <p>比如最开始的那个例子，<code>slice[i] = i * (2 + 6)</code>，得到的一棵语法树如下：</p>
-<p><img src="/2019/07/03/how-go-runs/5.png" alt="语法树"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/59962830-3490b600-951d-11e9-8ae6-53d6375f0246.png" alt="语法树"></p>
 <p>整个语句被看作是一个赋值表达式，左子树是一个数组表达式，右子树是一个乘法表达式；数组表达式由 2 个符号表达式组成；乘号表达式则是由一个符号表达式和一个加号表达式组成；加号表达式则是由两个数字组成。符号和数字是最小的表达式，它们不能再被分解，通常作为树的叶子节点。</p>
 <p>语法分析的过程可以检测一些形式上的错误，例如：括号是否缺少一半，<code>+</code> 号表达式缺少一个操作数等。</p>
 <blockquote>
@@ -137,7 +137,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <h3 id="语义分析"><a href="#语义分析" class="headerlink" title="语义分析"></a>语义分析</h3><p>语法分析完成后，我们并不知道语句的具体意义是什么。像上面的 <code>*</code> 号的两棵子树如果是两个指针，这是不合法的，但语法分析检测不出来，语义分析就是干这个事。</p>
 <p>编译期所能检查的是静态语义，可以认为这是在“代码”阶段，包括变量类型的匹配、转换等。例如，将一个浮点值赋给一个指针变量的时候，明显的类型不匹配，就会报编译错误。而对于运行期间才会出现的错误：不小心除了一个 0 ，语义分析是没办法检测的。</p>
 <p>语义分析阶段完成之后，会在每个节点上标注上类型：</p>
-<p><img src="/2019/07/03/how-go-runs/6.png" alt="语义分析完成"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/59962838-512cee00-951d-11e9-8581-18e12ffde230.png" alt="语义分析完成"></p>
 <p>Go 语言编译器在这一阶段检查常量、类型、函数声明以及变量赋值语句的类型，然后检查哈希中键的类型。实现类型检查的函数通常都是几千行的巨型 switch/case 语句。</p>
 <blockquote>
 <p>类型检查是 Go 语言编译的第二个阶段，在词法和语法分析之后我们得到了每个文件对应的抽象语法树，随后的类型检查会遍历抽象语法树中的节点，对每个节点的类型进行检验，找出其中存在的语法错误。</p>
@@ -162,7 +162,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>Go 语言的中间代码表示形式为 SSA（Static Single-Assignment，静态单赋值），之所以称之为单赋值，是因为每个名字在 SSA 中仅被赋值一次。。</p>
 <p>这一阶段会根据 CPU 的架构设置相应的用于生成中间代码的变量，例如编译器使用的指针和寄存器的大小、可用寄存器列表等。中间代码生成和机器码生成这两部分会共享相同的设置。</p>
 <p>在生成中间代码之前，会对抽象语法树中节点的一些元素进行替换。这里引用《面向信仰编程》编译原理相关博客里的一张图：</p>
-<p><img src="/2019/07/03/how-go-runs/7.png" alt="builtin mapping"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60553849-a364df00-9d67-11e9-832a-450f4d8ee6ba.png" alt="builtin mapping"></p>
 <p>例如对于 map 的操作 m[i]，在这里会被转换成 mapacess 或 mapassign。</p>
 <blockquote>
 <p>Go 语言的主程序在执行时会调用 runtime 中的函数，也就是说关键字和内置函数的功能其实是由语言的编译器和运行时共同完成的。</p>
@@ -184,7 +184,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[qcrao@qcrao hello-world]$ gdb hello</span><br></pre></td></tr></table></figure>
 
 <p>进入 gdb 调试模式，执行 <code>info files</code>，得到可执行文件的文件头，列出了各种段：</p>
-<p><img src="/2019/07/03/how-go-runs/8.png" alt="gdb info"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60392813-db88d980-9b3d-11e9-8b0f-7c1d845a8191.png" alt="gdb info"></p>
 <p>同时，我们也得到了入口地址：0x450e20。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) b *0x450e20</span><br><span class="line">Breakpoint 1 at 0x450e20: file /usr/local/go/src/runtime/rt0_linux_amd64.s, line 8.</span><br></pre></td></tr></table></figure>
 
@@ -208,7 +208,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 </ol>
 </blockquote>
 <p>最后用一张图来总结 go bootstrap 过程吧：</p>
-<p><img src="/2019/07/03/how-go-runs/9.png" alt="golang bootstrap"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60493589-b2a04a00-9cdf-11e9-9c9e-a4b275973f60.png" alt="golang bootstrap"></p>
 <p>main 函数里执行的一些重要的操作包括：新建一个线程执行 sysmon 函数，定期垃圾回收和调度抢占；启动 gc；执行所有的 init 函数等等。</p>
 <p>上面是启动过程，看一下退出过程：</p>
 <blockquote>
@@ -222,13 +222,13 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>关于程序退出这一段的阐述来自群聊《golang runtime 阅读》，又是一个高阶的读源码的组织，github 主页见参考资料。</p>
 <p>当然 Go 程序启动这一部分其实还会涉及到 fork 一个新进程、装载可执行文件，控制权转移等问题。还是推荐看前面的两本书，我觉得我不会写得更好，就不叙述了。</p>
 <h1 id="GoRoot-和-GoPath"><a href="#GoRoot-和-GoPath" class="headerlink" title="GoRoot 和 GoPath"></a>GoRoot 和 GoPath</h1><p>GoRoot 是  Go 的安装路径。mac 或 unix 是在 <code>/usr/local/go</code> 路径上，来看下这里都装了些什么：</p>
-<p><img src="/2019/07/03/how-go-runs/10.png" alt="/usr/local/go"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60344492-41178180-99e9-11e9-98b0-b1f8d64ce97d.png" alt="/usr/local/go"></p>
 <p>bin 目录下面：</p>
-<p><img src="/2019/07/03/how-go-runs/11.png" alt="bin"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/69785843-13cb3b80-11f4-11ea-8b71-e7dee5efc8fb.png" alt="bin"></p>
 <p>pkg 目录下面：</p>
-<p><img src="/2019/07/03/how-go-runs/12.png" alt="pkg"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60344731-c7cc5e80-99e9-11e9-8002-83f3debc09a6.png" alt="pkg"></p>
 <p>Go 工具目录如下，其中比较重要的有编译器 <code>compile</code>，链接器 <code>link</code>：</p>
-<p><img src="/2019/07/03/how-go-runs/13.png" alt="pkg/tool"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60379164-888d2480-9a60-11e9-9322-920c0e1b2b3d.png" alt="pkg/tool"></p>
 <p>GoPath 的作用在于提供一个可以寻找 <code>.go</code> 源码的路径，它是一个工作空间的概念，可以设置多个目录。Go 官方要求，GoPath 下面需要包含三个文件夹：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">src</span><br><span class="line">pkg</span><br><span class="line">bin</span><br></pre></td></tr></table></figure>
 
@@ -237,7 +237,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go</span><br></pre></td></tr></table></figure>
 
 <p>就能得到和 go 相关的命令简介：</p>
-<p><img src="/2019/07/03/how-go-runs/14.png" alt="go commands"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60248752-e2bda680-98f5-11e9-8b3b-7deaf70a919c.png" alt="go commands"></p>
 <p>和编译相关的命令主要是：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">go build</span><br><span class="line">go install</span><br><span class="line">go run</span><br></pre></td></tr></table></figure>
 
@@ -296,7 +296,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 </blockquote>
 <p>注意，<code>go build</code> 会忽略 <code>*_test.go</code> 文件。</p>
 <p>我们通过一个很简单的例子来演示 <code>go build</code> 命令。我用 Goland 新建了一个 <code>hello-world</code> 项目（为了展示引用自定义的包，和之前的 hello-world 程序不同），项目的结构如下：</p>
-<p><img src="/2019/07/03/how-go-runs/15.png" alt="example structure"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60383032-5b5f6700-9a9e-11e9-9613-03d9ba13b889.png" alt="example structure"></p>
 <p>最左边可以看到项目的结构，包含三个文件夹：bin，pkg，src。其中 src 目录下有一个 main.go，里面定义了 main 函数，是整个项目的入口，也就是前面提过的所谓的命令源码文件；src 目录下还有一个 util 目录，里面有 util.go 文件，定义了一个可以获取本机 IP 地址的函数，也就是所谓的库源码文件。</p>
 <p>中间是 main.go 的源码，引用了两个包，一个是标准库的 fmt；一个是 util 包，util 的导入路径是 <code>util</code>。所谓的导入路径是指相对于 Go 的源码目录 <code>$GoRoot/src</code> 或者 <code>$GoPath/src</code> 的下的子路径。例如 main 包里引用的 fmt 的源码路径是 <code>/usr/local/go/src/fmt</code>，而 util 的源码路径是 <code>/Users/qcrao/hello-world/src/util</code>，正好我们设置的 GoPath = /Users/qcrao/hello-world。</p>
 <p>最右边是库函数的源码，实现了获取本机 IP 的函数。</p>
@@ -320,11 +320,11 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 
 <p><code>-v</code> 会打印所编译过的包名字，<code>-x</code> 打印编译期间所执行的命令，<code>-work</code> 打印编译期间生成的临时文件路径，并且编译完成之后不会被删除。</p>
 <p>执行结果：</p>
-<p><img src="/2019/07/03/how-go-runs/16.png" alt="编译过程"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60386219-e3586780-9ac4-11e9-871f-5acfa83372d0.png" alt="编译过程"></p>
 <p>从结果来看，图中用箭头标注了本次编译过程涉及 2 个包：util，command-line-arguments。第二个包比较诡异，源码里根本就没有这个名字好吗？其实这是 <code>go build</code> 命令检测到 [packages] 处填的是一个 <code>.go</code> 文件，因此创建了一个虚拟的包：command-line-arguments。</p>
 <p>同时，用红框圈出了 compile, link，也就是先编译了 util 包和 <code>main.go</code> 文件，分别得到 <code>.a</code> 文件，之后将两者进行链接，最终生成可执行文件，并且移动到 bin 目录下，改名为 hello。</p>
 <p>另外，第一行显示了编译过程中的工作目录，此目录的文件结构是：</p>
-<p><img src="/2019/07/03/how-go-runs/17.png" alt="临时工作目录"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60386682-06861580-9acb-11e9-8367-d37ce03a46cc.png" alt="临时工作目录"></p>
 <p>可以看到，和 hello-world 目录的层级基本一致。command-line-arguments 就是虚拟的 main.go 文件所处的包。exe 目录下的可执行文件在最后一步被移动到了 bin 目录下，所以这里是空的。</p>
 <p>整体来看，<code>go build</code> 在执行时，会先递归寻找 main.go 所依赖的包，以及依赖的依赖，直至最底层的包。这里可以是深度优先遍历也可以是宽度优先遍历。如果发现有循环依赖，就会直接退出，这也是经常会发生的循环引用编译错误。</p>
 <p>正常情况下，这些依赖关系会形成一棵倒着生长的树，树根在最上面，就是 main.go 文件，最下面是没有任何其他依赖的包。编译器会从最左的节点所代表的包开始挨个编译，完成之后，再去编译上一层的包。</p>
@@ -336,12 +336,12 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>执行 <code>go build</code> 命令的计算机如果拥有多个逻辑 CPU 核心，那么编译代码包的顺序可能会存在一些不确定性。但是，它一定会满足这样的约束条件：依赖代码包 -&gt; 当前代码包 -&gt; 触发代码包。</p>
 </blockquote>
 <p>顺便推荐一个浏览器插件 Octotree，在看 github 项目的时候，此插件可以在浏览器里直接展示整个项目的文件结构，非常方便：</p>
-<p><img src="/2019/07/03/how-go-runs/18.png" alt="github 插件"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60390988-d9f7eb00-9b16-11e9-83ec-64c3c0beb6ad.png" alt="github 插件"></p>
 <p>到这里，你一定会发现，对于 hello-wrold 文件夹下的 pkg 目录好像一直没有涉及到。</p>
 <p>其实，pkg 目录下面应该存放的是涉及到的库文件编译后的包，也就是一些 <code>.a</code> 文件。但是 go build 执行过程中，这些 <code>.a</code> 文件放在临时文件夹中，编译完成后会被直接删掉，因此一般不会用到。</p>
 <p>前面我们提到过，在 go build 命令里加上 <code>-i</code> 参数会安装这些库文件编译的包，也就是这些 <code>.a</code> 文件会放到 pkg 目录下。</p>
 <p>在项目根目录执行 <code>go build -i src/main.go</code> 后，pkg 目录里增加了 util.a 文件：</p>
-<p><img src="/2019/07/03/how-go-runs/19.png" alt="pkg"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60386864-84e3b700-9acd-11e9-9513-68a52ff460bb.png" alt="pkg"></p>
 <p><code>darwin_amd64</code> 表示的是：</p>
 <blockquote>
 <p>GOOS 和 GOARCH。这两个环境变量不用我们设置，系统默认的。</p>
@@ -368,10 +368,10 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go run -x -work src/main.go</span><br></pre></td></tr></table></figure>
 
 <p>-x 可以打印整个过程涉及到的命令，-work 可以看到临时的工作目录：</p>
-<p><img src="/2019/07/03/how-go-runs/20.png" alt="go run 过程"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60391387-ae2d3300-9b1f-11e9-9355-a8f59c2eac9b.png" alt="go run 过程"></p>
 <p>从上图中可以看到，仍然是先编译，再连接，最后直接执行，并打印出了执行结果。</p>
 <p>第一行打印的就是工作目录，最终生成的可执行文件就是放置于此：</p>
-<p><img src="/2019/07/03/how-go-runs/21.png" alt="go run 结果"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/60391357-30692780-9b1f-11e9-8be4-48041779e293.png" alt="go run 结果"></p>
 <p>main 就是最终生成的可执行文件。</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这次的话题太大了，困难重重。从编译原理到 go 启动时的流程，到 go 命令原理，每个话题单独抽出来都可以写很多。</p>
 <p>幸好有一些很不错的书和博客文章可以去参考。这篇文章就作为一个引子，你可以跟随参考资料里推荐的一些内容去发散。</p>
@@ -400,7 +400,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>【曹大 go bootstrap】<a href="https://github.com/cch123/golang-notes/blob/master/bootstrap.md" target="_blank" rel="noopener">https://github.com/cch123/golang-notes/blob/master/bootstrap.md</a></p>
 <p>【golang 启动流程】<a href="https://blog.iceinto.com/posts/go/start/" target="_blank" rel="noopener">https://blog.iceinto.com/posts/go/start/</a></p>
 <p>【探索 golang 程序启动过程】<a href="http://cbsheng.github.io/posts/%E6%8E%A2%E7%B4%A2golang%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/" target="_blank" rel="noopener">http://cbsheng.github.io/posts/%E6%8E%A2%E7%B4%A2golang%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/</a></p>
-<p>【探索 goroutine 的创建】<a href="http://cbsheng.github.io/posts/%E6%8E%A2%E7%B4%A2goroutine%E7%9A%84%E5%88%9B%E5%BB%BA/" target="_blank" rel="noopener">http://cbsheng.github.io/posts/%E6%8E%A2%E7%B4%A2goroutine%E7%9A%84%E5%88%9B%E5%BB%BA/</a><br><img src="/2019/07/03/how-go-runs/22.png" alt="QR"></p>
+<p>【探索 goroutine 的创建】<a href="http://cbsheng.github.io/posts/%E6%8E%A2%E7%B4%A2goroutine%E7%9A%84%E5%88%9B%E5%BB%BA/" target="_blank" rel="noopener">http://cbsheng.github.io/posts/%E6%8E%A2%E7%B4%A2goroutine%E7%9A%84%E5%88%9B%E5%BB%BA/</a><br><img src="https://user-images.githubusercontent.com/7698088/51420568-305b1800-1bce-11e9-962a-52b12be7eb2e.png" alt="QR"></p>
 </div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>饶全成</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2019/07/03/how-go-runs/">https://qcrao.com/2019/07/03/how-go-runs/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本文章著作权归作者所有，任何形式的转载都请注明出处。</li></ul></div><br><div class="tags"><a href="/tags/golang/">golang</a><a href="/tags/编译原理/">编译原理</a></div><div class="post-nav"><a class="pre" href="/2019/07/08/how-to-write-resume-gracefully/">如何打造一份优雅的简历</a><a class="next" href="/2019/06/17/cch-says-memory-reorder/">曹大谈内存重排</a></div><div id="container"></div><link rel="stylesheet" type="text/css" href="//unpkg.com/gitalk/dist/gitalk.css?v=0.0.0"><script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js?v=0.0.0"></script><script type="text/javascript" src="//unpkg.com/gitalk/dist/gitalk.min.js?v=0.0.0"></script><script>var gitalk = new Gitalk({
   clientID: '7e91ec94cfb5913e3d6b',
   clientSecret: '902f91e26bc75c9f8d912557492476d0be254667',
@@ -411,7 +411,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
   distractionFreeMode: false
 })
 gitalk.render('container')
-</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="https://qcrao.com"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/性能优化/">性能优化</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/操作系统/">操作系统</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/求职/">求职</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">21</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">5</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/简历/" style="font-size: 15px;">简历</a> <a href="/tags/golang/" style="font-size: 15px;">golang</a> <a href="/tags/故障排查/" style="font-size: 15px;">故障排查</a> <a href="/tags/内存重排/" style="font-size: 15px;">内存重排</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/协议/" style="font-size: 15px;">协议</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/编译原理/" style="font-size: 15px;">编译原理</a> <a href="/tags/HTTP/" style="font-size: 15px;">HTTP</a> <a href="/tags/牛人/" style="font-size: 15px;">牛人</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/12/27/blogs-written-by-xargin/">那些年曹大写过的博客</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/11/16/become-contributor-of-redir/">喜提 redir contributor</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/09/05/concurrency-in-go-reading-notes/">深度阅读之《Concurrency in Go》</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/06/07/linux-performance-reading-notes/">《Linux 性能优化》读书笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/10/head-first-design-pattern-reading-notes/">《Head First 设计模式》读书笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/06/dive-into-go-sync-map/">深度解密Go语言之sync.map</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/27/codec-accident/">“���”引发的线上事故</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/20/dive-into-go-sync-pool/">深度解密Go语言之sync.pool</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/03/talk-about-g0/">聊聊 g0</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/03/23/how-to-traverse-defer-links/">defer 链表如何被遍历执行</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://github.com/qcrao/Go-Questions" title="Go-Questions" target="_blank">Go-Questions</a><ul></ul><a href="http://xargin.com/" title="No HeadBack" target="_blank">No HeadBack</a><ul></ul><a href="https://draveness.me/" title="面向信仰编程" target="_blank">面向信仰编程</a><ul></ul><a href="https://eddycjy.gitbook.io/golang/" title="跟煎鱼学 Go" target="_blank">跟煎鱼学 Go</a><ul></ul><a href="http://lessisbetter.site/" title="大彬 - Less is better" target="_blank">大彬 - Less is better</a><ul></ul><a href="https://wujunze.com/" title="Panda - Just for fun" target="_blank">Panda - Just for fun</a><ul></ul><a href="https://blog.changkun.de/" title="欧神" target="_blank">欧神</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2020 <a href="/." rel="nofollow">qcrao.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a><a rel="nofollow" target="_blank" href="http://www.beian.miit.gov.cn"> 鄂ICP备20006251号-1</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/x-mathjax-config">MathJax.Hub.Config({
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="https://qcrao.com"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/性能优化/">性能优化</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/操作系统/">操作系统</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/求职/">求职</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">21</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">5</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/牛人/" style="font-size: 15px;">牛人</a> <a href="/tags/故障排查/" style="font-size: 15px;">故障排查</a> <a href="/tags/golang/" style="font-size: 15px;">golang</a> <a href="/tags/协议/" style="font-size: 15px;">协议</a> <a href="/tags/内存重排/" style="font-size: 15px;">内存重排</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/HTTP/" style="font-size: 15px;">HTTP</a> <a href="/tags/编译原理/" style="font-size: 15px;">编译原理</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/简历/" style="font-size: 15px;">简历</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/12/27/blogs-written-by-xargin/">那些年曹大写过的博客</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/11/16/become-contributor-of-redir/">喜提 redir contributor</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/09/05/concurrency-in-go-reading-notes/">深度阅读之《Concurrency in Go》</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/06/07/linux-performance-reading-notes/">《Linux 性能优化》读书笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/10/head-first-design-pattern-reading-notes/">《Head First 设计模式》读书笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/06/dive-into-go-sync-map/">深度解密Go语言之sync.map</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/27/codec-accident/">“���”引发的线上事故</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/20/dive-into-go-sync-pool/">深度解密Go语言之sync.pool</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/03/talk-about-g0/">聊聊 g0</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/03/23/how-to-traverse-defer-links/">defer 链表如何被遍历执行</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://github.com/qcrao/Go-Questions" title="Go-Questions" target="_blank">Go-Questions</a><ul></ul><a href="http://xargin.com/" title="No HeadBack" target="_blank">No HeadBack</a><ul></ul><a href="https://draveness.me/" title="面向信仰编程" target="_blank">面向信仰编程</a><ul></ul><a href="https://eddycjy.gitbook.io/golang/" title="跟煎鱼学 Go" target="_blank">跟煎鱼学 Go</a><ul></ul><a href="http://lessisbetter.site/" title="大彬 - Less is better" target="_blank">大彬 - Less is better</a><ul></ul><a href="https://wujunze.com/" title="Panda - Just for fun" target="_blank">Panda - Just for fun</a><ul></ul><a href="https://blog.changkun.de/" title="欧神" target="_blank">欧神</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2021 <a href="/." rel="nofollow">qcrao.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a><a rel="nofollow" target="_blank" href="http://www.beian.miit.gov.cn"> 鄂ICP备20006251号-1</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/x-mathjax-config">MathJax.Hub.Config({
   tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
   });
 </script><script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

@@ -35,14 +35,14 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>这样本地的wireshark和远程的tcpdump都能抓取到HTTP网络数据包。</p>
 <h3 id="关闭服务进程"><a href="#关闭服务进程" class="headerlink" title="关闭服务进程"></a>关闭服务进程</h3><p>正式请求之前，我们先看一下几种特殊的情形。</p>
 <p>首先，关闭gcs服务进程，请求直接返回RST报文。</p>
-<p><img src="/2019/01/18/dive-into-http/1.png" alt="rst"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51288531-97929400-1a37-11e9-8425-c6a2ca6405ad.png" alt="rst"></p>
 <p>如上图，我在请求的时候，访问服务端的另一个端口<code>5010</code>, 这个端口没有服务监听，和关闭gcs服务进程是同样的效果。可以看到，客户端发送SYN报文，但直接被远程docker RST掉了。因为服务端操作系统找不到监听此端口的进程。</p>
 <h3 id="关闭docker"><a href="#关闭docker" class="headerlink" title="关闭docker"></a>关闭docker</h3><p>关闭docker, 由于发送的SYN报文段得不到响应，因此会进行重试，mac下重试的次数为10次。</p>
-<p><img src="/2019/01/18/dive-into-http/2.png" alt="mac retry"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/50555866-08823e00-0d0d-11e9-97cd-f1cdcca2f641.png" alt="mac retry"></p>
 <p>先每隔1秒重试了5次，再用“指数退避”的时间间隔重试，2s, 4s, 8s, 16s, 32s. 最后结束。</p>
 <h3 id="重启docker"><a href="#重启docker" class="headerlink" title="重启docker"></a>重启docker</h3><p>先进行一次正常的访问，随后重启docker。并再次在本地访问以上url, 浏览器这时还是用的上一次的端口，访问到服务端后，因为它已经重启了，所以服务端已经没有这个连接的消息了。因此会返回一个RST报文。</p>
 <h3 id="正常请求"><a href="#正常请求" class="headerlink" title="正常请求"></a>正常请求</h3><p>服务正常启动，正常发送请求，这次请求成功，那是当然的，嘿嘿！</p>
-<p><img src="/2019/01/18/dive-into-http/3.png" alt="normal_req_wireshark"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/50638281-2e6f4300-0f98-11e9-8d8b-0f3c0cc7eb85.png" alt="normal_req_wireshark"></p>
 <p>这是在mac上用wireshark捕获的数据包，共7个包，前三个包为3次握手的包，第四个包为<code>HTTP</code>层发送的请求数据，第五个包为服务端的TCP 确认报文，第六个包为服务端在<code>HTTP</code>层发送的响应数据，第七个包为mac对第六个包的确认报文。</p>
 <p>重点来关注后面几个包，先看第四个包，</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">0x0000:  4500 0295 0000 4000 3606 623b ac17 ccdc</span><br><span class="line">0x0010:  0a60 5cd4 db9b 1ba8 a59a 46ce 6d03 e87d</span><br><span class="line">0x0020:  8018 1015 0ee7 0000 0101 080a 2e4c b2ef</span><br><span class="line">0x0030:  0f20 3acf 4745 5420 2f64 6174 613f 636d</span><br><span class="line">0x0040:  643d 4665 6e63 6532 4172 6561 266d 6574</span><br><span class="line">0x0050:  613d 7b25 3232 6361 6c6c 6572 2532 323a</span><br><span class="line">0x0060:  2532 3274 6573 7425 3232 2c25 3232 5472</span><br><span class="line">0x0070:  6163 6549 6425 3232 3a25 3232 7465 7374</span><br><span class="line">0x0080:  2532 327d 2672 6571 7565 7374 3d7b 2532</span><br><span class="line">0x0090:  3266 656e 6365 2532 323a 5b7b 2532 326c</span><br><span class="line">0x00a0:  6e67 2532 323a 3130 2e32 2c25 3232 6c61</span><br><span class="line">0x00b0:  7425 3232 3a31 302e 327d 2c25 3230 7b25</span><br><span class="line">0x00c0:  3232 6c6e 6725 3232 3a31 302e 322c 2532</span><br><span class="line">0x00d0:  326c 6174 2532 323a 382e 327d 2c25 3230</span><br><span class="line">0x00e0:  7b25 3232 6c6e 6725 3232 3a38 2e32 2c25</span><br><span class="line">0x00f0:  3232 6c61 7425 3232 3a38 2e32 7d2c 2532</span><br><span class="line">0x0100:  307b 2532 326c 6e67 2532 323a 382e 322c</span><br><span class="line">0x0110:  2532 326c 6174 2532 323a 3130 2e32 7d5d</span><br><span class="line">0x0120:  2c25 3232 636f 6f72 6474 7970 6525 3232</span><br><span class="line">0x0130:  3a32 7d20 4854 5450 2f31 2e31 0d0a 486f</span><br><span class="line">0x0140:  7374 3a20 3130 2e39 362e 3932 2e32 3132</span><br><span class="line">0x0150:  3a37 3038 300d 0a55 7067 7261 6465 2d49</span><br><span class="line">0x0160:  6e73 6563 7572 652d 5265 7175 6573 7473</span><br><span class="line">0x0170:  3a20 310d 0a41 6363 6570 743a 2074 6578</span><br><span class="line">0x0180:  742f 6874 6d6c 2c61 7070 6c69 6361 7469</span><br><span class="line">0x0190:  6f6e 2f78 6874 6d6c 2b78 6d6c 2c61 7070</span><br><span class="line">0x01a0:  6c69 6361 7469 6f6e 2f78 6d6c 3b71 3d30</span><br><span class="line">0x01b0:  2e39 2c2a 2f2a 3b71 3d30 2e38 0d0a 5573</span><br><span class="line">0x01c0:  6572 2d41 6765 6e74 3a20 4d6f 7a69 6c6c</span><br><span class="line">0x01d0:  612f 352e 3020 284d 6163 696e 746f 7368</span><br><span class="line">0x01e0:  3b20 496e 7465 6c20 4d61 6320 4f53 2058</span><br><span class="line">0x01f0:  2031 305f 3133 5f36 2920 4170 706c 6557</span><br><span class="line">0x0200:  6562 4b69 742f 3630 352e 312e 3135 2028</span><br><span class="line">0x0210:  4b48 544d 4c2c 206c 696b 6520 4765 636b</span><br><span class="line">0x0220:  6f29 2056 6572 7369 6f6e 2f31 322e 302e</span><br><span class="line">0x0230:  3220 5361 6661 7269 2f36 3035 2e31 2e31</span><br><span class="line">0x0240:  350d 0a41 6363 6570 742d 4c61 6e67 7561</span><br><span class="line">0x0250:  6765 3a20 7a68 2d63 6e0d 0a41 6363 6570</span><br><span class="line">0x0260:  742d 456e 636f 6469 6e67 3a20 677a 6970</span><br><span class="line">0x0270:  2c20 6465 666c 6174 650d 0a43 6f6e 6e65</span><br><span class="line">0x0280:  6374 696f 6e3a 206b 6565 702d 616c 6976</span><br><span class="line">0x0290:  650d 0a0d 0a</span><br></pre></td></tr></table></figure>
@@ -178,10 +178,10 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">man ascii</span><br></pre></td></tr></table></figure>
 
 <p>可以得到ascii码，我们直接看十六进制的结果：</p>
-<p><img src="/2019/01/18/dive-into-http/4.png" alt="ascii"></p>
-<p><img src="/2019/01/18/dive-into-http/5.png" alt="HTTP 数据"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51357121-5f06bf00-1af8-11e9-9171-fa1e7a8b0228.png" alt="ascii"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/62196186-22255a00-b3b0-11e9-978a-fbda020ad9a6.png" alt="HTTP 数据"></p>
 <p>把上表的最后一列连起来，就是：</p>
-<p><img src="/2019/01/18/dive-into-http/6.png" alt="HTTP 数据"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/62195131-ec7f7180-b3ad-11e9-9b2d-22d466c322d0.png" alt="HTTP 数据"></p>
 <p>其中，cr nl表示回车，换行。</p>
 <p>docker收到数据后，会回复一个ack包。第四个包的总长度为661字节，去掉IP头部20字节，TCP头部固定部分20字节，TCP头部可选长度为12字节，共52字节，因此TCP数据部分总长度为661-52=609字节。另外，序列号为2778351310.</p>
 <p>再来看第5个包，字节流如下：</p>
@@ -651,33 +651,33 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <h1 id="HTTP协议分析"><a href="#HTTP协议分析" class="headerlink" title="HTTP协议分析"></a>HTTP协议分析</h1><p>上面我们把HTTP协议相关的数据给解构了，下面我将对照上面的数据拆解结果，一步步带你深入理解HTTP协议。</p>
 <h2 id="整体介绍"><a href="#整体介绍" class="headerlink" title="整体介绍"></a>整体介绍</h2><p><code>HTTP</code>(Hypertext Transfer Protocol)超文本传输协议，是在互联网上进行通信时使用的一种协议。说得更形象一点：<code>HTTP</code>是现代互联网中使用的公共语言。它最著名的应用是用在浏览器的服务器间的通信。</p>
 <p>HTTP属于应用层协议，底层是靠TCP进行可靠地信息传输。</p>
-<p><img src="/2019/01/18/dive-into-http/7.png" alt="HTTP层次"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51079842-4b2f1780-170a-11e9-9b22-ad68fe4541cc.png" alt="HTTP层次"></p>
 <p>HTTP在传输一段报文时，会以<code>流</code>的形式将报文数据的内容通过<code>一条打开</code>的TCP连接按序传输。TCP接到上层应用交给它的数据流之后，会按序将数据流打散成一个个的分段。再交到IP层，通过网络进行传输。另一端的接收方则相反，它们将接收到的分段按序组装好，交给上层HTTP协议进行处理。</p>
-<p><img src="/2019/01/18/dive-into-http/8.png" alt="tcp http structure"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/50802850-15adb700-1323-11e9-87b8-892139c3104d.png" alt="tcp http structure"></p>
 <h2 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h2><p>我们再来回顾一下：</p>
-<p><img src="/2019/01/18/dive-into-http/9.png" alt="编码"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/61799702-286e8000-ae5e-11e9-9aad-768f0a522f12.png" alt="编码"></p>
 <p>在之前的报文拆解过程中，我们看到多了很多<code>%22</code>，其实，<code>0x22</code>是单引号<code>&quot;</code>的ascii值，</p>
 <p>一方面，URL描述的资源为了能通过其他各种协议传送，但是有些协议在传输过程中会剥去一些特定的字符；另一方面，URL还是可读的，所以那些不可打印的字符就不能在URL中使用了，比如空格；最后，URL还得是完整的，它需要支持所有语言的字符。</p>
 <p>总之，基于很多原因，URL设计者将US-ASCII码和其转义序列集成到URL中，通过转义序列，就可以用US-ASCII字符集的有限子集对任意字符或数据进行编码了。</p>
 <p>转义的方法：百分号(<code>%</code>)后跟着两个表示ASCII码的十六进制数。比如：</p>
-<p><img src="/2019/01/18/dive-into-http/10.png" alt="转义法"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51080616-322e6280-171a-11e9-8deb-28ca0a472d51.png" alt="转义法"></p>
 <p>所以上面在浏览器发送给服务器的URL进行了非“安全字符”编码，也就不奇怪了吧？</p>
-<p><img src="/2019/01/18/dive-into-http/11.png" alt="url保留及受限的字符"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51294507-3aeea380-1a4e-11e9-9f52-2fb248a2d5de.png" alt="url保留及受限的字符"></p>
 <p>在URL中，当上面的保留字符用在保留用途之外的场合时，需要对URL进行编码。</p>
 <h2 id="MIME类型"><a href="#MIME类型" class="headerlink" title="MIME类型"></a>MIME类型</h2><p>响应数据中，我们注意到有一个首部：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-Type: text/plain; charset=utf-8</span><br></pre></td></tr></table></figure>
 
 <p>互联网上有数千种不同的数据类型，HTTP给每种对象都打上了MIME(Multipurpose Internet Media Extension, 多用途因特网邮件扩展)标签，也就是响应数据中的<code>Content-Type</code>. MIME本来是用在邮件协议中的，后来被移植到了HTTP中。浏览器从服务器上取回了一个对象时，会去查看MIME类型，从而得知如何处理这种对象，是该展示图片，还是调用声卡播放声音。MIME通过斜杠来标识对象的主类型和其中的特定的子类型，下表展示了一些常见的类型，其中的实体主体是指body部分：</p>
-<p><img src="/2019/01/18/dive-into-http/12.png" alt="MIME类型"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51149947-3768ea00-189f-11e9-8fcd-d40f2f2ccf0a.png" alt="MIME类型"></p>
 <h2 id="URI-URL-URN"><a href="#URI-URL-URN" class="headerlink" title="URI/URL/URN"></a>URI/URL/URN</h2><p>URI(Uniform Resource Identifier, 统一资源标识符)表示服务器资源，URL(Uniform Resource Locator, 统一资源定位符)和URN(Uniform Resource Name, 统一资源名)是URI的具体实现。URI是一个通用的概念，由两个主要的子集URL和URN构成，URL通过位置、URN通过名字来标识资源。</p>
 <p>URL定义了资源的位置，表示资源的实际地址，在使用URL的过程中，如果URL背后的资源发生了位置移动，访问者就找不到它了。这个时候就要用到URN了，它给定资源一个名字，无论它移动到哪里，都可以通过这个名字来访问到它，简直完美！</p>
 <p>URL通常的格式是：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">协议方案+服务器地址+具体的资源路径</span><br></pre></td></tr></table></figure>
 
 <p>协议方案(scheme)，如 <code>http</code>, <code>ftp</code>，告知web客户端怎样访问资源；服务器地址，如 <code>www.oreilly.com</code>; 具体的资源路径，如 <code>index.html</code>. </p>
-<p><img src="/2019/01/18/dive-into-http/13.png" alt="URL举例"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51070533-b5e64180-167d-11e9-8dc3-4c54b3cbf1a2.png" alt="URL举例"></p>
 <h2 id="HTTP方法"><a href="#HTTP方法" class="headerlink" title="HTTP方法"></a>HTTP方法</h2><p>HTTP支持几种不同的请求方法，每种方法对服务器要求的动作不同，如下图是几种常见的方法：</p>
-<p><img src="/2019/01/18/dive-into-http/14.png" alt="常见的http方法"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51070644-a0721700-167f-11e9-8579-8702abdb860b.png" alt="常见的http方法"></p>
 <p>HEAD方法只获取头部，不获取数据部分。通过头部可以获取比如资源的类型(Content-Type)、资源的长度(Content-Length)这些信息。这样，客户端可以获取即将请求资源的一些情况，可以做到心中有数。</p>
 <p>POST用于向服务器发送数据，常见的是提交表单；PUT用于向服务器上的资源存储数据。</p>
 <h2 id="状态码"><a href="#状态码" class="headerlink" title="状态码"></a>状态码</h2><p>每条HTTP的响应报文都会带上一个三位数字的状态码和一条解释性的“原因短语”，通知客户端本次请求的状态，帮助客户端快速理解事务处理结果，最常见的是：</p>
@@ -686,14 +686,14 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>我们平时使用浏览器的时候，很多的错误码其实是由浏览器处理的，我们感知不到。但是<code>404 Not Found</code>会穿透重重迷雾，来到我们面前，为何？那是因为他对我们爱的深沉啊！</p>
 <p>客户端可以据此状态码，决定下一步的行动（如重定向等）。</p>
 <p>三位数字的第一位表示分类：</p>
-<p><img src="/2019/01/18/dive-into-http/15.png" alt="http状态分类"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51070802-2f802e80-1682-11e9-8a02-f60e2f11c3e6.png" alt="http状态分类"></p>
 <h2 id="报文格式"><a href="#报文格式" class="headerlink" title="报文格式"></a>报文格式</h2><p>HTTP报文实际上是由一行行的字符串组成的，每行字符串的末尾用<code>\r\n</code>分隔，人类可以很方便的阅读。顺便说一句，不是所有的协议都对人类这么友好的，像thrift协议，直接甩一堆字节给你，告诉你说<code>0x0001</code>表示调用方法，诸如此类的，你只能对着一个十六进制的数据块一个个地去“解码”。不可能像HTTP协议这样，直接将字符编码，人类可以直接读懂。</p>
 <p>举个简单的请求报文和响应报文的格式的例子：</p>
-<p><img src="/2019/01/18/dive-into-http/16.png" alt="请求响应报文示例"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51070991-6dcb1d00-1685-11e9-8dae-25b63ad7ad52.png" alt="请求响应报文示例"></p>
 <p>实际上，请求报文也是可以有body（主体）部分的。请求报文是由<code>请求行（request line）、请求头部（header）、空行、请求数据</code>四个部分组成。唯一要注意的一点就是，请求报文即使body部分是空的，请求头部后的<code>回车换行</code>符也是必须要有的。</p>
-<p><img src="/2019/01/18/dive-into-http/17.png" alt="请求报文格式"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51071026-c4d0f200-1685-11e9-81ca-87c8da1dfc30.png" alt="请求报文格式"></p>
 <p>响应报文的格式和请求报文的格式类似：</p>
-<p><img src="/2019/01/18/dive-into-http/18.png" alt="响应报文格式"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51074380-67ef2f00-16b9-11e9-81e7-d5ecaa8d4537.png" alt="响应报文格式"></p>
 <p>请求报文、响应报文的起始行和响应头部里的字段都是文本化、结构化的。而请求body却可以包含任意二进制数据（如图片、视频、软件等），当然也可以包含文本。</p>
 <p>有些首部是通用的，有些则是请求或者响应报文才会有的。</p>
 <table>
@@ -725,14 +725,14 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 </tr>
 </tbody></table>
 <p>顺便提一下， 用telnet直连服务器的http端口，telnet命令会建立一条TCP通道，然后就可以通过这个通道直接发送HTTP请求数据，获取响应数据了。</p>
-<p><img src="/2019/01/18/dive-into-http/19.png" alt="用telnet进行http对话"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51079989-318fcf00-170e-11e9-9958-daf87d65972b.png" alt="用telnet进行http对话"></p>
 <h1 id="HTTP协议进阶"><a href="#HTTP协议进阶" class="headerlink" title="HTTP协议进阶"></a>HTTP协议进阶</h1><h2 id="代理"><a href="#代理" class="headerlink" title="代理"></a>代理</h2><p>HTTP的代理服务器既是Web服务器，又是Web客户端。</p>
-<p><img src="/2019/01/18/dive-into-http/20.png" alt="HTTP代理"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51082793-23ab6f80-1749-11e9-8247-1a3fc5ac4d1d.png" alt="HTTP代理"></p>
 <p>使用代理可以“接触”到所有流过的HTTP流量，代理可以对其进行监视和修改。常见的就是对儿童过滤一些“成人”内容；网络工程师会利用代理服务器来提高安全性，它可以限制哪些应用层的协议数据可以通过，过滤“病毒”等数据；代理可以存储缓存的文件，直接返回给访问者，无需请求原始的服务器资源；对于访问慢速网络上的公共内容时，可以假扮服务器提供服务，从而提高访问速度；这被称为<code>反向代理</code>；可以作为内容路由器，如对付费用户，则将请求导到缓存服务器，提高访问速度；可以将页面的语言转换到与客户端相匹配，这称为<code>内容转码器</code>; <code>匿名代理</code>会主动从HTTP报文中删除身份相关的信息，如<code>User-Agent</code>, <code>Cookie</code>等字段。</p>
 <p>现实中，请求通过以下几种方式打到代理服务器上去：</p>
-<p><img src="/2019/01/18/dive-into-http/21.png" alt="代理获取流量的方式"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51083035-c534c000-174d-11e9-9cab-ddc4a0de2314.png" alt="代理获取流量的方式"></p>
 <p>报文每经过一个中间点（代理或网关），都需要在首部via字段的末尾插入一个可以代表本节点的独特的字符串，包含实现的协议版本和主机地址。注意图中的via字段。</p>
-<p><img src="/2019/01/18/dive-into-http/22.png" alt="via字段"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51083254-e7304180-1751-11e9-95f8-a833a0d10d51.png" alt="via字段"></p>
 <p>请求和响应的报文传输路径通常都是一致的，只不过方向是相反的。因此，响应报文上的via字段表示的中间节点的顺序是刚好相反的。</p>
 <h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><p>当有很多请求访问同一个页面时，服务器会多次传输同一份数据，这些数据重复地在网络中传输着，消耗着大量带宽。如果将这些数据缓存下来，就可以提高响应速度，节省网络带宽了。</p>
 <p>大部分缓存只有在客户端发起请求，并且副本已经比较旧的情况下才会对副本的新鲜度进行检测。最常用的请求首部是<code>If-Modified-Since</code>, 如果在xx时间(此时间即为If-Modified-Since的值)之后内容没有变化，服务器会回应一个<code>304 Not Modified</code>. 否则，服务器会正常响应，并返回原始的文件数据，而这个过程中被称为<code>再验证命中</code>。</p>
@@ -741,10 +741,10 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>缓存服务器返回响应的时候，是基于已缓存的服务器响应的首部，再对一些首部字段做一些微调。比如向其中插入新鲜度信息（如<code>Age</code>, <code>Expires</code>首部等），而且通常会包含一个<code>via</code>首部来说明缓存是由一个缓存代理提供的。注意，这时不要修改<code>Date</code>字段，它表示原始服务器最初构建这条响应的日期。</p>
 <p>HTTP通过<code>文档过期机制</code>和<code>服务器再验证机制</code>保持已缓存数据和服务器间的数据充分一致。</p>
 <p>文档过期通过如下首部字段来表示缓存的有效期：</p>
-<p><img src="/2019/01/18/dive-into-http/23.png" alt="缓存有效期"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51092170-60ba4500-17cf-11e9-8689-71b3c552bff3.png" alt="缓存有效期"></p>
 <p>当上面两个字段暗示的过期时间已到，需要向服务器再次验证文档的新鲜度。如果这时缓存仍和服务器上的原始文档一致，缓存只需要更新头部的相关字段。如上表中提到的<code>Expires</code>字段等。</p>
 <p>为了更好的节省网络流量，缓存服务器可以通过相关首部向原始服务器发送一个<code>条件GET</code>请求, 这样只有在缓存真正过期的情况下，才会返回原始的文档，否则只会返回相关的首部。<code>条件GET</code>请求会用到如下的字段：</p>
-<p><img src="/2019/01/18/dive-into-http/24.png" alt="缓存条件GET"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51092289-8562ec80-17d0-11e9-9e35-47a010a3f7a3.png" alt="缓存条件GET"></p>
 <h2 id="cookie"><a href="#cookie" class="headerlink" title="cookie"></a>cookie</h2><p>cookie是服务器“贴在”客户端身上的标签，由客户端维护的状态片段，并且只会回送给合适的站点。</p>
 <p>有两类cookie: 会话cookie、持久cookie. 会话cookie在退出浏览器后就被删除了；而持久cookie则保存在硬盘中，计算机重启后仍然存在。</p>
 <p>服务器在给客户端的响应字段首部加上<code>Set-cookie</code>或<code>Set-cookie2</code>, 值为<code>名字=值</code>的列表，即可以包含多个字段。当下次浏览器再次访问到相同的网站时，会将这些字段通过<code>Cookie</code>带上。cookie中保留的内容是服务器给此客户端打的标签，方便服务进行追踪的识别码。浏览器会将cookie以特定的格式存储在特定的文件中。</p>
@@ -759,7 +759,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>HTTP的早期版本采用关闭连接的方式来划定报文的结束。这带来的问题是显而易见的：客户端并不能分清是因为服务器正常结束还是中途崩溃了。这里，如果是客户端用关闭来表示请求报文主体部分的结束，是不可取的，因为关闭之后，就无法获取服务器的响应了。当然，客户端可以采用半关闭的方式，只关闭数据发送方向，但是很多服务器是不识别的，会把半关闭当成客户端要成服务器断开来处理。</p>
 <p>HTTP报文在传输的过程中可能会遭到代理或是其他通信实体的无意修改，为了让接收方知道这种情况，服务器会对body部分作一个md5, 并把值放到<code>Content-MD5</code>这个字段中。但是，如果中间的代理即修改了报文主体，又修改了md5, 就不好检测了。因此规定代理是不能修改<code>Content-MD5</code>首部的。这样，客户端在收到数据后，先进行解码，再算出md5, 并与<code>Content-MD5</code>首部进行比较。这主要是防止代理对报文进行了无意的改动。</p>
 <p>HTTP在发送内容之前需要对其进行编码，它是对报文主体进行的可逆变换。比如将报文用gzip格式进行压缩，减少传输时间。常见的编码类型如下：</p>
-<p><img src="/2019/01/18/dive-into-http/25.png" alt="编码类型"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51150609-12c24180-18a2-11e9-9ca4-032f5abcd474.png" alt="编码类型"></p>
 <p>当然，客户端为了避免服务器返回自己不能解码的数据，请求的时候，会在<code>Accept-Encoding</code>首部里带上自己支持的编码方式。如果不传输的话，默认可以接受任何编码方式。</p>
 <p>上面提到的编码是内容编码，它只是在响应报文的主体报文将原始数据进行编码，改变的是内容的格式。还有另一种编码：<code>传输编码</code>。它与内容无关，它是为了改变报文数据在网络上传输的方式。传输编码是在HTTP 1.1中引入的一个新特性。</p>
 <p>通常，服务器需要先生成数据，再进行传输，这时，可以计算数据的长度，并将其编码到<code>Content-Length</code>中。但是，有时，内容是动态生成的，服务器希望在数据生成之前就开始传输，这时，是没有办法知道数据大小的。这种情况下，就要用到<code>传输编码</code>来标注数据的结束的。</p>
@@ -784,10 +784,10 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 </tr>
 </tbody></table>
 <p>分块编码的报文形式是这样的：</p>
-<p><img src="/2019/01/18/dive-into-http/26.png" alt="分块编码"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51151337-671af080-18a5-11e9-80ad-926461f90f6a.png" alt="分块编码"></p>
 <p>每个分块包含一个长度值（十六进制，字节数）和该分块的数据。<code>&lt;CR&gt;&lt;LF&gt;</code>用于区隔长度值和数据。长度值不包含分块中的任何<code>&lt;CR&gt;&lt;LF&gt;</code>序列。最后一个分块，用长度值0来表示结束。注意报文首部包含一个<code>Trailer: Content-MD5</code>, 所以在紧跟着最后一个报文结束之后，就是一个拖挂。其他如，<code>Content-Length</code>, <code>Trailer</code>, <code>Transfer-Encoding</code>也可以作为拖挂。</p>
 <p>内容编码和传输编码是可以结合起来使用的。</p>
-<p><img src="/2019/01/18/dive-into-http/27.png" alt="内容编码和传输编码结合"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51151680-ae55b100-18a6-11e9-819c-5cffcc35cd69.png" alt="内容编码和传输编码结合"></p>
 <h2 id="国际化支持"><a href="#国际化支持" class="headerlink" title="国际化支持"></a>国际化支持</h2><p>HTTP为了支持国际化的内容，客户端要告知服务器自己能理解的何种语言，以及浏览器上安装了何种字母表编码算法。这通过<code>Accept-Charset</code>和<code>Accept-Language</code>首部实现。</p>
 <p>比如：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Accept-Language: fr, en;q=0.8</span><br><span class="line">Accept-Charset: iso-8859-1, utf-8</span><br></pre></td></tr></table></figure>
@@ -796,7 +796,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <p>本质上，HTTP报文的body部分存放的就是一串二进制码，我们先把二进制码转换成字符代码（如ascii是一个字节表示一个字符，而utf-8则表示一个字符的字节数不定，每个字符1~6个字节），之后，用字符代码去字符集中找到对应的元素。</p>
 <p>比较常见的字符集是<code>US-ASCII</code>: 这个字符集是所有字符集的始祖，早在1968年就发布了标准。ASCII码的代码值从0到127, 只需要7个bit位就可以覆盖代码空间。HTTP报文的首部、URL使用的字符集就是ASCII码。可以再看下上文报文分析部分的acsii码集。</p>
 <p><code>US-ASCII</code>是把每个字符编码成固定的7位二进制值。<code>UTF-8</code>则是无固定的编码方案。第一个字节的高位用来表示编码后的字符所用的字节数（如果所用的字节数是5，则第一个字节前5bit都是1，第6bit是0），所需的后续的字节都含有6位的代码值，前两个bit位是用<code>10</code>标识。</p>
-<p><img src="/2019/01/18/dive-into-http/28.png" alt="utf-8编码"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51167193-e2e65e80-18e0-11e9-97da-caea0244386d.png" alt="utf-8编码"></p>
 <p>举个例子，汉字“严”的Unicode编码为<code>4E25</code>(<code>100111000100101</code>), 共有15位，落在上表中的第三行，因此“严”的编码就需要三个字节。将<code>100111000100101</code>填入上表中的<code>c</code>位即可。因此，严的<code>UTF-8</code>编码是11100100 10111000 10100101，转换成十六进制就是E4B8A5. 比如我在谷歌搜索框里搜索“严”字，google发出的请求如下：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://www.google.com.hk/search?q=%E4%B8%A5&amp;oq=%E4%B8%A5&amp;aqs=chrome..69i57j0l5.3802j0j4&amp;sourceid=chrome&amp;ie=UTF-8&amp;gws_rd=cr</span><br></pre></td></tr></table></figure>
 
@@ -810,23 +810,23 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
 <h2 id="HTTP连接"><a href="#HTTP连接" class="headerlink" title="HTTP连接"></a>HTTP连接</h2><p>HTTP连接是HTTP报文传输的关键通道。</p>
 <h3 id="并行连接"><a href="#并行连接" class="headerlink" title="并行连接"></a>并行连接</h3><p>对于一个页面上同时出现多个对象的时候，如果浏览器并行地打开多个连接，同时去获取这些对象，多个连接的TCP握手时延可以进行重叠，速度会快起来。</p>
 <p>如一个包含3张图片的页面，浏览器要发送4次HTTP请求来获取页面。1个用于顶层的HTML页面，3个用于图片。如果采用串行方式，那么连接时延会进行叠加。</p>
-<p><img src="/2019/01/18/dive-into-http/29.png" alt="串行连接"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/50803988-0f213e80-1327-11e9-93d9-10339ee54864.png" alt="串行连接"></p>
 <p>采用并行连接之后：</p>
-<p><img src="/2019/01/18/dive-into-http/30.png" alt="并行连接"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/50803776-13992780-1326-11e9-8752-defd450ca639.png" alt="并行连接"></p>
 <p>但是并行连接也不绝对提升速度，如果一个页面有数百个内嵌对象，那要启动数百个连接，对服务器的性能也是非常大的挑战。所以，通常浏览器会限制并行连接的总数据在一个较小的值，通常是4个，而且服务端可以随意关闭客户端超量的连接。</p>
 <p>另一方面，如果客户端网络带宽较小，每个连接都会去争抢有限的带宽，每个连接都会获取较小的速度，即每个对象都会以较小的速度去加载。这样，并行连接带来的速度提升就会比较小，甚至没有提升。</p>
 <h3 id="持久连接"><a href="#持久连接" class="headerlink" title="持久连接"></a>持久连接</h3><p>HTTP keep-alive机制</p>
 <p>我们知道HTTP请求是“请求-应答”模式，每次请求-应答都要新建一个连接，完成之后要断开连接。HTTP是无状态的，连接之间没有任何关系。</p>
 <p>HTTP是应用层协议，TCP是传输层协议。HTTP底层仍然采用TCP进行传输数据。TCP为HTTP提供了一层可靠的比特传输通道。HTTP一般交换的数据都不大，而每次连接都要进行TCP三次握手，很大一部分时间都消耗在这上面，有时候甚至能达到50%。如果能复用连接，就可以减少由于TCP三次握手所带来的时延。</p>
 <p>HTTP 1.1默认开启keep-alive机制，从上面抓到的包也可以看到。这样，数据传输完成之后保持TCP连接不断开，之后同域名下复用连接，继续用这个通道传输数据。服务器在响应一个请求后，可以保持这个连接keep-alive timeout的时间，在这个时间内没有请求，则关闭此连接；否则，重新开始倒计时keep-alive timeout时间。</p>
-<p><img src="/2019/01/18/dive-into-http/31.png" alt="http keep alive"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51286420-e4716d00-1a2d-11e9-9b95-79b1e0a1984a.png" alt="http keep alive"></p>
 <p>HTTP有keep-alive机制，目的是可以在一个TCP<br>连接上传输多个HTTP事务，以此提高通信效率。底层的TCP其实也有keep-alive机制，它是为了探测TCP连接的活跃性。TCP层的keepalive可以在任何一方设置，可以是一端设置、两端同时设置或者两端都没有设置。新建socket的时候需要设置，从而使得协议栈调用相关函数tcp_set_keepalive，来激活连接的keep-alive属性。</p>
 <p>当网络两端建立了TCP连接之后，闲置（双方没有任何数据流发送往来）时间超过<code>tcp_keepalive_time</code>后，服务器内核就会尝试向客户端发送侦测包，来判断TCP连接状况(有可能客户端崩溃、强制关闭了应用、主机不可达等等)。如果没有收到对方的回答(ack包)，则会在 <code>tcp_keepalive_intvl</code>后再次尝试发送侦测包，直到收到对方的ack,如果一直没有收到对方的ack,一共会尝试 tcp_keepalive_probes次，每次的间隔时间在这里分别是15s, 30s, 45s, 60s, 75s。如果尝试<code>tcp_keepalive_probes</code>次后,依然没有收到对方的ack包，则会丢弃该TCP连接。TCP连接默认闲置时间是2小时，一般设置为30分钟足够了。</p>
 <h3 id="管道化连接"><a href="#管道化连接" class="headerlink" title="管道化连接"></a>管道化连接</h3><p>在keep-alive的基础上，我们可以做地更进一步，在响应到达之前，我们将多条请求按序放入请求队列，服务端在收到请求后，必须按照顺序对应请求的响应。但由于网络环境非常复杂，因此即使请求是按顺序发送的，也不一定是按顺序到达服务端的。而且就算是服务端按序处理的，也不一定是按序返回给客户端，所以最好是在响应中附带一些可以标识请求的参数。</p>
 <p>为了安全起见，管道化的连接只适合“幂等”的请求，一般我们认为：GET/HEAD/PUT/DELETE/TRACE/OPTIONS等方法都是幂等的。</p>
 <h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>以上，就是所有HTTP的通信细节了，足够在日常开发 作中使用了。更多没有涉及的细节可以在用到的时候再去仔细研究。</p>
 <p>文章看完了，不知道你对HTTP的理解有没有更上一层楼？欢迎一起交流探讨。</p>
-<p><img src="/2019/01/18/dive-into-http/32.png" alt="QR margin2"></p>
+<p><img src="https://user-images.githubusercontent.com/7698088/51420568-305b1800-1bce-11e9-962a-52b12be7eb2e.png" alt="QR margin2"></p>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>【http长连接】<a href="https://www.cnblogs.com/cswuyg/p/3653263.html" target="_blank" rel="noopener">https://www.cnblogs.com/cswuyg/p/3653263.html</a></p>
 <p>【http/tcp keep alive】<a href="https://segmentfault.com/a/1190000012894416" target="_blank" rel="noopener">https://segmentfault.com/a/1190000012894416</a></p>
 <p>【http/tcp keep alive】<a href="http://www.nowamagic.net/academy/detail/23350305" target="_blank" rel="noopener">http://www.nowamagic.net/academy/detail/23350305</a></p>
@@ -847,7 +847,7 @@ ga('create','UA-144930666-1','auto');ga('send','pageview');
   distractionFreeMode: false
 })
 gitalk.render('container')
-</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="https://qcrao.com"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/性能优化/">性能优化</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/操作系统/">操作系统</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/求职/">求职</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">21</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">5</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/简历/" style="font-size: 15px;">简历</a> <a href="/tags/golang/" style="font-size: 15px;">golang</a> <a href="/tags/故障排查/" style="font-size: 15px;">故障排查</a> <a href="/tags/内存重排/" style="font-size: 15px;">内存重排</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/协议/" style="font-size: 15px;">协议</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/编译原理/" style="font-size: 15px;">编译原理</a> <a href="/tags/HTTP/" style="font-size: 15px;">HTTP</a> <a href="/tags/牛人/" style="font-size: 15px;">牛人</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/12/27/blogs-written-by-xargin/">那些年曹大写过的博客</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/11/16/become-contributor-of-redir/">喜提 redir contributor</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/09/05/concurrency-in-go-reading-notes/">深度阅读之《Concurrency in Go》</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/06/07/linux-performance-reading-notes/">《Linux 性能优化》读书笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/10/head-first-design-pattern-reading-notes/">《Head First 设计模式》读书笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/06/dive-into-go-sync-map/">深度解密Go语言之sync.map</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/27/codec-accident/">“���”引发的线上事故</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/20/dive-into-go-sync-pool/">深度解密Go语言之sync.pool</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/03/talk-about-g0/">聊聊 g0</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/03/23/how-to-traverse-defer-links/">defer 链表如何被遍历执行</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://github.com/qcrao/Go-Questions" title="Go-Questions" target="_blank">Go-Questions</a><ul></ul><a href="http://xargin.com/" title="No HeadBack" target="_blank">No HeadBack</a><ul></ul><a href="https://draveness.me/" title="面向信仰编程" target="_blank">面向信仰编程</a><ul></ul><a href="https://eddycjy.gitbook.io/golang/" title="跟煎鱼学 Go" target="_blank">跟煎鱼学 Go</a><ul></ul><a href="http://lessisbetter.site/" title="大彬 - Less is better" target="_blank">大彬 - Less is better</a><ul></ul><a href="https://wujunze.com/" title="Panda - Just for fun" target="_blank">Panda - Just for fun</a><ul></ul><a href="https://blog.changkun.de/" title="欧神" target="_blank">欧神</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2020 <a href="/." rel="nofollow">qcrao.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a><a rel="nofollow" target="_blank" href="http://www.beian.miit.gov.cn"> 鄂ICP备20006251号-1</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/x-mathjax-config">MathJax.Hub.Config({
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="https://qcrao.com"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/性能优化/">性能优化</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/操作系统/">操作系统</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/求职/">求职</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">21</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">5</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/牛人/" style="font-size: 15px;">牛人</a> <a href="/tags/故障排查/" style="font-size: 15px;">故障排查</a> <a href="/tags/golang/" style="font-size: 15px;">golang</a> <a href="/tags/协议/" style="font-size: 15px;">协议</a> <a href="/tags/内存重排/" style="font-size: 15px;">内存重排</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/HTTP/" style="font-size: 15px;">HTTP</a> <a href="/tags/编译原理/" style="font-size: 15px;">编译原理</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/简历/" style="font-size: 15px;">简历</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/12/27/blogs-written-by-xargin/">那些年曹大写过的博客</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/11/16/become-contributor-of-redir/">喜提 redir contributor</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/09/05/concurrency-in-go-reading-notes/">深度阅读之《Concurrency in Go》</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/06/07/linux-performance-reading-notes/">《Linux 性能优化》读书笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/10/head-first-design-pattern-reading-notes/">《Head First 设计模式》读书笔记</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/06/dive-into-go-sync-map/">深度解密Go语言之sync.map</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/27/codec-accident/">“���”引发的线上事故</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/20/dive-into-go-sync-pool/">深度解密Go语言之sync.pool</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/03/talk-about-g0/">聊聊 g0</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/03/23/how-to-traverse-defer-links/">defer 链表如何被遍历执行</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://github.com/qcrao/Go-Questions" title="Go-Questions" target="_blank">Go-Questions</a><ul></ul><a href="http://xargin.com/" title="No HeadBack" target="_blank">No HeadBack</a><ul></ul><a href="https://draveness.me/" title="面向信仰编程" target="_blank">面向信仰编程</a><ul></ul><a href="https://eddycjy.gitbook.io/golang/" title="跟煎鱼学 Go" target="_blank">跟煎鱼学 Go</a><ul></ul><a href="http://lessisbetter.site/" title="大彬 - Less is better" target="_blank">大彬 - Less is better</a><ul></ul><a href="https://wujunze.com/" title="Panda - Just for fun" target="_blank">Panda - Just for fun</a><ul></ul><a href="https://blog.changkun.de/" title="欧神" target="_blank">欧神</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2021 <a href="/." rel="nofollow">qcrao.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a><a rel="nofollow" target="_blank" href="http://www.beian.miit.gov.cn"> 鄂ICP备20006251号-1</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/x-mathjax-config">MathJax.Hub.Config({
   tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
   });
 </script><script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
