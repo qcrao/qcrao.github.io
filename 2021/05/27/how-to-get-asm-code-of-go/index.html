@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.9.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="日拱一卒，终有所成！"><title>如何用汇编打同事的脸 | qcrao</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create','UA-144930666-1','auto');ga('send','pageview');
+</script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = 'https://hm.baidu.com/hm.js?' + '6d54b847f6c5fb175b1ed2d153159403';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">如何用汇编打同事的脸</h1><a id="logo" href="/.">qcrao</a><p class="description">码农桃花源</p></div><div id="nav-menu"><a href="/"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/readings/"><i class="fa fa-book"> 阅读</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">如何用汇编打同事的脸</h1><div class="post-meta">May 27, 2021<span> | </span><span class="category"><a href="/categories/编程语言/">编程语言</a></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#go-tool-生成汇编"><span class="toc-number">1.</span> <span class="toc-text">go tool 生成汇编</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#找到-runtime-源码"><span class="toc-number">2.</span> <span class="toc-text">找到 runtime 源码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#用-dlv-调试"><span class="toc-number">3.</span> <span class="toc-text">用 dlv 调试</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="post-content"><p>今天介绍几个常用的查看 Go 汇编代码、调试 Go 程序的命令和工具，既可以在平时和同事、网友抬杠时使用，还能在关键时刻打他们的脸。</p>
+<p>比如，有同事说这段代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">	Class <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> a = &amp;Student&#123;<span class="number">1</span>&#125;</span><br><span class="line">	<span class="built_in">println</span>(a)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>的执行效率要高于下面这段代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">	Class <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> a = Student&#123;<span class="number">1</span>&#125;</span><br><span class="line">	<span class="keyword">var</span> b = &amp;a</span><br><span class="line">	<span class="built_in">println</span>(b)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>并且给你讲了一通道理，你好像没法辩赢他。怎么办？</p>
+<p>直接用一行命令生成汇编代码，马上可以戳穿他，打他的脸。</p>
+<h1 id="go-tool-生成汇编"><a href="#go-tool-生成汇编" class="headerlink" title="go tool 生成汇编"></a>go tool 生成汇编</h1><p>其实很简单，有两个命令可以做到：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool compile -S main.go</span><br></pre></td></tr></table></figure>
+
+<p>和：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go build main.go &amp;&amp; go tool objdump ./main</span><br></pre></td></tr></table></figure>
+
+<p>前者是编译，即将源代码编译成 <code>.o</code> 目标文件，并输出汇编代码。</p>
+<p>后者是反汇编，即从可执行文件反编译成汇编，所以要先用 <code>go build</code> 命令编译出可执行文件。</p>
+<p>二者不尽相同，但都能看到前面两个示例代码对应的汇编代码是一致的。同事的“谣言”不攻自破，脸都被你打疼了。</p>
+<h1 id="找到-runtime-源码"><a href="#找到-runtime-源码" class="headerlink" title="找到 runtime 源码"></a>找到 runtime 源码</h1><p>Go 是一门有 runtime 的语言，什么是 runtime？其实就是一段辅助程序，用户没有写的代码，runtime 替我们写了，比如 Go 调度器的代码。</p>
+<p>我们只需要知道用 go 关键字创建 goroutine，就可以疯狂堆业务了。至于 goroutine 是怎么被调度的，根本不需要关心，这些是 runtime 调度器的工作。</p>
+<p>那我们自己写的代码如何和 runtime 里的代码对应起来呢？</p>
+<p>前面介绍的方法就可以做到，只需要加一个 <code>grep</code> 就可以。</p>
+<p>例如，我想知道 go 关键字对应 runtime 里的哪个函数，于是写了一段测试代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="built_in">println</span>(<span class="number">1</span>+<span class="number">2</span>)</span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为 <code>go func(){}()</code> 那一行代码在第 4 行，所以，grep 的时候加一个条件：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">go tool compile -S main.go | grep <span class="string">"main.go:4"</span></span><br><span class="line"></span><br><span class="line">// 或</span><br><span class="line"></span><br><span class="line">go build main.go &amp;&amp; go tool objdump ./main | grep <span class="string">"main.go:4"</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210525232528.png" alt="go func"></p>
+<p>马上就能看到 <code>go func(){}()</code> 对应 <code>newproc()</code> 函数，这时再深入研究下 <code>newproc()</code> 函数就大概知道 goroutine 是如何被创建的。</p>
+<h1 id="用-dlv-调试"><a href="#用-dlv-调试" class="headerlink" title="用 dlv 调试"></a>用 dlv 调试</h1><p>那有同学问了，有没有其他可以调试 Go、以及和 Go 程序互动的方法呢？其实是有的！这就是我们要介绍的 dlv 调试工具，目前它对调试 Go 的程序支持是最好的。</p>
+<p>之前没我怎么研究它，只会一些非常简单的命令，这次学会了几个进阶的指令，威力挺大，也进一步加深了对 Go 的理解。</p>
+<p>下面我们带着一个任务来讲解 dlv 如何使用。</p>
+<p>我们知道，向一个 nil 的 slice append 元素，不会有任何问题。但是向一个 nil 的 map 插入新元素，马上就会报 panic。这是为什么呢？又是在哪 panic 呢？</p>
+<p>首先写出让 map 产生 panic 的示例程序：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> m <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span></span><br><span class="line">	m[<span class="number">1</span>] = <span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接着用 <code>go build</code> 命令编译生成可执行文件：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go build a.go</span><br></pre></td></tr></table></figure>
+
+<p>然后，使用 dlv 进入调试状态：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dlv <span class="built_in">exec</span> ./a</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>b</code> 这个命令打断点，有三种方法：</p>
+<ol>
+<li>b + 地址</li>
+<li>b + 代码行数</li>
+<li>b + 函数名</li>
+</ol>
+<p>我们要在对 map 赋值的地方加个断点。先找到代码位置：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat -n a.go</span><br></pre></td></tr></table></figure>
+
+<p>看到：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210525234605.png" alt="hello.go"></p>
+<p>赋值的地方在第 5 行，加断点：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(dlv) b a.go:5</span><br><span class="line">Breakpoint 1 <span class="built_in">set</span> at 0x45e55d <span class="keyword">for</span> main.main() ./a.go:5</span><br></pre></td></tr></table></figure>
+
+<p>执行 <code>c</code> 命令，直接运行到断点处：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210525233423.png" alt="运行到断点处"></p>
+<p>执行 <code>disass</code> 命令，可以看到汇编指令：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210525233635.png" alt="disass"></p>
+<p>这时使用 <code>si</code> 命令，执行单条指令，多次执行 <code>si</code>，就会执行到 map 赋值函数 <code>mapassign_fast64</code>：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210525233856.png" alt="mapassign_fast64"></p>
+<p>这时再用单步命令 <code>s</code>，就会进入判断 h 的值为 nil 的分支，然后执行 <code>panic</code> 函数：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210525234044.png" alt="panic"></p>
+<p>至此，向 nil 的 map 赋值时，产生 panic 的代码就被我们找到了。接着，按图索骥找到对应 runtime 源码的位置，就可以进一步探索了。</p>
+<p>除此之外，我们还可以使用 <code>bt</code> 命令看到调用栈：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210525234258.png" alt="调用栈"></p>
+<p>使用 <code>frame 1</code> 命令可以跳转到相应位置。这里 <code>1</code> 对应图中的 <code>a.go:5</code>，也就是我们前面打断点的地方，是不是非常酷炫。</p>
+<p>上面这张图里我们也能清楚地看到，用户 goroutine 其实是被 goexit 函数一路调用过来的。当用户 goroutine 执行完毕后，就会回到 goexit 函数做一些收尾工作。当然，这是题外话了。</p>
+<p>另外，用 dlv 也能干第二部分“找到 runtime 源码”的活。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>今天系统地讲了几招通过命令和工具查看用户代码对应的 runtime 源码或者汇编代码的方法，非常实用。最后再汇总一下：</p>
+<ol>
+<li>go tool compile</li>
+<li>go tool objdump</li>
+<li>dlv</li>
+</ol>
+<p>使用这些命令和工具，可以让你在看 Go 源码的过程中事半功倍。</p>
+</div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>饶全成</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2021/05/27/how-to-get-asm-code-of-go/">https://qcrao.com/2021/05/27/how-to-get-asm-code-of-go/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本文章著作权归作者所有，任何形式的转载都请注明出处。</li></ul></div><br><div class="tags"><a href="/tags/golang/">golang</a></div><div class="post-nav"><a class="pre" href="/2021/06/01/getting-to-know-the-power-of-ast/">初始 ast 的威力</a><a class="next" href="/2021/05/24/confusing-goroutine-running-orders/">迷惑的 goroutine 执行顺序</a></div><div id="container"></div><link rel="stylesheet" type="text/css" href="//unpkg.com/gitalk/dist/gitalk.css?v=0.0.0"><script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js?v=0.0.0"></script><script type="text/javascript" src="//unpkg.com/gitalk/dist/gitalk.min.js?v=0.0.0"></script><script>var gitalk = new Gitalk({
+  clientID: '7e91ec94cfb5913e3d6b',
+  clientSecret: '902f91e26bc75c9f8d912557492476d0be254667',
+  repo: 'qcrao.github.io',
+  owner: 'qcrao',
+  admin: ['qcrao'],
+  id: md5(location.pathname),
+  distractionFreeMode: false
+})
+gitalk.render('container')
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="https://qcrao.com"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/性能优化/">性能优化</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术人生/">技术人生</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/操作系统/">操作系统</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/求职/">求职</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">34</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">6</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/golang/" style="font-size: 15px;">golang</a> <a href="/tags/故障排查/" style="font-size: 15px;">故障排查</a> <a href="/tags/协议/" style="font-size: 15px;">协议</a> <a href="/tags/内存重排/" style="font-size: 15px;">内存重排</a> <a href="/tags/牛人/" style="font-size: 15px;">牛人</a> <a href="/tags/HTTP/" style="font-size: 15px;">HTTP</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/编译原理/" style="font-size: 15px;">编译原理</a> <a href="/tags/小技巧/" style="font-size: 15px;">小技巧</a> <a href="/tags/简历/" style="font-size: 15px;">简历</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2021/08/09/talk-about-map-extra-field/">从 map 的 extra 字段谈起</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/08/03/go-tls-pr-by-xargin/">如何给 Go 提性能优化的 pr</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/07/21/start-to-build-up-personal-tools/">开始积累自己的工具库</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/07/19/accident-by-a-metric/">一个 metrics 打点引发的事故</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/07/15/how-to-use-functional-options-pattern/">如何优雅地指定配置项</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/06/10/out-of-tech/">技术之外</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/06/07/where-is-goexit-from/">哪来里的 goexit？</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/06/01/getting-to-know-the-power-of-ast/">初始 ast 的威力</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/05/27/how-to-get-asm-code-of-go/">如何用汇编打同事的脸</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/05/24/confusing-goroutine-running-orders/">迷惑的 goroutine 执行顺序</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://github.com/qcrao/Go-Questions" title="Go-Questions" target="_blank">Go-Questions</a><ul></ul><a href="http://xargin.com/" title="No HeadBack" target="_blank">No HeadBack</a><ul></ul><a href="https://blog.changkun.de/" title="欧神" target="_blank">欧神</a><ul></ul><a href="https://draveness.me/" title="面向信仰编程" target="_blank">面向信仰编程</a><ul></ul><a href="https://eddycjy.gitbook.io/golang/" title="跟煎鱼学 Go" target="_blank">跟煎鱼学 Go</a><ul></ul><a href="http://lessisbetter.site/" title="大彬 - Less is better" target="_blank">大彬 - Less is better</a><ul></ul><a href="https://wujunze.com/" title="Panda - Just for fun" target="_blank">Panda - Just for fun</a><ul></ul><a href="https://mytechshares.com/" title="董泽润" target="_blank">董泽润</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2021 <a href="/." rel="nofollow">qcrao.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a><a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn"> 鄂ICP备20006251号-1</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script><script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

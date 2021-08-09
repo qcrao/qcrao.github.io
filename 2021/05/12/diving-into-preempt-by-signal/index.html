@@ -1,0 +1,131 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.9.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="日拱一卒，终有所成！"><title>深度解密 Go 语言之基于信号的抢占式调度 | qcrao</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create','UA-144930666-1','auto');ga('send','pageview');
+</script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = 'https://hm.baidu.com/hm.js?' + '6d54b847f6c5fb175b1ed2d153159403';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">深度解密 Go 语言之基于信号的抢占式调度</h1><a id="logo" href="/.">qcrao</a><p class="description">码农桃花源</p></div><div id="nav-menu"><a href="/"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/readings/"><i class="fa fa-book"> 阅读</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">深度解密 Go 语言之基于信号的抢占式调度</h1><div class="post-meta">May 12, 2021</div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#preemptone"><span class="toc-number">1.</span> <span class="toc-text">preemptone</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#注册-sighandler"><span class="toc-number">2.</span> <span class="toc-text">注册 sighandler</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#信号执行过程"><span class="toc-number">3.</span> <span class="toc-text">信号执行过程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#dosigPreempt"><span class="toc-number">4.</span> <span class="toc-text">dosigPreempt</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pushCall"><span class="toc-number">5.</span> <span class="toc-text">pushCall</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#异步抢占"><span class="toc-number">6.</span> <span class="toc-text">异步抢占</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-number">7.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="post-content"><p>不知道大家在实际工作中有没有遇到过老版本 Go 调度器的坑：死循环导致程序“死机”。我去年就遇到过，并且搞出了一起 P0 事故，还写了篇弱智的找 bug <a href="https://mp.weixin.qq.com/s/xe8KXD39YlJdDG4cLT0veA" target="_blank" rel="noopener">文章</a>。</p>
+<p>识别事故的本质，并且用一个非常简单的示例展示出来，是功力的一种体现。那次事故的原因可以简化成如下的 demo：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210507230327.png" alt="demo-1"></p>
+<p>我来简单解释一下上面这个程序。在主 goroutine 里，先用 GoMAXPROCS 函数拿到 CPU 的逻辑核心数 threads。这意味着 Go 进程会创建 threads 个数的 P。接着，启动了 threads 个数的 goroutine，每个 goroutine 都在执行一个无限循环，并且这个无限循环只是简单地执行 <code>x++</code>。</p>
+<p>接着，主 goroutine sleep 了 1 秒钟；最后，打印 x 的值。</p>
+<p>你可以自己思考一下，输出会是什么？</p>
+<p>如果你想出了答案，接着再看下面这个 demo：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210507230413.png" alt="demo-2"></p>
+<p>我也来解释一下，在主 goroutine 里，只启动了一个 goroutine（虽然程序里用了一个 for 循环，但其实只循环了一次，完全是为了和前面的 demo 看起来更协调一些），同样执行了一个 <code>x++</code> 的无限 for 循环。</p>
+<p>和前一个 demo 的不同点在于，在主 goroutine 里，我们手动执行了一次 GC；最后，打印 x 的值。</p>
+<p>如果你能答对第一题，大概率也能答对第二题。</p>
+<p>下面我就来揭晓答案。</p>
+<p>其实我留了一个坑，我没说用哪个版本的 Go 来运行代码。所以，正确的答案是：</p>
+<table>
+<thead>
+<tr>
+<th>Go 版本</th>
+<th>demo-1</th>
+<th>demo-2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1.13</td>
+<td>卡死</td>
+<td>卡死</td>
+</tr>
+<tr>
+<td>1.14</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody></table>
+<p>这个其实就是 Go 调度器的坑了。</p>
+<p>假设在 demo-1 中，共有 4 个 P，于是创建了 4 个 goroutine。当主 goroutine 执行 sleep 的时候，刚刚创建的 4 个 goroutine 马上就把 4 个 P 霸占了，执行死循环，而且竟然没有进行函数调用，就只有一个简单的赋值语句。Go 1.13 对这种情况是无能为力的，没有任何办法让这些 goroutine 停下来，进程对外表现出“死机”。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210507231301.png" alt="demo-1 示意图"></p>
+<p>由于 Go 1.14 实现了基于信号的抢占式调度，这些执行无限循环的 goroutine 会被调度器“拿下”，P 就会空出来。所以当主 goroutine sleep 时间到了之后，马上就能获得 P，并得以打印出 x 的值。至于 x 为什么输出的是 0，不太好解释，因为这是一种未定义（有数据竞争，正常情况下要加锁）的行为，可能的一个原因是 CPU 的 cache 没有来得及更新，不过不太好验证。</p>
+<p>理解了这个 demo，第二个 demo 其实是类似的道理：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210507232036.png" alt="demo-2 示意图"></p>
+<p>当主 goroutine 主动触发 GC 时，需要把所有当前正在运行的 goroutine 停止下来，即 stw（stop the world），但是 goroutine 正在执行无限循环，没法让它停下来。当然，Go 1.14 还是可以抢占掉这个 goroutine，从而打印出 x 的值，也是 0。</p>
+<p>Go 1.14 之前的版本，能否抢占一个正在执行死循环的 goroutine 其实是有讲究的：</p>
+<blockquote>
+<p>能否被抢占，不是看有没有调用函数，而是看函数的序言部分有没有插入扩栈检测指令。</p>
+</blockquote>
+<blockquote>
+<p>如果没有调用函数，肯定不会被抢占。</p>
+</blockquote>
+<blockquote>
+<p>有些虽然也调用了函数，但其实不会插入检测指令，这个时候也不会被抢占。</p>
+</blockquote>
+<p>像前面的两个 demo，不可能有机会在函数扩栈检测期间主动放弃 CPU 使用权，从而完成抢占，因为没有函数调用。具体的过程后面有机会再写一篇文章详细讲，本文主要看基于信号的抢占式调度如何实现。</p>
+<h1 id="preemptone"><a href="#preemptone" class="headerlink" title="preemptone"></a>preemptone</h1><p>一方面，Go 进程在启动的时候，会开启一个后台线程 sysmon，监控执行时间过长的 goroutine，进而发出抢占。另一方面，GC 执行 stw 时，会让所有的 goroutine 都停止，其实就是抢占。这两者都会调用 <code>preemptone()</code> 函数。</p>
+<p><code>preemptone()</code> 函数会沿着下面这条路径：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">preemptone-&gt;preemptM-&gt;signalM-&gt;tgkill</span><br></pre></td></tr></table></figure>
+
+<p>向正在运行的 goroutine 所绑定的的那个 M（也可以说是线程）发出 <code>SIGURG</code> 信号。</p>
+<h1 id="注册-sighandler"><a href="#注册-sighandler" class="headerlink" title="注册 sighandler"></a>注册 sighandler</h1><p>每个 M 在初始化的时候都会设置信号处理函数：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">initsig-&gt;setsig-&gt;sighandler</span><br></pre></td></tr></table></figure>
+
+<h1 id="信号执行过程"><a href="#信号执行过程" class="headerlink" title="信号执行过程"></a>信号执行过程</h1><p>我们从“宏观”层面看一下信号的执行过程：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210507233951.png" alt="信号执行过程"></p>
+<p>主程序（线程）正在“勤勤恳恳”地执行指令：它已经执行完了指令 <code>m</code>，接着就要执行指令 <code>m+1</code> 了……不幸在这个时候发生了，线程收到了一个信号，对应图中的 <code>①</code>。</p>
+<p>接着，内核会接管执行流，转而去执行预先设置好的信号处理器程序，对应到 Go 里，就是执行 sighandler，对应图中的 <code>②</code> 和 <code>③</code>。</p>
+<p>最后，执行流又交到线程手上，继续执行指令 <code>m+1</code>，对应图中的 <code>④</code>。</p>
+<p>这里其实涉及到了一些现场的保护和恢复，内核都帮我们搞定了，我们不用操心。</p>
+<h1 id="dosigPreempt"><a href="#dosigPreempt" class="headerlink" title="dosigPreempt"></a>dosigPreempt</h1><p>当线程收到 <code>SIGURG</code> 信号的时候，就会去执行 sighandler 函数，核心是 doSigPreempt 函数。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sighandler</span><span class="params">(sig <span class="keyword">uint32</span>, info *siginfo, ctxt unsafe.Pointer, gp *g)</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> sig == sigPreempt &amp;&amp; debug.asyncpreemptoff == <span class="number">0</span> &#123;</span><br><span class="line">		doSigPreempt(gp, c)</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>doSigPreempt</code> 这个函数其实很短，一会儿就执行完了。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">doSigPreempt</span><span class="params">(gp *g, ctxt *sigctxt)</span></span> &#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">if</span> ok, newpc := isAsyncSafePoint(gp, ctxt.sigpc(), ctxt.sigsp(), ctxt.siglr()); ok &#123;</span><br><span class="line">		<span class="comment">// Adjust the PC and inject a call to asyncPreempt.</span></span><br><span class="line">		ctxt.pushCall(funcPC(asyncPreempt), newpc)</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>isAsyncSafePoint</code> 函数会返回当前 goroutine 能否被抢占，以及从哪条指令开始抢占，返回的 newpc 表示安全的抢占地址。</p>
+<p>接着，<code>pushCall</code> 调整了一下 SP，设置了几个寄存器的值就返回了。按理说，返回之后，就会接着执行指令 <code>m+1</code> 了，但那还怎么实现抢占呢？其实魔法都在 <code>pushCall</code> 这个函数里。</p>
+<h1 id="pushCall"><a href="#pushCall" class="headerlink" title="pushCall"></a>pushCall</h1><p>在分析这个函数之前，我们需要先复习一下 Go 函数的调用规约，重点回顾一下 CALL 和 RET 指令就行了。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210509114734.png" alt="call 和 ret 指令"></p>
+<p><code>call</code> 指令可以简单地理解为 <code>push ip</code> + <code>JMP</code>。这个 ip 其实就是返回地址，也就是调用完子函数接下来该执行啥指令的地址。所以 <code>push ip</code> 就是在 call 一个子函数之前，将返回地址压入栈中，然后 JMP 到子函数的地址执行。</p>
+<p><code>ret</code> 指令和 <code>call</code> 指令刚好相反，它将返回地址从栈上 pop 到 IP 寄存器，使得 CPU 从这个地址继续执行。</p>
+<p>理解了 <code>call</code> 和 <code>ret</code>，我们再来分析 <code>pushCall</code> 函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *sigctxt)</span> <span class="title">pushCall</span><span class="params">(targetPC, resumePC <span class="keyword">uintptr</span>)</span></span> &#123;</span><br><span class="line">	<span class="comment">// Make it look like we called target at resumePC.</span></span><br><span class="line">	sp := <span class="keyword">uintptr</span>(c.rsp())</span><br><span class="line">	sp -= sys.PtrSize</span><br><span class="line">	*(*<span class="keyword">uintptr</span>)(unsafe.Pointer(sp)) = resumePC</span><br><span class="line">	c.set_rsp(<span class="keyword">uint64</span>(sp))</span><br><span class="line">	c.set_rip(<span class="keyword">uint64</span>(targetPC))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意看这行注释：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">// Make it look like we called target at resumePC.</span><br></pre></td></tr></table></figure>
+
+<p>它清晰地说明了这个函数的作用：让 CPU 误以为是 resumePC 调用了 targetPC。而这个 resumePC 就是上一步调用 isAsyncSafePoint 函数返回的 newpc，它代表我们抢占 goroutine 的指令地址。</p>
+<p>前两行代码将 SP 下移了 8 个字节，并且把 resumePC 入栈（注意，它其实是一个返回地址），接着把 targetPC 设置到 ip 寄存器，sp 设置到 SP 寄存器。这使得从内核返回到用户态执行时，不是从指令 <code>m+1</code>，而是直接从 targetPC 开始执行，等到 targetPC 执行完，才会返回到 resumePC 继续执行。整个过程就像是 resumePC 调用了 targetPC 一样。而 targetPC 其实就是 <code>funcPC(asyncPreempt)</code>，也就是抢占函数。</p>
+<p>于是我们可以看到，信号处理器程序 sighandler 只是将一个异步抢占函数给“安插”进来了，而真正的抢占过程则是在 asyncPreempt 函数中完成。</p>
+<h1 id="异步抢占"><a href="#异步抢占" class="headerlink" title="异步抢占"></a>异步抢占</h1><p>当执行完 sighandler，执行流再次回到线程。由于 sighandler 插入了一个 asyncPreempt 的函数调用，所以 goroutine 原本的任务就得不到推进，转而执行 asyncPreempt 去了：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210509160026.png" alt="asyncPreempt 调用链路"></p>
+<p><code>mcall(fn)</code> 的作用是切到 g0 栈去执行函数 <code>fn</code>, <code>fn</code> 永不返回。在 <code>mcall(gopreempt_m)</code> 这里，fn 就是 gopreempt_m。</p>
+<p><code>gopreempt_m</code> 直接调用 <code>goschedImpl</code>：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210509160534.png" alt="goschedImpl"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/qcrao/images/blog/20210509160551.png" alt="dropg"></p>
+<p>最精彩的部分就在 goschedImpl 函数。它首先将 goroutine 的状态从 running 改成 runnable；接着调 dropg 将 g 和 m 解绑；然后调用 globrunqput 将 goroutine 丢到全局可运行队列，由于是全局可运行队列，所以需要加锁。最后，调用 <code>schedule()</code> 函数进入调度循环。关于调度循环，可以看这篇<a href="https://mp.weixin.qq.com/s/QFmh0wq50H9-4ZrtEknpCQ" target="_blank" rel="noopener">文章</a>。</p>
+<p>运行 <code>schedule</code> 函数用的是 g0 栈，它会去寻找其他可运行的 goroutine，包括从当前 P 本地可运行队列获取、从全局可运行队列获取、从其他 P 偷等方式找到下一个可运行的 goroutine 并执行。</p>
+<p>至此，这个线程就转而去执行其他的 goroutine，当前的 goroutine 也就被抢占了。</p>
+<p>那被抢占的这个 goroutine 什么时候会再次得到执行呢？</p>
+<p>因为它已经被丢到全局可运行队列了，所以它的优先级就会降低，得到调度的机会也就降低，但总还是有机会再次执行的，并且它会从调用 mcall 的下一条指令接着执行。</p>
+<p>还记得 mcall 函数的作用吗？它会切到 g0 栈执行 gopreempt_m，自然它也会保存 goroutine 的执行进度，其实就是 SP、BP、PC 寄存器的值，当 goroutine 再次被调度执行时，就会从原来的执行流断点处继续执行下去。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文讲述了 Go 语言基于信号的异步抢占的全过程，一起来回顾下：</p>
+<ol>
+<li>M 注册一个 SIGURG 信号的处理函数：sighandler。</li>
+<li>sysmon 线程检测到执行时间过长的 goroutine、GC stw 时，会向相应的 M（或者说线程，每个线程对应一个 M）发送 SIGURG 信号。</li>
+<li>收到信号后，内核执行 sighandler 函数，通过 pushCall 插入 asyncPreempt 函数调用。</li>
+<li>回到当前 goroutine 执行 asyncPreempt 函数，通过 mcall 切到 g0 栈执行 gopreempt_m。</li>
+<li>将当前 goroutine 插入到全局可运行队列，M 则继续寻找其他 goroutine 来运行。</li>
+<li>被抢占的 goroutine 再次调度过来执行时，会继续原来的执行流。</li>
+</ol>
+</div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>饶全成</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2021/05/12/diving-into-preempt-by-signal/">https://qcrao.com/2021/05/12/diving-into-preempt-by-signal/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本文章著作权归作者所有，任何形式的转载都请注明出处。</li></ul></div><br><div class="tags"></div><div class="post-nav"><a class="pre" href="/2021/05/20/go-schedule-under-the-hood/">Go 调度的本质</a><a class="next" href="/2021/04/19/mastering-go-reading-notes/">深度阅读之《Mastering Go》</a></div><div id="container"></div><link rel="stylesheet" type="text/css" href="//unpkg.com/gitalk/dist/gitalk.css?v=0.0.0"><script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js?v=0.0.0"></script><script type="text/javascript" src="//unpkg.com/gitalk/dist/gitalk.min.js?v=0.0.0"></script><script>var gitalk = new Gitalk({
+  clientID: '7e91ec94cfb5913e3d6b',
+  clientSecret: '902f91e26bc75c9f8d912557492476d0be254667',
+  repo: 'qcrao.github.io',
+  owner: 'qcrao',
+  admin: ['qcrao'],
+  id: md5(location.pathname),
+  distractionFreeMode: false
+})
+gitalk.render('container')
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="https://qcrao.com"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/性能优化/">性能优化</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/技术人生/">技术人生</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/操作系统/">操作系统</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/求职/">求职</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><span class="category-list-count">34</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网络/">网络</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/读书笔记/">读书笔记</a><span class="category-list-count">6</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/golang/" style="font-size: 15px;">golang</a> <a href="/tags/故障排查/" style="font-size: 15px;">故障排查</a> <a href="/tags/协议/" style="font-size: 15px;">协议</a> <a href="/tags/内存重排/" style="font-size: 15px;">内存重排</a> <a href="/tags/牛人/" style="font-size: 15px;">牛人</a> <a href="/tags/HTTP/" style="font-size: 15px;">HTTP</a> <a href="/tags/设计模式/" style="font-size: 15px;">设计模式</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/编译原理/" style="font-size: 15px;">编译原理</a> <a href="/tags/小技巧/" style="font-size: 15px;">小技巧</a> <a href="/tags/简历/" style="font-size: 15px;">简历</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2021/08/09/talk-about-map-extra-field/">从 map 的 extra 字段谈起</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/08/03/go-tls-pr-by-xargin/">如何给 Go 提性能优化的 pr</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/07/21/start-to-build-up-personal-tools/">开始积累自己的工具库</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/07/19/accident-by-a-metric/">一个 metrics 打点引发的事故</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/07/15/how-to-use-functional-options-pattern/">如何优雅地指定配置项</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/06/10/out-of-tech/">技术之外</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/06/07/where-is-goexit-from/">哪来里的 goexit？</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/06/01/getting-to-know-the-power-of-ast/">初始 ast 的威力</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/05/27/how-to-get-asm-code-of-go/">如何用汇编打同事的脸</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/05/24/confusing-goroutine-running-orders/">迷惑的 goroutine 执行顺序</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://github.com/qcrao/Go-Questions" title="Go-Questions" target="_blank">Go-Questions</a><ul></ul><a href="http://xargin.com/" title="No HeadBack" target="_blank">No HeadBack</a><ul></ul><a href="https://blog.changkun.de/" title="欧神" target="_blank">欧神</a><ul></ul><a href="https://draveness.me/" title="面向信仰编程" target="_blank">面向信仰编程</a><ul></ul><a href="https://eddycjy.gitbook.io/golang/" title="跟煎鱼学 Go" target="_blank">跟煎鱼学 Go</a><ul></ul><a href="http://lessisbetter.site/" title="大彬 - Less is better" target="_blank">大彬 - Less is better</a><ul></ul><a href="https://wujunze.com/" title="Panda - Just for fun" target="_blank">Panda - Just for fun</a><ul></ul><a href="https://mytechshares.com/" title="董泽润" target="_blank">董泽润</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2021 <a href="/." rel="nofollow">qcrao.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a><a rel="nofollow" target="_blank" href="http://beian.miit.gov.cn"> 鄂ICP备20006251号-1</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script><script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
