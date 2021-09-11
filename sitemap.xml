@@ -2,388 +2,546 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://qcrao.com/2021/09/11/look-up-go-doc-gracefully/</loc>
+    
+    <lastmod>2021-09-11</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/godoc/index.html</loc>
+    
+    <lastmod>2021-09-05</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://qcrao.com/2021/06/10/out-of-tech/</loc>
     
-    <lastmod>2021-08-09T16:14:25.830Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/05/27/how-to-get-asm-code-of-go/</loc>
     
-    <lastmod>2021-08-09T16:09:44.657Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/06/01/getting-to-know-the-power-of-ast/</loc>
     
-    <lastmod>2021-08-09T16:08:53.221Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/06/07/where-is-goexit-from/</loc>
     
-    <lastmod>2021-08-09T16:07:59.240Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/07/15/how-to-use-functional-options-pattern/</loc>
     
-    <lastmod>2021-08-09T15:48:53.711Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/07/19/accident-by-a-metric/</loc>
     
-    <lastmod>2021-08-09T15:47:51.077Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/07/21/start-to-build-up-personal-tools/</loc>
     
-    <lastmod>2021-08-09T15:47:02.765Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/08/03/go-tls-pr-by-xargin/</loc>
     
-    <lastmod>2021-08-09T15:45:53.018Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/08/09/talk-about-map-extra-field/</loc>
     
-    <lastmod>2021-08-09T15:44:45.169Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/05/24/confusing-goroutine-running-orders/</loc>
     
-    <lastmod>2021-08-09T15:20:50.046Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/05/20/go-schedule-under-the-hood/</loc>
     
-    <lastmod>2021-08-09T15:17:13.851Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/05/12/diving-into-preempt-by-signal/</loc>
     
-    <lastmod>2021-08-09T15:15:59.879Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/04/19/mastering-go-reading-notes/</loc>
     
-    <lastmod>2021-08-09T15:10:24.608Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/03/30/become-a-go-typo-contributor/</loc>
     
-    <lastmod>2021-08-09T14:45:49.585Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/03/15/ingenious-use-of-go-build-x/</loc>
     
-    <lastmod>2021-08-09T14:42:19.755Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/02/04/ingenious-use-of-channel/</loc>
     
-    <lastmod>2021-08-09T14:06:56.964Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/404.html</loc>
     
-    <lastmod>2021-08-09T07:07:45.133Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/about/index.html</loc>
     
-    <lastmod>2021-08-09T07:05:42.838Z</lastmod>
+    <lastmod>2021-08-09</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2020/12/27/blogs-written-by-xargin/</loc>
     
-    <lastmod>2021-03-23T10:27:25.721Z</lastmod>
+    <lastmod>2021-03-23</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/01/29/error-depend-on-host-ip/</loc>
     
-    <lastmod>2021-01-29T02:19:10.000Z</lastmod>
+    <lastmod>2021-01-29</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2021/01/11/panic-blame-robot/</loc>
     
-    <lastmod>2021-01-11T01:19:19.000Z</lastmod>
+    <lastmod>2021-01-11</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/01/16/dive-into-three-way-handshake/</loc>
     
-    <lastmod>2021-01-08T12:17:21.579Z</lastmod>
+    <lastmod>2021-01-08</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2020/11/16/become-contributor-of-redir/</loc>
     
-    <lastmod>2020-11-21T11:31:54.000Z</lastmod>
+    <lastmod>2020-11-21</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2020/09/05/concurrency-in-go-reading-notes/</loc>
     
-    <lastmod>2020-09-05T03:46:54.000Z</lastmod>
+    <lastmod>2020-09-05</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2020/06/07/linux-performance-reading-notes/</loc>
     
-    <lastmod>2020-06-10T10:04:31.929Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/05/10/head-first-design-pattern-reading-notes/</loc>
-    
-    <lastmod>2020-06-07T13:45:46.266Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/03/08/high-performance-mysql-reading-notes/</loc>
-    
-    <lastmod>2020-05-23T09:27:32.668Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
-    
-    <lastmod>2020-05-23T02:45:46.633Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/05/06/dive-into-go-sync-map/</loc>
-    
-    <lastmod>2020-05-06T02:19:10.670Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/04/20/dive-into-go-sync-pool/</loc>
-    
-    <lastmod>2020-05-06T01:42:39.903Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/04/27/codec-accident/</loc>
-    
-    <lastmod>2020-04-28T00:56:40.404Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/06/03/dive-into-go-unsafe/</loc>
-    
-    <lastmod>2020-04-23T15:05:55.944Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/11/10/dive-into-go-pprof/</loc>
-    
-    <lastmod>2020-04-20T01:35:28.740Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/04/03/talk-about-g0/</loc>
-    
-    <lastmod>2020-04-03T07:27:59.415Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
-    
-    <lastmod>2020-03-30T02:19:28.859Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/readings/index.html</loc>
-    
-    <lastmod>2020-03-11T07:37:40.441Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/07/22/dive-into-go-channel/</loc>
-    
-    <lastmod>2019-12-23T02:36:35.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/04/25/dive-into-go-interface/</loc>
-    
-    <lastmod>2019-12-21T13:17:00.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/04/02/dive-into-go-slice/</loc>
-    
-    <lastmod>2019-12-21T08:43:23.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
-    
-    <lastmod>2019-12-21T07:28:22.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/07/03/how-go-runs/</loc>
-    
-    <lastmod>2019-11-28T07:31:31.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://qcrao.com/2019/05/22/dive-into-go-map/</loc>
-    
-    <lastmod>2019-11-15T07:19:05.000Z</lastmod>
+    <lastmod>2020-06-10</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/09/06/dive-into-go-scheduler-source-code/</loc>
     
-    <lastmod>2019-10-21T01:24:36.000Z</lastmod>
+    <lastmod>2020-06-10</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/05/10/head-first-design-pattern-reading-notes/</loc>
+    
+    <lastmod>2020-06-07</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/03/08/high-performance-mysql-reading-notes/</loc>
+    
+    <lastmod>2020-05-23</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/02/12/how-to-keep-off-trap-of-defer/</loc>
+    
+    <lastmod>2020-05-23</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/05/06/dive-into-go-sync-map/</loc>
+    
+    <lastmod>2020-05-06</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/04/20/dive-into-go-sync-pool/</loc>
+    
+    <lastmod>2020-05-06</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/04/27/codec-accident/</loc>
+    
+    <lastmod>2020-04-28</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/06/03/dive-into-go-unsafe/</loc>
+    
+    <lastmod>2020-04-23</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/11/10/dive-into-go-pprof/</loc>
+    
+    <lastmod>2020-04-20</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/04/03/talk-about-g0/</loc>
+    
+    <lastmod>2020-04-03</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2020/03/23/how-to-traverse-defer-links/</loc>
+    
+    <lastmod>2020-03-30</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/readings/index.html</loc>
+    
+    <lastmod>2020-03-11</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/07/22/dive-into-go-channel/</loc>
+    
+    <lastmod>2019-12-23</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/04/25/dive-into-go-interface/</loc>
+    
+    <lastmod>2019-12-21</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/04/02/dive-into-go-slice/</loc>
+    
+    <lastmod>2019-12-21</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/03/01/where-go-variables-go/</loc>
+    
+    <lastmod>2019-12-21</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/07/03/how-go-runs/</loc>
+    
+    <lastmod>2019-11-28</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/2019/05/22/dive-into-go-map/</loc>
+    
+    <lastmod>2019-11-15</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/01/18/dive-into-http/</loc>
     
-    <lastmod>2019-09-25T08:46:30.000Z</lastmod>
+    <lastmod>2019-09-25</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/09/18/golang-error-break-through/</loc>
     
-    <lastmod>2019-09-18T04:06:37.000Z</lastmod>
+    <lastmod>2019-09-18</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/09/02/dive-into-go-scheduler/</loc>
     
-    <lastmod>2019-09-02T09:07:21.000Z</lastmod>
+    <lastmod>2019-09-02</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/03/20/dive-into-go-asm/</loc>
     
-    <lastmod>2019-08-19T01:08:23.000Z</lastmod>
+    <lastmod>2019-08-19</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/baidu_verify_HpBdCzQ8Ex.html</loc>
     
-    <lastmod>2019-08-01T11:50:17.000Z</lastmod>
+    <lastmod>2019-08-01</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/01/30/byte-travel-story/</loc>
     
-    <lastmod>2019-07-31T08:01:46.000Z</lastmod>
+    <lastmod>2019-07-31</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/06/17/cch-says-memory-reorder/</loc>
     
-    <lastmod>2019-07-31T08:01:44.000Z</lastmod>
+    <lastmod>2019-07-31</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/06/12/dive-into-go-context/</loc>
     
-    <lastmod>2019-07-31T08:01:37.000Z</lastmod>
+    <lastmod>2019-07-31</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/05/07/dive-into-go-reflection/</loc>
     
-    <lastmod>2019-07-31T08:01:31.000Z</lastmod>
+    <lastmod>2019-07-31</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/03/13/graphic-go-memory-allocation/</loc>
     
-    <lastmod>2019-07-31T08:01:22.000Z</lastmod>
+    <lastmod>2019-07-31</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/2019/07/08/how-to-write-resume-gracefully/</loc>
     
-    <lastmod>2019-07-31T08:01:16.000Z</lastmod>
+    <lastmod>2019-07-31</lastmod>
     
   </url>
   
   <url>
     <loc>https://qcrao.com/categories/index.html</loc>
     
-    <lastmod>2019-07-23T15:24:28.000Z</lastmod>
+    <lastmod>2019-07-23</lastmod>
     
+  </url>
+  
+
+  <url>
+    <loc>https://qcrao.com/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  
+  <url>
+    <loc>https://qcrao.com/tags/golang/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/tags/%E7%89%9B%E4%BA%BA/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/tags/%E5%8D%8F%E8%AE%AE/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/tags/%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/tags/%E5%86%85%E5%AD%98%E9%87%8D%E6%8E%92/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/tags/HTTP/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/tags/MySQL/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/tags/%E7%AE%80%E5%8E%86/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/tags/Linux/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/tags/%E5%B0%8F%E6%8A%80%E5%B7%A7/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+
+  
+  <url>
+    <loc>https://qcrao.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/categories/%E7%BD%91%E7%BB%9C/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/categories/%E6%B1%82%E8%81%8C/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://qcrao.com/categories/%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%94%9F/</loc>
+    <lastmod>2021-09-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
   </url>
   
 </urlset>
