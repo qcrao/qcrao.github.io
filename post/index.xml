@@ -1,1 +1,38 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on qcrao 的博客</title><link>https://www.qcrao.com/post/</link><description>Recent content in Posts on qcrao 的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 21 Jun 2022 22:00:00 +0800</lastBuildDate><atom:link href="https://www.qcrao.com/post/index.xml" rel="self" type="application/rss+xml"/><item><title>最重要的是内容</title><link>https://www.qcrao.com/post/content-is-more-important/</link><pubDate>Tue, 21 Jun 2022 22:00:00 +0800</pubDate><guid>https://www.qcrao.com/post/content-is-more-important/</guid><description>今年是写博客的第四年，上半年基本没有发表新文章，非常惭愧。 对于一个博客而言，内容是最重要的。 最近打算将内容和博客构建任务都托管到 github，我只需要写出内容，其他由 github actions 自动完成。</description></item><item><title>hello hugo</title><link>https://www.qcrao.com/post/2017-11-03-hello-world2/</link><pubDate>Tue, 14 Dec 2021 21:00:00 +0800</pubDate><guid>https://www.qcrao.com/post/2017-11-03-hello-world2/</guid><description>内容测试 “Yeah It&amp;rsquo;s on. ” Hello World! 内容测试</description></item><item><title>欢迎使用 hugo 重新构建博客</title><link>https://www.qcrao.com/post/2017-11-03-hello-world/</link><pubDate>Fri, 13 Dec 2019 21:00:00 +0800</pubDate><guid>https://www.qcrao.com/post/2017-11-03-hello-world/</guid><description>内容测试 “Yeah It&amp;rsquo;s on. ” Hello World! 内容测试</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on qcrao 的博客</title>
+    <link>https://www.qcrao.com/post/</link>
+    <description>Recent content in Posts on qcrao 的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 21 Jun 2022 22:00:00 +0800</lastBuildDate><atom:link href="https://www.qcrao.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>最重要的是内容</title>
+      <link>https://www.qcrao.com/post/content-is-more-important/</link>
+      <pubDate>Tue, 21 Jun 2022 22:00:00 +0800</pubDate>
+      
+      <guid>https://www.qcrao.com/post/content-is-more-important/</guid>
+      <description>今年是写博客的第四年，上半年基本没有发表新文章，非常惭愧。 对于一个博客而言，内容是最重要的。 最近打算将内容和博客构建任务都托管到 github，我只需要写出内容，其他由 github actions 自动完成。 blog_post -&amp;gt; hugo -&amp;gt; public -&amp;gt; qcrao.github.io</description>
+    </item>
+    
+    <item>
+      <title>hello hugo</title>
+      <link>https://www.qcrao.com/post/2017-11-03-hello-world2/</link>
+      <pubDate>Tue, 14 Dec 2021 21:00:00 +0800</pubDate>
+      
+      <guid>https://www.qcrao.com/post/2017-11-03-hello-world2/</guid>
+      <description>内容测试 “Yeah It&amp;rsquo;s on. ” Hello World! 内容测试</description>
+    </item>
+    
+    <item>
+      <title>欢迎使用 hugo 重新构建博客</title>
+      <link>https://www.qcrao.com/post/2017-11-03-hello-world/</link>
+      <pubDate>Fri, 13 Dec 2019 21:00:00 +0800</pubDate>
+      
+      <guid>https://www.qcrao.com/post/2017-11-03-hello-world/</guid>
+      <description>内容测试 “Yeah It&amp;rsquo;s on. ” Hello World! 内容测试</description>
+    </item>
+    
+  </channel>
+</rss>
