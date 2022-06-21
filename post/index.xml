@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on qcrao 的博客</title>
+    <link>https://www.qcrao.com/post/</link>
+    <description>Recent content in Posts on qcrao 的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 14 Dec 2021 21:00:00 +0800</lastBuildDate><atom:link href="https://www.qcrao.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>欢迎使用 hugo 重新构建博客2</title>
+      <link>https://www.qcrao.com/post/2017-11-03-hello-world2/</link>
+      <pubDate>Tue, 14 Dec 2021 21:00:00 +0800</pubDate>
+      
+      <guid>https://www.qcrao.com/post/2017-11-03-hello-world2/</guid>
+      <description>内容测试 “Yeah It&amp;rsquo;s on. ” Hello World! 内容测试</description>
+    </item>
+    
+    <item>
+      <title>欢迎使用 hugo 重新构建博客</title>
+      <link>https://www.qcrao.com/post/2017-11-03-hello-world/</link>
+      <pubDate>Fri, 13 Dec 2019 21:00:00 +0800</pubDate>
+      
+      <guid>https://www.qcrao.com/post/2017-11-03-hello-world/</guid>
+      <description>内容测试 “Yeah It&amp;rsquo;s on. ” Hello World! 内容测试</description>
+    </item>
+    
+  </channel>
+</rss>
