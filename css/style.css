@@ -1115,4 +1115,13 @@ table tr th, table tr td {
 .github-badge .bg-lightgrey,.github-badge .bg-lightgray {
   background-color: #9f9f9f !important; 
 }
-  
+
+@media only screen and (max-width: 800px) {
+    .post-archive {
+        font-size: 16px;
+    }
+
+    .post-content {
+        font-size: 16px;
+    }
+}
