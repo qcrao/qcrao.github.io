@@ -1,1 +1,1 @@
-/:year/:month/:day/* /:splat
+/:year/:month/:day/* /post/:splat
