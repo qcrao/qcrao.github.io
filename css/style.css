@@ -1125,4 +1125,14 @@ table tr th, table tr td {
     .post-content {
         font-size: 16px;
     }
+
+    .post-archive h2 {
+          margin: 0;
+          font: bold 16px / 1.1 "ff-tisa-web-pro", Cambria, "Times New Roman", Georgia, Times, sans-serif; 
+    }
+    
+    .post-archive .date {
+        font-size: 16px;
+        padding-right: .7em; 
+    }
 }
