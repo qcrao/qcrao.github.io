@@ -1000,6 +1000,7 @@ img.alignright {
     border-left: 3px solid #ff1700;
     background-color: #f9f9f9;
     list-style: none;
+    font-size: 18px;
 }
 .post-copyright a {
     border-bottom: 1px solid #999;
@@ -1130,7 +1131,7 @@ table tr th, table tr td {
           margin: 0;
           font: bold 16px / 1.1 "ff-tisa-web-pro", Cambria, "Times New Roman", Georgia, Times, sans-serif; 
     }
-    
+
     .post-archive .date {
         font-size: 16px;
         padding-right: .7em; 
