@@ -1004,6 +1004,7 @@ img.alignright {
 }
 .post-copyright a {
     border-bottom: 1px solid #999;
+    font-size: 18px;
 }
 
 /* table*/
