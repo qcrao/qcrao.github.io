@@ -1172,3 +1172,12 @@ table tr th, table tr td {
     );
     background-position: center;
 }
+
+/*鼠标悬停时标题变色*/
+h1 a:hover {
+    color:#0061fe;
+}
+
+.listing a:hover {
+    color:#0061fe;
+}
