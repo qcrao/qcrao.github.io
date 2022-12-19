@@ -1181,3 +1181,7 @@ h1 a:hover {
 .listing a:hover {
     color:#0061fe;
 }
+
+.widget-list a:hover {
+    color:#0061fe;
+}
