@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The AI Video Shot Risk Scorecard</title>
+  <meta name="description" content="A practical scorecard for planning multi-shot AI video: identify expensive shots, test continuity early, and regenerate the smallest possible unit.">
+  <link rel="canonical" href="https://qcrao.com/guides/ai-video-shot-risk-scorecard/">
+  <style>
+    :root { --paper:#f5f0e6; --ink:#17211b; --muted:#5d665f; --line:#cdc6b8; --accent:#cc5a35; --green:#28594a; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--paper); font-family:Georgia, "Times New Roman", serif; line-height:1.7; }
+    .top { border-bottom:1px solid var(--line); padding:18px 24px; font:600 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; letter-spacing:.08em; text-transform:uppercase; }
+    .top a { color:var(--green); text-decoration:none; }
+    main { width:min(760px, calc(100% - 40px)); margin:70px auto 100px; }
+    .kicker { color:var(--accent); font:700 12px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; letter-spacing:.14em; text-transform:uppercase; }
+    h1 { margin:14px 0 18px; font-size:clamp(42px,8vw,72px); line-height:.98; letter-spacing:-.045em; }
+    .dek { max-width:650px; color:var(--muted); font-size:21px; line-height:1.5; }
+    .rule { width:80px; height:5px; margin:36px 0 52px; background:var(--accent); }
+    h2 { margin:56px 0 14px; color:var(--green); font-size:30px; line-height:1.15; }
+    h3 { margin:34px 0 8px; font:700 16px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; text-transform:uppercase; letter-spacing:.05em; }
+    p, li { font-size:18px; }
+    ul, ol { padding-left:26px; }
+    li { margin:8px 0; }
+    .scorecard { margin:34px 0; border:1px solid var(--line); background:rgba(255,255,255,.35); }
+    .scorecard div { display:grid; grid-template-columns:84px 1fr; gap:18px; padding:17px 20px; border-bottom:1px solid var(--line); }
+    .scorecard div:last-child { border-bottom:0; }
+    .points { color:var(--accent); font:800 14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; text-transform:uppercase; }
+    blockquote { margin:38px 0; padding:6px 0 6px 24px; border-left:5px solid var(--accent); font-size:24px; line-height:1.45; }
+    .callout { margin-top:48px; padding:30px; color:#f8f2e8; background:var(--green); }
+    .callout a { color:#fff1b8; font-weight:700; }
+    footer { margin-top:70px; padding-top:24px; border-top:1px solid var(--line); color:var(--muted); font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    @media (max-width:560px) { main { margin-top:48px; } .scorecard div { grid-template-columns:1fr; gap:4px; } }
+  </style>
+</head>
+<body>
+  <header class="top"><a href="https://qcrao.com/">qcrao.com</a> / Production field notes</header>
+  <main>
+    <div class="kicker">AI filmmaking · planning</div>
+    <h1>The AI Video Shot Risk Scorecard</h1>
+    <p class="dek">A multi-shot AI film gets expensive when difficult decisions are hidden inside apparently simple shots. Score the risk before generating, then spend tests where failure is most likely.</p>
+    <div class="rule"></div>
+
+    <p>A short generative film rarely fails because every shot is bad. It fails because one or two shots ask the model to solve too many problems at once: preserve a face, move a hand, maintain a prop, deliver dialogue, and match the previous cut. Those shots consume most of the retries.</p>
+    <p>A risk scorecard makes that cost visible before generation. It is not a model benchmark. It is a production tool for deciding which shots can go straight to a normal render, which need a cheap motion test, and which should be redesigned.</p>
+
+    <h2>Give one point to every fragile requirement</h2>
+    <p>Read each planned shot and add one point for every requirement below. Score what the audience must actually see, not everything mentioned in the prompt.</p>
+    <ul>
+      <li>a recognizable face in close-up;</li>
+      <li>two or more recurring characters;</li>
+      <li>a hand touching or transferring a prop;</li>
+      <li>spoken dialogue or lip sync;</li>
+      <li>a moving camera;</li>
+      <li>an exact match to the previous shot;</li>
+      <li>unusual body motion, such as falling or dancing;</li>
+      <li>text that must remain readable;</li>
+      <li>a reflection, mirror, or screen-within-a-screen;</li>
+      <li>a location whose geometry has already been established.</li>
+    </ul>
+
+    <div class="scorecard">
+      <div><span class="points">0–2 points</span><span>Generate normally. The shot has a clear job and few coupled constraints.</span></div>
+      <div><span class="points">3–4 points</span><span>Approve the first frame, then run a short low-cost motion test before committing to duration or resolution.</span></div>
+      <div><span class="points">5+ points</span><span>Redesign. This is probably two shots pretending to be one.</span></div>
+    </div>
+
+    <h2>Score the cut, not only the clip</h2>
+    <p>A shot can look good in isolation and still break the sequence. Add a continuity point when the incoming frame must agree with a previous outgoing frame on pose, prop state, gaze, screen direction, light direction, or background movement.</p>
+    <p>Review the two boundary frames side by side. If they disagree, regenerate the cheaper side of the cut. In most cases that means repairing the new first frame instead of throwing away a completed clip.</p>
+    <blockquote>The cut is the smallest unit the audience judges, even when the generator presents one clip at a time.</blockquote>
+
+    <h2>Test the riskiest shot first</h2>
+    <p>Chronological generation feels natural, but it delays the most useful information. If shot six contains a close-up, dialogue, a handoff, and a moving camera, test it before the quiet establishing shot.</p>
+    <p>An early failure can change the whole plan. The handoff may become an insert. The moving camera may become locked. The dialogue may play over a reaction shot. Each change removes a coupled constraint while preserving the story beat.</p>
+
+    <h2>Separate identity, composition, and motion</h2>
+    <p>Do not ask a video model to decide everything simultaneously. First approve a reference portrait. Then approve a still frame with the right wardrobe, location, camera position, and light. Only then ask for the temporal change.</p>
+    <p>A useful motion prompt describes a delta: “She hears the bell, tightens her grip on the ticket, and looks toward the platform. Locked camera. Steam drifts behind her.” The still already owns identity and composition. The motion prompt owns the change.</p>
+
+    <h2>Keep a rejection ledger</h2>
+    <p>For every attempt, record the shot number, risk score, model or preset, credits spent, and one rejection code. A compact code system is enough:</p>
+    <ul>
+      <li><strong>ID</strong> — face, wardrobe, or character identity;</li>
+      <li><strong>GEO</strong> — location geometry or screen direction;</li>
+      <li><strong>MOT</strong> — action, camera move, or temporal coherence;</li>
+      <li><strong>AUD</strong> — speech, timing, voice, or ambience;</li>
+      <li><strong>ART</strong> — visible generation artifacts.</li>
+    </ul>
+    <p>After a dozen attempts, patterns become obvious. If ID dominates, improve the reference image. If MOT dominates, simplify actions. If GEO dominates, strengthen first-frame anchors. The ledger turns retries into production data.</p>
+
+    <h2>A practical seven-step loop</h2>
+    <ol>
+      <li>Write the story as six or seven visual beats.</li>
+      <li>Assign a duration range and a risk score to each beat.</li>
+      <li>Split every five-point shot.</li>
+      <li>Approve character references and first frames.</li>
+      <li>Test the highest-risk motion first.</li>
+      <li>Inspect every outgoing and incoming frame pair.</li>
+      <li>Spend on duration, resolution, and alternate takes only after the sequence works.</li>
+    </ol>
+
+    <div class="callout">
+      <h2 style="color:#fff;margin-top:0">Where storyboard-first tools help</h2>
+      <p><a href="https://www.talescene.com/">TaleScene</a> exposes the units this workflow needs: scene planning, character references, keyframes, shot-by-shot clip generation, and final sequence export. The storyboard makes risk and continuity decisions visible before the expensive motion stage.</p>
+    </div>
+
+    <p>The scorecard does not make difficult shots easy. It makes them explicit. Once risk is visible, you can move uncertainty into cheaper stages, redesign overloaded shots, and reserve high-cost generations for frames that already have an approved job in the cut.</p>
+
+    <footer>Published July 2026 · An independent production field note by qcrao.</footer>
+  </main>
+</body>
+</html>
